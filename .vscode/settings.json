@@ -1,0 +1,4 @@
+{
+    "jestTestExplorer.pathToJest": "server/src",
+    "git.ignoreLimitWarning": true
+}

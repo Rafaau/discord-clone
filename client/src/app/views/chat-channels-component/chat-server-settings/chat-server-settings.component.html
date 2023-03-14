@@ -1,0 +1,11 @@
+<div [@fadeIn] *ngIf="isOpen" class="server-settings-container">
+  <div class="side-menu">
+    <h5>{{ chatServer!.name }}</h5>
+  </div>
+  <div class="main-container">
+    <div class="close-btn" (click)="onCloseClick()">
+      <mat-icon>close</mat-icon>
+      ESC
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+    padding-inline: 15px;
+    padding-bottom: 15px;
+    overflow: hidden!important;
+}
+
+h1 {
+    text-align: center!important;
+    font-weight: 700!important;
+}
+
+::ng-deep .mat-mdc-dialog-content {
+    text-align: center!important;;
+}
+
+.close-btn {
+    z-index: 1;
+    color: #A7A8AC;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    transition: 0.2s;
+}
+
+    .close-btn:hover {
+        color: #6f6f72;
+    }
+
+.dialog-tab {
+    position: relative;
+    color: #313338;
+    font-weight: 500;
+    width: auto;
+    border: 1px solid #c1c2c6; 
+    border-radius: 5px;
+    height: 70px;
+    line-height: 70px;
+    padding-left: 70px;
+    cursor: pointer;
+}
+
+    .dialog-tab:hover {
+        background-color: #e9eaec;
+    }
+
+.create-icon {
+    position: absolute;
+    color: #F3F4F5;
+    background-color: #3f51b5;
+    border-radius: 50%;
+    padding: 5px;
+    left: 20px;
+    top: 18px;
+}
+
+.chevron {
+    font-size: 30px;
+    color: #6f6f72;
+    position: absolute;
+    right: 10px;
+    top: 22px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.create-btn {
+    position: absolute;
+    right: 5px;
+}
+
+::ng-deep #cdk-overlay-1 {
+    min-height: 272px;
+    transition: 0.2s;
+} 
+
+mat-dialog-content {
+    padding: 0!important;
+}

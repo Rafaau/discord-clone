@@ -1,0 +1,48 @@
+<div class="top-bar">
+  <mat-icon>people</mat-icon>
+  <div class="title">
+    Friends
+  </div>
+  <div 
+    class="all" 
+    (click)="changeView(0)" 
+    [ngClass]="currentView === ViewEnum.FriendsList ? 'all-current' : ''">
+    All
+  </div>
+  <div 
+    class="add" 
+    (click)="changeView(1)"
+    [ngClass]="currentView === ViewEnum.AddFriend ? 'add-current' : ''">
+    Add Friend
+  </div>
+</div>
+<!-- FRIENDS LIST VIEW -->
+<div *ngIf="currentView === ViewEnum.FriendsList">
+  <div class="input-container">
+    <input [(ngModel)]="searchValue" placeholder="Search"/>
+    <mat-icon class="search-icon">search</mat-icon>
+  </div>
+  <h6>FRIENDS - {{ friendsOfUser.length }}</h6>
+  <div 
+    class="single-friend" 
+    *ngFor="let friend of filterFriendsBySearch(friendsOfUser)"
+    (click)="redirectToConversation(friend)">
+    <i class="fa-brands fa-discord" [ngClass]="true ? 'av-'+friend.username[0].toLowerCase() : ''"></i>
+    {{ friend.username }}
+    <i class="fa-solid fa-message message-icon" matTooltip="Message" matTooltipPosition="above"></i>
+  </div>
+</div>
+<!-- ADD FRIEND VIEW -->
+<div class="friend-view" *ngIf="currentView === ViewEnum.AddFriend">
+  <h4>ADD FRIEND</h4>
+  <p>You can add a friend with their Discord Tag. It's cAsE-sEnSitIvE!</p>
+  <div class="input-container">
+    <input [(ngModel)]="friendInputValue" placeholder="Enter a Username">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      [ngClass]="friendInputValue == '' ? 'disabled' : ''">
+      Send Friend Request
+    </button>
+  </div>
+</div>

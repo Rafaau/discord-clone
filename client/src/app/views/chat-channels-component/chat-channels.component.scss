@@ -1,0 +1,182 @@
+.container {
+    position: relative;
+    height: 100%;
+}
+
+.top-bar {
+    height: 42px;
+    line-height: 44px;
+    border-bottom: 1px solid #1F2023;
+    box-shadow: 0 1px 5px -2px #1F2023;
+    border-top-left-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    padding-left: 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+    .top-bar:hover {
+        background-color: #36373D;
+    }
+
+.arrow {
+    font-size: 16px;
+    width: 16px;
+    margin-right: 5px;
+    margin-left: 2px;
+}
+
+.server-menu-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 22px;
+}
+
+.add {
+    font-size: 20px;
+    width: 16px;
+    margin-right: 5px;
+    position: absolute;
+    right: 8px;
+    top: -3px;
+}
+
+    .add:hover {
+        color: #F3F4F5;
+    }
+    
+.chat-category {
+    position: relative;
+    display: flex;
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #989AA2;
+    transition: 0.05s;
+    cursor: pointer;
+}
+
+    .chat-category:hover > .arrow, :hover > .category-name {
+        color: #F3F4F5;
+    }
+
+.chat-channel {
+    display: flex;
+    font-size: 15px;
+    color: #989AA2;
+    padding-left: 15px;
+    line-height: 34px;
+    height: 34px;
+    cursor: pointer;
+    margin-inline: 5px;
+    border-radius: 5px;
+    margin-bottom: 3px;
+}
+
+    .chat-channel:hover {
+        background-color: #36373D;
+    }
+
+    .chat-channel:hover > .channel-name {
+        color: #F3F4F5;
+    }
+
+.hashtag {
+    font-size: 20px;
+    margin-right: 5px;
+    color: #989AA2;
+}
+
+.channel-name {
+    font-weight: 500;
+}
+
+.chat-channel-current {
+    display: flex;
+    font-size: 15px;
+    color: #F3F4F5;
+    background-color: #404249;
+    padding-left: 15px;
+    line-height: 34px;
+    height: 34px;
+    cursor: pointer;
+    margin-inline: 5px;
+    border-radius: 5px;
+    margin-bottom: 3px;
+}
+
+::ng-deep .mdc-menu-surface {
+    background-color: #111214!important;
+}
+
+::ng-deep .mat-mdc-menu-panel.mat-mdc-menu-panel {
+    margin-top: 10px!important;
+    margin-left: 10px!important;
+}
+
+.menu {
+    width: 190px;
+    padding-inline: 10px;
+    font-size: 14px;
+}
+
+.menu-option {
+    display: flex;
+    color: #B2B3B9;
+    border-radius: 3px;
+    justify-content:space-between;
+    cursor: pointer;
+    padding: 3px 6px 3px 6px;
+    margin-bottom: 2px;
+}
+
+    .menu-option:hover {
+        background-color: #3f51b5;
+        color: #f3f4f5;
+    }
+
+    .menu-option mat-icon {
+        font-size: 20px;
+        line-height: 25px;
+    }
+
+::ng-deep .dialog-container {
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+        padding-inline: 0!important;
+        padding-bottom: 0!important;
+    }
+    .mat-mdc-dialog-container {
+        --mdc-dialog-container-color: #313338!important;
+        padding: 0!important;
+    }
+    .mat-mdc-radio-button.mat-accent {
+        --mdc-radio-selected-focus-icon-color: #F3F4F5;
+        --mdc-radio-selected-hover-icon-color: #F3F4F5;
+        --mdc-radio-selected-icon-color: #F3F4F5;
+        --mdc-radio-selected-pressed-icon-color: #F3F4F5;
+        --mat-mdc-radio-checked-ripple-color: rgba(0,0,0,0);
+    }
+    mat-dialog-content {
+        padding: 0!important;
+    }
+    .mdc-text-field {
+        background-color: #232428!important;
+    }
+    .mat-mdc-input-element {
+        color: #F3F4F6!important;
+    }
+    mat-label {
+        color: #F3F4F6!important;
+    }
+    .mat-mdc-form-field-required-marker {
+        display: none;
+    }
+    .mat-mdc-raised-button.mat-warn {
+        --mdc-protected-button-container-color: #DA373C;
+    }
+    .mat-mdc-raised-button.mat-warn:hover {
+        --mdc-protected-button-container-color: #A12828;
+    }
+}

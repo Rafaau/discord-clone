@@ -1,0 +1,109 @@
+.chat-servers-container {
+    display: block;
+}
+
+hr {
+    width: 45%;
+    border: 1px solid #313338;
+}
+
+.chat-server-icon {
+    position: relative;
+    margin: 0;
+    background-color: #313338;
+    border-radius: 50%;
+    text-align: center;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    margin: auto;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 8px;
+}
+
+.chat-server-icon:hover {
+    background-color: #3f51b5;
+    border-radius: 35%;
+}
+
+.chat-server-icon:hover > .indicator {
+    transform: scale(1);
+}
+
+.chat-server-icon-current {
+    position: relative;
+    margin: 0;
+    background-color: #3f51b5;
+    border-radius: 35%;
+    text-align: center;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    margin: auto;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 8px;
+}
+
+i {
+    font-size: 22px;
+    height: 45px;
+    line-height: 45px;
+    background-color: transparent!important;
+}
+
+mat-icon {
+    height: 45px;
+    line-height: 45px;
+}
+
+
+.indicator {
+    position: absolute;
+    background-color: #F3F4F5;
+    width: 10px;
+    height: 20px;
+    border-radius: 5px;
+    top: 26.5%;
+    left: -16px;
+    transition: 0.1s linear;
+    transform: scale(0);
+}
+
+.current {
+    position: absolute;
+    background-color: #F3F4F5;
+    width: 10px;
+    height: 35px;
+    border-radius: 5px;
+    top: 10.5%;
+    left: -16px;
+    transition: 0.1s linear;
+}
+
+.add-chat-server {
+    position: relative;
+    margin: 0;
+    background-color: #313338;
+    color: #23A55A;
+    border-radius: 50%;
+    text-align: center;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    margin: auto;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 5px;
+}
+
+.add-chat-server:hover {
+    background-color: #23A55A;
+    color: #F3F4F5;
+    border-radius: 35%;
+}
+
+
+
+

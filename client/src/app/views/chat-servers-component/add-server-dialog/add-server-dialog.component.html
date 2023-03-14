@@ -1,0 +1,56 @@
+<!-- MAIN VIEW -->
+
+<div [@changeView] *ngIf="!createView" class="container">
+  <mat-icon class="close-btn" mat-dialog-close>close</mat-icon>
+  <h1 mat-dialog-title>Create a server</h1>
+  <div mat-dialog-content>
+    Your server is where you and your friends hang out. 
+    Make yours and start talking.
+  </div>
+  <div 
+    class="dialog-tab"
+    (click)="toCreateView()">
+    <mat-icon class="create-icon">create</mat-icon>
+    Create My Own
+    <mat-icon class="chevron">keyboard_arrow_right</mat-icon>
+  </div>
+</div>
+
+<!-- CREATE VIEW -->
+
+<div [@otherView] *ngIf="createView">
+  <mat-icon class="close-btn" mat-dialog-close>close</mat-icon>
+  <h1 mat-dialog-title>Customise your server</h1>
+  <div mat-dialog-content>
+    Give your new server a personality with a name and an icon.
+    You can always change it later.
+  </div>
+
+  <mat-dialog-content [formGroup]="chatServerForm">
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>SERVER NAME</mat-label>
+      <input
+        matInput 
+        matNativeControl
+        required
+        formControlName="name"
+        [errorStateMatcher]="matcher"/>
+      <mat-error *ngIf="chatServerForm.controls.name.hasError('required')">
+        Server Name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-dialog-actions>
+      <button 
+        mat-button
+        (click)="toMainView()">Back</button>
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="onSubmit()"
+        class="create-btn">Create</button>
+    </mat-dialog-actions>
+
+  </mat-dialog-content>
+
+</div>

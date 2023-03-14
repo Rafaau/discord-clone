@@ -1,0 +1,38 @@
+<div class="container">
+  <mat-icon 
+    class="close"
+    mat-dialog-close>
+    close
+  </mat-icon>
+  <h1>Delete Message</h1>
+  <p>Are you sure you want to delete this message?</p>
+  <div class="message-to-delete">
+    <i class="fa-brands fa-discord avatar" [ngClass]="true ? 'av-' + this.data.message.user.username[0].toLowerCase() : ''"></i>
+    <div class="message-user">
+      {{ this.data.message.user.username }}
+      <div class="post-date">
+        {{ isToday(this.data.message.postDate) ? 'Today at ' : '' }}
+        {{ isYesterday(this.data.message.postDate) ? 'Yesterday at ' : '' }}
+        {{ isLongAgo(this.data.message.postDate) ? (this.data.message.postDate | date:'dd/MM/yyyy') : '' }}
+        {{ this.data.message.postDate | date:'h:mm a' }}
+      </div>
+    </div>
+    <div class="message-content">
+      {{ this.data.message.content }}
+    </div>
+  </div>
+</div>
+<div class="bottom-actions">
+  <div 
+    class="cancel" 
+    mat-dialog-close>
+    Cancel
+  </div>
+  <button
+    mat-raised-button
+    color="warn"
+    class="submit-btn"
+    (click)="onDelete()">
+    Delete
+  </button>
+</div>

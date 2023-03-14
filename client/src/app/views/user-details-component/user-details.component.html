@@ -1,0 +1,16 @@
+<div [@slideIn] class="details-container">
+  <div class="details-upper" [ngClass]="true ? 'av-' + user!.username[0].toLowerCase() : ''"></div>
+  <i class="fa-brands fa-discord member-avatar" [ngClass]="true ? 'av-' + user!.username[0].toLowerCase() : ''"></i>
+  <div class="details">
+    <div class="username">
+      {{ user?.username }}
+    </div>
+    <div class="input-container">
+      <input
+        [placeholder]="'Message @'+user!.username"
+        [value]="messageValue"
+        (input)="onValueChange($event)"
+        (keydown.enter)="onSubmit($event)">
+    </div>
+  </div>
+</div>

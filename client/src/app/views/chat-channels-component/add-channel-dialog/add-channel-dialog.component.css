@@ -1,0 +1,104 @@
+.container {
+    position: relative;
+    padding: 15px;
+    padding-top: 20px;
+    overflow: hidden;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 20px;
+    cursor: pointer;
+    color: #87888D;
+    transition: 0.2s;
+}
+
+    .close:hover {
+        color: #EEEFF0;
+    }
+
+h1 {
+    color: #EEEFF0!important;
+    font-weight: 400!important;
+    font-size: 18px!important;
+}
+
+p {
+    margin-top: 3px;
+    font-size: 12px;
+    color: #87888D;
+}
+
+h2 {
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #B8B9BF;
+}
+
+.channel-type {
+    display: flex;
+    background-color: #43444B;
+    border-radius: 5px;
+    height: 60px;
+    line-height: 60px;
+    padding: auto;
+    cursor: pointer;
+}
+
+.hashtag {
+    color: #87888D;
+    font-size: 30px;
+    padding-inline: 15px;
+}
+
+.type-title {
+    color: #B8B9BF;
+    font-size: 15px;
+    font-weight: 500;
+    height: 15px;
+    line-height: 40px;
+}
+
+.type-desc {
+    color: #87888D;
+    font-size: 11px;
+    line-height: 55px;
+    margin-right: 25px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.bottom-actions {
+    display: flex;
+    justify-content: right;
+    background-color: #2B2D31;
+    overflow: hidden;
+    height: 65px;
+    line-height: 65px;
+}
+
+.cancel {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+    .cancel:hover {
+        text-decoration: underline;
+    }
+
+.submit-btn {
+    margin: 15px;
+}
+
+.disabled {
+    cursor: not-allowed!important;
+    background-color: #454C94!important;
+    color: #82858F!important;
+}

@@ -1,0 +1,122 @@
+<div class="container">
+  <div class="top-bar">
+    <div *ngIf="directConversation && currentUser">
+      <div 
+        class="interlocutor" 
+        *ngVar="directConversation!.users[0].id == currentUser!.id ? 
+                directConversation!.users[1] : 
+                directConversation!.users[0] as interlocutor ">
+        <div class="at">
+          @
+        </div>
+        {{ interlocutor.username }}
+      </div>
+    </div>
+  </div>
+  <div class="flex" *ngIf="directConversation && currentUser">
+    <div 
+      class="messages-container" 
+      *ngVar="directConversation!.users[0].id == currentUser!.id ? 
+            directConversation!.users[1] : 
+            directConversation!.users[0] as interlocutor ">
+      <div class="messages-wrapper">
+        <i class="fa-brands fa-discord interlocutor-avatar" [ngClass]="true ? 'av-' + interlocutor.username[0].toLowerCase() : ''"></i>
+        <h1>{{ interlocutor.username }}</h1>
+        <p>This is the beginning of your direct message history with <strong>@{{ interlocutor.username }}</strong></p>
+        <div *ngFor="let message of directMessages; index as i" class="single-message">
+
+          <div 
+            *ngVar="directMessages[i-1]?.user!.username != message.user.username || 
+                    toDate(directMessages[i-1]?.postDate!) != toDate(message.postDate) 
+                    as firstOfMessages;" 
+            class="single-message">
+            <div 
+              *ngIf="toDate(directMessages[i-1]?.postDate!) != toDate(message.postDate)"
+              class="date-hr">
+              <hr/>
+              {{ message.postDate | date:'d MMM y' }}
+              <hr/>
+            </div>
+
+            <div class="message-content" [ngClass]="!firstOfMessages ? 'not-first' : 'first'">
+              <div *ngIf="!firstOfMessages" class="post-date-not-first">
+                {{ message.postDate | date:'h:mm a' }}
+              </div>
+
+              <div 
+                *ngIf="firstOfMessages" 
+                class="user-avatar">
+                <i class="fa-brands fa-discord i-avatar" [ngClass]="true ? 'av-' + message.user.username[0].toLowerCase() : ''"></i>
+              </div>
+
+              <div [ngClass]="firstOfMessages ? 'margin-fix' : ''">
+                <div *ngIf="firstOfMessages" class="user-name">
+                  {{ message.user.username }}
+                  <div class="post-date-first">
+                    {{ isToday(message.postDate) ? 'Today at ' : '' }}
+                    {{ isYesterday(message.postDate) ? 'Yesterday at ' : '' }}
+                    {{ isLongAgo(message.postDate) ? (message.postDate | date:'dd/MM/yyyy') : '' }}
+                    {{ message.postDate | date:'h:mm a' }}
+                  </div>
+                </div>
+
+                <div 
+                  *ngIf="message.id != messageToEditId" 
+                  class="content-fix"
+                  [ngClass]="firstOfMessages ? 'first-content-fix' : ''">
+                  {{ message.content }}
+                </div>
+
+                <div *ngIf="message.id == messageToEditId">
+                  <textarea 
+                    class="edit-input" 
+                    cdkTextareaAutosize 
+                    [value]="messageToEditValue"
+                    (input)="onEditValueChange($event)"
+                    (keydown.escape)="exitEditMode($event)"
+                    (keydown.enter)="onEditSubmit($event)"></textarea>
+                    <div class="edit-info">
+                      escape to <a (click)="exitEditMode($event)" class="edit-action">cancel</a> 
+                      • enter to <a (click)="onEditSubmit($event)" class="edit-action">save</a>
+                    </div>
+                </div>
+
+                <div 
+                  class="message-actions" 
+                  *ngIf="message.user.id == currentUser?.id && message.id != messageToEditId">
+                  <i 
+                    matTooltip="Edit"
+                    matTooltipPosition="above"
+                    class="fa-solid fa-pen action-btn" 
+                    (click)="onEdit(message)"></i>
+                  <i 
+                    matTooltip="Delete"
+                    matTooltipPosition="above"
+                    class="fa-solid fa-trash-can action-btn" 
+                    style="color: #F23F42;"
+                    (click)="openConfirmDelete(message)"></i>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div id="target" class="end-space">
+          {{ scrollToLastMessage() }}
+        </div>
+      </div>
+      <div class="bottom-section">
+        <div class="input-container">
+          <textarea 
+            class="chat-input" 
+            cdkTextareaAutosize 
+            placeholder="Message #{{ interlocutor.username }}"
+            [value]="messageValue"
+            (input)="onValueChange($event)"
+            (keydown.enter)="onSubmit($event)"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

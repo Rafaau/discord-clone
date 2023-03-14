@@ -1,0 +1,22 @@
+<div class="base-container">
+  <div class="row">
+    <div class="primary-side-bar">
+      <app-chat-servers [currentUser]="currentUser"></app-chat-servers>
+    </div>
+    <div class="secondary-side-bar">
+      <app-chat-channels *ngIf="router.url.includes('/chatserver')" (members)="fetchUsersFromServer($event)"></app-chat-channels>
+      <app-direct-messages-list *ngIf="router.url.includes('/directmessages') && currentUser" [currentUser]="currentUser" (rendered)="passUserToChild()"></app-direct-messages-list>
+      <div class="user-tab">
+        <div *ngIf="currentUser">
+          <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + currentUser!.username[0].toLowerCase() : ''"></i>
+          {{ currentUser.username }}
+        </div>
+      </div>
+    </div>
+    <div class="main-container">
+      <app-chat-messages *ngIf="currentRoute.route.includes('channel=')" [currentUser]="currentUser" [members]="members"></app-chat-messages>
+      <app-friends *ngIf="currentRoute.route === '/directmessages'" [currentUser]="currentUser"></app-friends>
+      <app-direct-messages *ngIf="currentRoute.route.includes('conversation=')" [currentUser]="currentUser"></app-direct-messages>
+    </div>
+  </div>
+</div>

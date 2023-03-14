@@ -1,0 +1,53 @@
+<div class="bg">
+  <div [@openClose] *ngIf="isShown" class="form-container">
+    <h1>Welcome back!</h1>
+    <p>We're so excited to see you again!</p>
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+
+      <mat-error *ngIf="unauthorizedResponse" [ngStyle]="{marginBottom: '15px'}">
+        <strong>Email</strong> or <strong>Password</strong> is invalid.
+      </mat-error>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>EMAIL</mat-label>
+        <input 
+          matInput 
+          matNativeControl 
+          required 
+          formControlName="email"
+          [errorStateMatcher]="matcher"/>
+        <mat-error *ngIf="profileForm.controls.email.hasError('email') && !profileForm.controls.email.hasError('required')">
+          Please enter a valid email address
+        </mat-error>
+        <mat-error *ngIf="profileForm.controls.email.hasError('required')">
+          Email is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>PASSWORD</mat-label>
+        <input 
+          matInput 
+          required 
+          type="password" 
+          formControlName="password"
+          [errorStateMatcher]="matcher"/>
+        <mat-error *ngIf="profileForm.controls.password.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit"
+        class="full-width">
+        Log In
+      </button>
+
+    </form>
+    <p class="register-p">Need an account? 
+      <a (click)="redirectToRegister()" routerLinkActive="active" class="link">Register</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+<div class="bg">
+  <div [@inOut] *ngIf="isShown" class="form-container">
+    <h1>Create an account</h1>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>EMAIL</mat-label>
+        <input
+          matInput
+          matNativeControl
+          required
+          formControlName="email"
+          [errorStateMatcher]="matcher"/>
+        <mat-error *ngIf="registerForm.controls.email.hasError('email') && !registerForm.controls.email.hasError('required')">
+          Please enter a valid email address
+        </mat-error>
+        <mat-error *ngIf="registerForm.controls.email.hasError('required')">
+          Email is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>USERNAME</mat-label>
+        <input
+          matInput
+          matNativeControl
+          required
+          formControlName="username"
+          [errorStateMatcher]="matcher"/>
+        <mat-error *ngIf="registerForm.controls.username.hasError('required')">
+          Username is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>PASSWORD</mat-label>
+        <input 
+          matInput
+          matNativeControl
+          required
+          formControlName="password"
+          [errorStateMatcher]="matcher"/>
+        <mat-error *ngIf="registerForm.controls.password.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-checkbox
+        formControlName="terms">
+        I have read and agree to ChatApp's <a class="link">Terms of Service</a> and <a class="link">Privacy Policy</a>.
+      </mat-checkbox>
+
+      <button
+        mat-raised-button
+        color="primary"
+        [type]="!registerForm.value.terms ? 'button' : 'submit'"
+        class="full-width btn"
+        [ngClass]="{'disabled' : !registerForm.value.terms}"
+        [matTooltip]="!registerForm.value.terms ? 'You need to agree to our terms of service to continue' : ''"
+        (mousedown)="$event.stopImmediatePropagation()">
+        Register
+      </button>
+
+    </form>
+
+    <p class="login-p">Already have an account?
+      <a (click)="redirectToLogIn()" routerLinkActive="active" class="link">Log In</a>
+    </p>
+
+  </div>
+</div>

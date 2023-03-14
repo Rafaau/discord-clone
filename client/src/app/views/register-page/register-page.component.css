@@ -1,0 +1,30 @@
+h1 {
+    margin-bottom: 30px!important;
+}
+
+.login-p {
+    text-align: left;
+    margin: 0!important;
+}
+
+.btn {
+    margin-top: 10px;
+}
+
+.disabled {
+    background-color: #454C94!important;
+    color: #82858F!important;
+    cursor: not-allowed!important;
+}
+
+::ng-deep .mdc-form-field {
+    /* color: #F3F4F6!important; */
+    font-size: 12px!important;
+}
+
+
+::ng-deep .mat-accent {
+    text-align: left!important;
+    width: 100%!important;
+} 
+

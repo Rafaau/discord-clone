@@ -1,0 +1,79 @@
+.top-bar {
+    display: flex;
+    position: relative;
+    height: 42px;
+    line-height: 42px;
+    border-bottom: 1px solid #1F2023;
+    box-shadow: 0 1px 5px -2px #1F2023;
+    border-top-left-radius: 10px;
+    padding-left: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1;
+}
+
+mat-icon {
+    font-size: 28px;
+    margin-top: 8px;
+    padding-inline: 15px;
+}
+
+.friends-tab {
+    color: #989AA2;
+    border-radius: 5px;
+    height: 45px;
+    line-height: 47px;
+    display: flex;
+    cursor: pointer;
+    transition: 0.05s;
+    margin-inline: 8px;
+    margin: 8px 8px 0px 8px;
+}
+
+    .friends-tab:hover {
+        background-color: #36373D;
+        color: #F3F4F5;
+    }
+
+.current {
+    background-color: #404249;
+    color: #F3F4F5!important;
+}
+
+h6 {
+    color: #989AA2;
+    font-size: 12px;
+    margin-left: 18px;
+    margin-bottom: 10px;
+}
+
+    h6:hover {
+        color: #F3F4F5;
+    }
+
+.single-conversation {
+    color: #989AA2;
+    margin-inline: 9px;
+    padding-left: 9px;
+    cursor: pointer;
+    height: 45px;
+    line-height: 45px;
+    padding-top: 2px;
+    border-radius: 5px;
+    margin-bottom: 2px;
+}
+
+    .single-conversation:hover {
+        background-color: #36373D;
+        color: #F3F4F5;
+    }
+
+i {
+    color: #F3F4F5;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    margin-right: 5px;
+}

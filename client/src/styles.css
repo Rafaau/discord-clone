@@ -1,0 +1,35 @@
+/* @import "~@angular/material/prebuilt-themes/indigo-pink.css"; */
+/* @import "./custom-theme.scss"; */
+@import "./assets/av-colors.css";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; color: #DEDFE1; user-select: none; }
+
+h1 {
+    font-weight: 500!important;
+    margin: 0!important;
+}
+
+p {
+    color: #A9ABB0;
+}
+
+label {
+    color: #A9ABB0!important;
+}
+
+.mdc-checkbox__background {
+    border-color: #82858F!important;
+}
+
+.mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+    border-color: #3F51B5!important;
+    background-color: #3F51B5!important;
+}
+
+button:disabled {
+    background-color: #454C94!important;
+    color: #82858F!important;
+    cursor: not-allowed!important;
+}
+

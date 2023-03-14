@@ -1,0 +1,139 @@
+.container {
+    position: relative;
+    padding: 15px;
+    padding-top: 20px;
+    overflow: hidden;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 20px;
+    cursor: pointer;
+    color: #87888D;
+    transition: 0.2s;
+}
+
+    .close:hover {
+        color: #EEEFF0;
+    }
+
+h1 {
+    color: #EEEFF0!important;
+    font-weight: 400!important;
+    font-size: 18px!important;
+}
+
+p {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #87888D;
+}
+
+h2 {
+    margin-top: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #B8B9BF;
+}
+
+.channel-type {
+    display: flex;
+    background-color: #43444B;
+    border-radius: 5px;
+    height: 60px;
+    line-height: 60px;
+    padding: auto;
+    cursor: pointer;
+}
+
+.hashtag {
+    color: #87888D;
+    font-size: 30px;
+    padding-inline: 15px;
+}
+
+.type-title {
+    color: #B8B9BF;
+    font-size: 15px;
+    font-weight: 500;
+    height: 15px;
+    line-height: 40px;
+}
+
+.type-desc {
+    color: #87888D;
+    font-size: 11px;
+    line-height: 55px;
+    margin-right: 25px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.bottom-actions {
+    display: flex;
+    justify-content: right;
+    background-color: #2B2D31;
+    overflow: hidden;
+    height: 65px;
+    line-height: 65px;
+}
+
+.cancel {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+    .cancel:hover {
+        text-decoration: underline;
+    }
+
+.submit-btn {
+    margin: 15px;
+}
+
+.message-to-delete {
+    position: relative;
+    border: 1px solid #242628;
+    border-radius: 5px;
+    padding: 10px 10px 0px 10px;
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
+}
+
+.avatar {
+    font-size: 22px;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    text-align: center;
+    line-height: 48px;
+}
+
+.message-user {
+    position: absolute;
+    left: 70px;
+    top: 10px;
+    display: flex;
+}
+
+.post-date {
+    color: #989AA2;
+    font-size: 12px;
+    margin-left: 10px;
+    margin-top: 2px;
+}
+
+.message-content {
+    position: relative;
+    left: 60px;
+    top: -22px;
+    font-size: 14px;
+    padding-right: 70px;
+}
+
+

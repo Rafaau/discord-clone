@@ -1,0 +1,49 @@
+<div class="container">
+  <mat-icon 
+    class="close"
+    mat-dialog-close>
+    close
+  </mat-icon>
+  <h1>Create Channel</h1>
+  <p>in {{ data.categoryName }} </p>
+  <h2>CHANNEL TYPE</h2>
+  <div class="channel-type">
+    <div class="hashtag">#</div>
+    <div>
+      <div class="type-title">Text</div>
+      <div class="type-desc">
+        Send messages, images, GIFs, emoji, opinions and puns
+      </div>
+    </div>
+    <mat-radio-button checked></mat-radio-button>
+  </div>
+  <h2>CHANNEL NAME</h2>
+  <mat-dialog-content [formGroup]="channelForm">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>#</mat-label>
+      <input
+        matInput
+        matNativeControl
+        formControlName="name"
+        [errorStateMatcher]="matcher"/>
+      <mat-error *ngIf="channelForm.controls.name.hasError('required')">
+        Channel Name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+  </mat-dialog-content>
+</div>
+<div class="bottom-actions">
+  <div 
+    class="cancel"
+    mat-dialog-close>
+    Cancel
+  </div>
+  <button
+    mat-raised-button
+    color="primary"
+    class="submit-btn"
+    [ngClass]="{'disabled' : !channelForm.value.name}"
+    (click)="onSubmit()">
+    Create Channel
+  </button>
+</div>
