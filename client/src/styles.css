@@ -1,6 +1,7 @@
 /* @import "~@angular/material/prebuilt-themes/indigo-pink.css"; */
 /* @import "./custom-theme.scss"; */
 @import "./assets/av-colors.css";
+@import '~@ctrl/ngx-emoji-mart/picker';
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; color: #DEDFE1; user-select: none; }

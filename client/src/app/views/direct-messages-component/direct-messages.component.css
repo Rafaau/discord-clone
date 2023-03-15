@@ -424,3 +424,41 @@ i {
     position: relative;
     top: 6px;
 }
+
+.picker-container {
+    padding-inline: 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.picker {
+    position: absolute;
+    right: 5px;
+    bottom: 8px;
+    font-size: 24px;
+    filter: grayscale(100%);
+    transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.775)
+}
+
+    .picker:hover {
+        filter: grayscale(15%);
+        transform: scale(1.1);
+    }
+
+.emoji-container {
+    position: absolute;
+    bottom: 100px;
+    right: 0;
+    overflow-y: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    padding: 10px;
+}
+
+    .emoji-container::-webkit-scrollbar {
+        display: none;
+    }
+
+::ng-deep .emoji-mart-scroll {
+    height: 40vh;
+    overflow-x: hidden;
+}

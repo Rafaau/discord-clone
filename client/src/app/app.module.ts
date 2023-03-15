@@ -25,6 +25,8 @@ import { UserDetailsComponent } from './views/user-details-component/user-detail
 import { ClickOutsideModule } from 'ng-click-outside';
 import { AddCategoryDialog } from './views/chat-channels-component/add-category-dialog/add-category-dialog.component';
 import { ChatServerSettingsComponent } from './views/chat-channels-component/chat-server-settings/chat-server-settings.component';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 
 
 @NgModule({
@@ -56,6 +58,8 @@ import { ChatServerSettingsComponent } from './views/chat-channels-component/cha
     HttpClientModule,
     FormsModule,
     ClickOutsideModule,
+    PickerModule,
+    EmojiModule,
   ],
   providers: [
     HttpClient,

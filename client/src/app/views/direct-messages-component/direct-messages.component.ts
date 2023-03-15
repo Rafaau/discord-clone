@@ -28,6 +28,8 @@ export class DirectMessagesComponent implements OnInit {
   messageValue: string = ''
   messageToEditId: number = 0
   messageToEditValue: string = ''
+  showEmojiPicker: boolean = false
+  martToggle: number = 0
 
   constructor(
     private location: Location,
@@ -154,6 +156,25 @@ export class DirectMessagesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(() => {
       sub.unsubscribe()
     })
+  }
+
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker
+    this.martToggle = 0
+  }
+
+  closeEmojiPicker(event: Event) {
+    if (this.martToggle != 0) {
+      this.showEmojiPicker = false
+      this.martToggle = 0
+    }
+    else
+      this.martToggle = 1
+  }
+
+  addEmojiToMessage(event: Event) {
+    this.messageValue += (event as any).emoji.native
+    this.showEmojiPicker = false
   }
 
   isToday(date: Date) {

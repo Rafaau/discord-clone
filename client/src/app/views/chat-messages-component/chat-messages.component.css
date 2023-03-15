@@ -185,6 +185,8 @@
     max-height: 120px;
     border-radius: 8px;
     margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .chat-input {
@@ -385,6 +387,7 @@ i {
 .content-fix {
     padding-right: 90px;
     user-select: text;
+    user-select: contain;
     line-height: 20px;
 }
 
@@ -394,19 +397,46 @@ i {
     top: 6px;
 }
 
-/* .details-grand-wrapper {
+.picker-container {
+    padding-inline: 8px;
+    cursor: pointer;
     position: relative;
-    border: 1px solid yellow;
-    width: 300px;
-    height: auto;
 }
 
-.details-wrapper {
-    border: 1px solid red;
+.picker {
     position: absolute;
-    top: 0;
-    height: auto;
-    bottom: -30px;
-    right: 300px;
-    width: 300px;
-} */
+    right: 5px;
+    bottom: 6px;
+    font-size: 24px;
+    filter: grayscale(100%);
+    transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.775)
+}
+
+    .picker:hover {
+        filter: grayscale(15%);
+        transform: scale(1.1);
+    }
+
+.emoji-container {
+    position: absolute;
+    bottom: 100px;
+    right: 0;
+    overflow-y: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    padding: 10px;
+}
+
+    .emoji-container::-webkit-scrollbar {
+        display: none;
+    }
+
+::ng-deep .emoji-mart-scroll {
+    height: 40vh;
+    overflow-x: hidden;
+}
+
+::ng-deep .emoji-mart-emoji .emoji-mart-emoji-native .ng-star-inserted {
+    cursor: pointer!important;
+    background-color: red!important;
+}
+

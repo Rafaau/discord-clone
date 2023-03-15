@@ -69,10 +69,6 @@ export class MainLayoutComponent implements OnInit {
         this.currentUser = data.body!
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
         this.chatServersChild?.getChatServers(data.body!.id)
-        // setTimeout(() => {
-        //   this.friendsChild?.fetchFriendsOfUser(data.body!.id)
-        //   this.directMessagesChild?.fetchUserConversations(data.body!.id)
-        // }, 20)
         //this.router.navigate(['/directmessages'])
       },
       (error) => {

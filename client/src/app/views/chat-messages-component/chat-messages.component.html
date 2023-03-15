@@ -109,7 +109,29 @@
             placeholder="Message #{{ chatChannel.name }}"
             [value]="messageValue"
             (input)="onValueChange($event)"
-            (keydown.enter)="onSubmit($event)"></textarea>
+            (keydown.enter)="onSubmit($event)">
+          </textarea>
+          <div 
+            class="picker-container"
+            (click)="toggleEmojiPicker()">
+            <div class="picker">
+              😁
+            </div>
+          </div>
+          <div class="emoji-container">
+            <emoji-mart 
+              class="emoji-mart" 
+              *ngIf="showEmojiPicker"
+              (emojiSelect)="addEmojiToMessage($event)"
+              [showSingleCategory]="true"
+              [isNative]="true"
+              [darkMode]="true"
+              [enableSearch]="false"
+              color="#f3f4f5"
+              [useButton]="true"
+              (clickOutside)="closeEmojiPicker($event)">
+            </emoji-mart>
+          </div>
         </div>
       </div>
     </div>

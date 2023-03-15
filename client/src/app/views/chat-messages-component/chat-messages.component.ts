@@ -1,9 +1,10 @@
 import { Location, ViewportScroller } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Renderer2 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VERSION } from '@angular/platform-browser-dynamic';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from 'src/app/_models/chat-message';
@@ -36,6 +37,8 @@ export class ChatMessagesComponent implements OnInit {
   messageToEditValue: string = ''
   currentMemberDetails: number = 0
   detailsToggle: number = 0
+  showEmojiPicker: boolean = false
+  martToggle: number = 0
 
   constructor(
     private location: Location,
@@ -44,7 +47,7 @@ export class ChatMessagesComponent implements OnInit {
     private readonly _chatChannelsService: ChatChannelService,
     private readonly _usersService: UsersService,
     public dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.init()
@@ -159,6 +162,7 @@ export class ChatMessagesComponent implements OnInit {
   }
 
   openConfirmDelete(message: ChatMessage) {
+    message.chatChannel = this.chatChannel!
     let dialogRef = this.dialog.open(ConfirmDeleteDialog, {
       data: { message: message },
       width: '450px',
@@ -184,6 +188,25 @@ export class ChatMessagesComponent implements OnInit {
     }
     else
       this.detailsToggle = 1
+  }
+
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker
+    this.martToggle = 0
+  }
+
+  closeEmojiPicker(event: Event) {
+    if (this.martToggle != 0) {
+      this.showEmojiPicker = false
+      this.martToggle = 0
+    }
+    else
+      this.martToggle = 1
+  }
+
+  addEmojiToMessage(event: Event) {
+    this.messageValue += (event as any).emoji.native
+    this.showEmojiPicker = false
   }
 
   isToday(date: Date) {
