@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { DirectConversation } from 'src/app/_models/direct-conversation';
@@ -21,6 +21,8 @@ import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-d
 export class DirectMessagesComponent implements OnInit {
   @Input()
   currentUser?: User
+  @Output()
+  onJoinCallback = new EventEmitter()
   currentRoute = new LocationHrefProvider(this.location)
   directConversation?: DirectConversation
   directMessages: DirectMessage[] = []
@@ -175,6 +177,10 @@ export class DirectMessagesComponent implements OnInit {
   addEmojiToMessage(event: Event) {
     this.messageValue += (event as any).emoji.native
     this.showEmojiPicker = false
+  }
+
+  handleJoinCallback(event: Event) {
+    this.onJoinCallback.emit()
   }
 
   isToday(date: Date) {

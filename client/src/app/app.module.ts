@@ -27,6 +27,10 @@ import { AddCategoryDialog } from './views/chat-channels-component/add-category-
 import { ChatServerSettingsComponent } from './views/chat-channels-component/chat-server-settings/chat-server-settings.component';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { MessageContentComponent } from './views/chat-messages-component/message-content-component/message-content.component';
+import { NgxYoutubePlayerModule } from 'ngx-youtube-player';
+import { GenerateInvitationDialog } from './views/chat-channels-component/generate-invitation-dialog/generate-invitation.component';
+import { ClipboardModule } from '@angular/cdk/clipboard'
 
 
 @NgModule({
@@ -46,8 +50,10 @@ import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
     AddChannelDialog,
     AddCategoryDialog,
     ConfirmDeleteDialog,
+    GenerateInvitationDialog,
     UserDetailsComponent,
-    ChatServerSettingsComponent
+    ChatServerSettingsComponent,
+    MessageContentComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +66,8 @@ import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
     ClickOutsideModule,
     PickerModule,
     EmojiModule,
+    ClipboardModule,
+    NgxYoutubePlayerModule.forRoot(),
   ],
   providers: [
     HttpClient,

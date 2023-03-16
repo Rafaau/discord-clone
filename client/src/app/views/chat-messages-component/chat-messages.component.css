@@ -435,8 +435,25 @@ i {
     overflow-x: hidden;
 }
 
-::ng-deep .emoji-mart-emoji .emoji-mart-emoji-native .ng-star-inserted {
-    cursor: pointer!important;
-    background-color: red!important;
+.member-options {
+    position: absolute;
+    background-color: #111214;
+    border-radius: 5px;
+    width: 150px;
+    height: auto;
+    padding: 10px 5px 10px 5px;
+    margin-top: 45px;
+    font-size: 14px;
 }
 
+.member-option-warn {
+    color: #F23F42;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .member-option-warn:hover {
+        background-color: #F23F42;
+        color: #f3f4f5;
+    }

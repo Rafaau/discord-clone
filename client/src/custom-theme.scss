@@ -32,18 +32,21 @@ $my-palette: (
         A200 : #ffffff,
         A400 : #ffffff,
         A700 : #ffffff,
-    )
+    ),
+    B100 : #248046
 );
 
 $custom-primary: mat.define-palette($my-palette, 500);
 $custom-accent: mat.define-palette($my-palette, 500, A100, A700);
 $custom-warn: mat.define-palette(mat.$red-palette);
+$custom-success: mat.define-palette($my-palette, B100);
 
 $custom-theme: mat.define-light-theme((
     color: (
         primary: $custom-primary,
         accent: $custom-accent,
         warn: $custom-warn,
+        success: $custom-success
     ),
     typography: mat.define-typography-config(),
     density: 0,

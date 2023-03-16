@@ -62,10 +62,15 @@ export class MainLayoutComponent implements OnInit {
     this.members = users
   }
 
+  refreshChatServers(event: Event) {
+    this.chatServersChild?.getChatServers(this.currentUser!.id)
+  }
+
   async authorizeUser() {
     await this._authService.getAuthStatus().subscribe(
       (data: HttpResponse<User>) => {
         console.log('authorized')
+        console.log(data.body)
         this.currentUser = data.body!
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
         this.chatServersChild?.getChatServers(data.body!.id)

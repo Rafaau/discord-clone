@@ -1,0 +1,93 @@
+.invitation-container {
+    padding: 5px 15px 20px 15px;
+    background-color: #2B2D31;
+    border-radius: 8px;
+    user-select: none;
+    width: 400px;
+}
+
+.server-icon {
+    background-color: #1b1c1e;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    margin-right: 10px;
+    font-weight: 400;
+}
+
+h3 {
+    margin: 5px 0 0 0;
+    padding: 0;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+.join-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: #248046;
+    padding: 10px 20px 8px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2;
+}
+
+    .join-btn:hover {
+        filter: brightness(1.1)
+    }
+
+.disabled {
+    cursor: not-allowed;
+    filter: grayscale(20%);
+} 
+
+    .disabled:hover {
+        filter: grayscale(20%);
+    }
+
+::ng-deep .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: #f3f4f5!important;
+    }
+
+.youtube-player-container {
+    background-color: #2B2D31;
+    width: 370px;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #FF0000;
+}
+
+.yt-link {
+    color: #B5BAC1;
+    width: auto;
+    cursor: pointer;
+    width: 50px;
+    margin-bottom: 10px;
+    display: block;
+    font-size: 12px;
+}
+
+.video-title {
+    font-weight: 500;
+    color: #00A8DC;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: block;
+    font-size: 16px;
+}
+
+.video-channel {
+    color: #f3f4f5;
+    display: block;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 10px;
+}

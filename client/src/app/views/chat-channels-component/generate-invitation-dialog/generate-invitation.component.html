@@ -1,0 +1,19 @@
+<div class="container">
+  <mat-icon 
+    class="close"
+    mat-dialog-close>
+    close
+  </mat-icon>
+  <h1>Invite friends to chat server</h1>
+  <h2>SEND INVITE LINK FOR A FRIEND</h2>
+  <div *ngIf="invitation" class="invitation-link">
+    {{ invitation?.url }}
+    <button
+      mat-raised-button
+      color="primary"
+      [cdkCopyToClipboard]="invitation.url">
+      Copy
+    </button>
+  </div>
+  <p>Your link expires in 7 days.</p>
+</div>

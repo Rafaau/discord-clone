@@ -85,6 +85,26 @@ export class ChatServersController {
         }
     }
 
+    @Patch(':chatServerId/removeuser/:userId')
+    async removeMemberFromChatServer(
+        @Param('chatServerId') chatServerId: number,
+        @Param('userId') userId: number,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(HttpStatus.OK)
+                .json(await this.chatServersService.removeMemberFromChatServer(userId, chatServerId))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
     @Delete(':id')
     async deleteChatServer(
         @Param('id') id: number,

@@ -29,7 +29,29 @@ export class ChatServerService {
     )
   }
 
-  getChatServerBydId(id: number): Observable<HttpResponse<any>> {
+  getChatServerById(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(this.api+`/chatservers/${id}`, { observe: 'response' })
+  }
+
+  addUserToChatServer(
+    chatServerId: number,
+    userId: number
+  ): Observable<HttpResponse<any>> {
+    return this.httpClient.patch(
+      this.api+`/chatservers/${chatServerId}/adduser/${userId}`,
+      {},
+      { observe: 'response' }  
+    )
+  }
+
+  removeMemberFromChatServer(
+    chatServerId: number,
+    userId: number
+  ): Observable<HttpResponse<any>> {
+    return this.httpClient.patch(
+      this.api+`/chatservers/${chatServerId}/removeuser/${userId}`,
+      {},
+      { observe: 'response' }
+    )
   }
 }

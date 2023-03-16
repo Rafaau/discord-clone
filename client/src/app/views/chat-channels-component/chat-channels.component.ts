@@ -12,6 +12,7 @@ import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { User } from 'src/app/_models/Users';
 import { UsersService } from 'src/app/_services/users.service';
 import { AddCategoryDialog } from './add-category-dialog/add-category-dialog.component';
+import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-invitation.component';
 
 @Component({
   selector: 'app-chat-channels',
@@ -67,7 +68,7 @@ export class ChatChannelsComponent implements OnInit {
   }
 
   getChatServerDetails(id: number) {
-    this._chatServerService.getChatServerBydId(id).subscribe(
+    this._chatServerService.getChatServerById(id).subscribe(
       (data: HttpResponse<ChatServer>) => {
         this.chatServer = data.body!
         for (let i = 0; i < data.body!.chatCategories!.length; i++) {
@@ -158,6 +159,15 @@ export class ChatChannelsComponent implements OnInit {
   toggleServerSettings() {
     this.isServerSettingsOn = !this.isServerSettingsOn
     this.isServerMenuExpanded = false
+  }
+
+  openGenerateInvitationDialog() {
+    this.isServerMenuExpanded = false
+    let dialogRef = this.dialog.open(GenerateInvitationDialog, {
+      data: { serverId: this.chatServer!.id },
+      width: '450px',
+      panelClass: 'dialog-container',
+    })
   }
 
   orderById(chatChannels: any[]): any[] {

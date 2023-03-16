@@ -34,3 +34,12 @@ button:disabled {
     cursor: not-allowed!important;
 }
 
+a {
+    color: #00A8DC;
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+

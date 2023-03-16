@@ -64,7 +64,11 @@
                   *ngIf="message.id != messageToEditId" 
                   class="content-fix"
                   [ngClass]="firstOfMessages ? 'first-content-fix' : ''">
-                  {{ message.content }}
+                  <message-content 
+                    [currentUser]="currentUser" 
+                    [messageContent]="message.content"
+                    (onJoinCallback)="handleJoinCallback($event)">
+                  </message-content>
                 </div>
 
                 <div *ngIf="message.id == messageToEditId">

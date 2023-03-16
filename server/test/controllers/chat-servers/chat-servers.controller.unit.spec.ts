@@ -32,7 +32,8 @@ describe('ChatServersController', () => {
                         getChatServerById: jest.fn((x) => x),
                         getChatServersByUserId: jest.fn((x) => x),
                         addMemberToChatServer: jest.fn((x) => x),
-                        deleteChatServer: jest.fn((x) => x)
+                        deleteChatServer: jest.fn((x) => x),
+                        removeMemberFromChatServer: jest.fn((x) => x)
                     }
                 }
             ]
@@ -170,6 +171,33 @@ describe('ChatServersController', () => {
             await controller.addUserToChatServer(1, 2, response)
             expect(response._getStatusCode()).toBe(HttpStatus.OK)
             expect(response._getJSONData()).toMatchObject(fakeChatServer)
+        })
+    })
+
+    describe('removeMemberFromChatServer', () => {
+        it('should return not found', async () => {
+            jest.spyOn(service, 'removeMemberFromChatServer')
+                .mockImplementation((): any => {
+                    throw new NotFoundException()
+                })
+            await controller.removeMemberFromChatServer(1, 1, response)
+            expect(response._getStatusCode()).toBe(HttpStatus.NOT_FOUND)
+            expect(response._getJSONData().statusCode).toBe(404)
+            expect(response._getJSONData().message).toBe('Not Found')
+        })
+
+        it('should return ok', async () => {
+            jest.spyOn(service, 'removeMemberFromChatServer')
+                .mockImplementation(async (userId: number, chatServerId: number) => {
+                    return {
+                        statusCode: 200,
+                        message: `User (id: ${userId}) has been successfully removed from Chat Server (id: ${chatServerId})`
+                    }
+                })
+            await controller.removeMemberFromChatServer(1, 1, response)
+            expect(response._getStatusCode()).toBe(HttpStatus.OK)
+            expect(response._getJSONData().statusCode).toBe(200)
+            expect(response._getJSONData().message).toBe('User (id: 1) has been successfully removed from Chat Server (id: 1)')
         })
     })
 

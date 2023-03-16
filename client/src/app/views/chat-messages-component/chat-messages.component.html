@@ -60,7 +60,11 @@
                   *ngIf="message.id != messageToEditId" 
                   class="content-fix"
                   [ngClass]="firstOfMessages ? 'first-content-fix' : ''">
-                  {{ message.content }}
+                  <message-content 
+                    [currentUser]="currentUser" 
+                    [messageContent]="message.content"
+                    (onJoinCallback)="handleJoinCallback($event)">
+                  </message-content>
                 </div>
 
                 <div *ngIf="message.id == messageToEditId">
@@ -149,10 +153,21 @@
           [currentUser]="currentUser"
           [user]="member">
         </user-details>
+        <div 
+          *ngIf="currentMemberOptions == member.id" 
+          class="member-options"
+          (clickOutside)="closeMemberOptions($event)">
+          <div 
+            (click)="onKickMember(member.id)" 
+            class="member-option-warn">
+            Kick {{ member.username }}
+          </div>
+        </div>
         <div *ngIf="!member.isOwner">
           <div 
             class="single-member"
-            (click)="openMemberDetails(member.id)">
+            (click)="openMemberDetails(member.id)"
+            (contextmenu)="onMemberRightClick(member.id)">
             <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + member.username[0].toLowerCase() : ''"></i>
             {{ member.username }}
           </div>

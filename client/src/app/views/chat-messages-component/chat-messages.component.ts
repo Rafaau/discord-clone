@@ -1,16 +1,15 @@
 import { Location, ViewportScroller } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, Input, OnInit, Renderer2 } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, Renderer2 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { VERSION } from '@angular/platform-browser-dynamic';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from 'src/app/_models/chat-message';
 import { User } from 'src/app/_models/Users';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
+import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dialog.component';
 
@@ -27,6 +26,8 @@ export class ChatMessagesComponent implements OnInit {
   public members?: User[] = []
   @Input()
   currentUser?: User
+  @Output()
+  onJoinCallback = new EventEmitter()
   currentRoute = new LocationHrefProvider(this.location)
   chatMessages: ChatMessage[] = []
   chatChannel?: ChatChannel
@@ -37,15 +38,18 @@ export class ChatMessagesComponent implements OnInit {
   messageToEditValue: string = ''
   currentMemberDetails: number = 0
   detailsToggle: number = 0
+  currentMemberOptions: number = 0
   showEmojiPicker: boolean = false
   martToggle: number = 0
 
   constructor(
     private location: Location,
     private route: ActivatedRoute,
+    private router: Router,
     private readonly _chatMessagesService: ChatMessagesService,
     private readonly _chatChannelsService: ChatChannelService,
     private readonly _usersService: UsersService,
+    private readonly _chatServerService: ChatServerService,
     public dialog: MatDialog
   ) { }
 
@@ -207,6 +211,41 @@ export class ChatMessagesComponent implements OnInit {
   addEmojiToMessage(event: Event) {
     this.messageValue += (event as any).emoji.native
     this.showEmojiPicker = false
+  }
+
+  onMemberRightClick(userId: number) {
+    if (this.currentUser!.id == this.members!.filter(x => x.isOwner == true)[0].id) {
+      this.currentMemberOptions = userId
+      return false
+    }
+      return true
+  }
+
+  onKickMember(userId: number) {
+    let chatServerId: number = 0
+    this.route.queryParams.subscribe(
+      params => {
+        chatServerId = params['id']
+      }
+    )
+    this._chatServerService.removeMemberFromChatServer(chatServerId, userId)
+    .subscribe(
+      (data: HttpResponse<any>) => {
+        this.members = this.members!.filter(x => x.id != userId)
+        this.currentMemberOptions = 0
+      },
+      (error) => {
+        console.log('err')
+      }
+    )
+  }
+
+  closeMemberOptions(event: Event) {
+    this.currentMemberOptions = 0
+  }
+
+  handleJoinCallback(event: Event) {
+    this.onJoinCallback.emit()
   }
 
   isToday(date: Date) {

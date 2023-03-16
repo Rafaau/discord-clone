@@ -53,7 +53,7 @@ export class ChatServersService {
         })
     }
 
-    async addMemberToChatServer(userId: number, chatServerId) {
+    async addMemberToChatServer(userId: number, chatServerId: number) {
         const member = await this.userRepository.findOneBy({ id: userId })
         if (!member)
             throw new HttpException(
@@ -73,10 +73,44 @@ export class ChatServersService {
         return this.chatServerRepository.save(chatServer)
     }
 
+    async removeMemberFromChatServer(userId: number, chatServerId: number) {
+        const member = await this.userRepository.findOneBy({ id: userId })
+        if (!member)
+            throw new HttpException(
+                'User not found. Cannot remove from chat server.',
+                HttpStatus.BAD_REQUEST
+            )
+        const chatServer = await this.chatServerRepository.findOne({
+            where: { id: chatServerId },
+            relations: ['members']
+        })
+        if (!chatServer)
+            throw new HttpException(
+                'Chat server not found. Cannot remove member.',
+                HttpStatus.BAD_REQUEST
+            )
+        var memberToDelete = chatServer.members.filter(x => x.id == member.id)
+        if (!memberToDelete)
+                throw new HttpException(
+                    `User (id: ${userId}) is not a member of Chat Server (id: ${chatServerId})`,
+                    HttpStatus.BAD_REQUEST
+                )
+        chatServer.members = [...chatServer.members.filter(x => x.id != member.id)]
+        await this.chatServerRepository.save(chatServer)
+        return {
+            statusCode: 200,
+            message: `User (id: ${userId}) has been successfully removed from Chat Server (id: ${chatServerId})`
+        }
+    }
+
     async getChatServerById(id: number) {
         const user = await this.chatServerRepository.findOne({
             where: { id },
-            relations: ['chatCategories', 'chatCategories.chatChannels']
+            relations: [
+                'chatCategories', 
+                'chatCategories.chatChannels',
+                'members'
+            ]
         })
         if (!user)
             throw new NotFoundException()
