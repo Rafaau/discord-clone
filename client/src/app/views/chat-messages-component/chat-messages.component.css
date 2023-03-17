@@ -457,3 +457,13 @@ i {
         background-color: #F23F42;
         color: #f3f4f5;
     }
+
+mat-progress-spinner {
+    margin: auto;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: #3975b0!important;
+    }

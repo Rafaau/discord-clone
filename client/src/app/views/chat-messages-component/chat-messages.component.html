@@ -15,11 +15,17 @@
   </div>
   <div class="flex" *ngIf="chatChannel">
     <div class="messages-container">
-      <div class="messages-wrapper">
+      <div 
+        class="messages-wrapper"
+        infiniteScroll
+        [infiniteScrollUpDistance]="1"
+        (scrolledUp)="onScroll()"
+        [scrollWindow]="false">
         <div class="hashtag-big">#</div>
         <h1>Welcome to #{{ chatChannel.name }}!</h1>
         <p>This is the start of the #{{ chatChannel.name }} channel.</p>
-        <div *ngFor="let message of chatMessages; index as i" class="single-message">
+        <mat-progress-spinner *ngIf="loading" mode="indeterminate" [diameter]="40"></mat-progress-spinner>
+        <div *ngFor="let message of orderByPostDate(chatMessages); index as i" class="single-message">
 
           <div 
             *ngVar="chatMessages[i-1]?.user!.username != message.user.username || 
@@ -139,7 +145,7 @@
         </div>
       </div>
     </div>
-    <div *ngIf="showMembers" class="members-container">
+    <div *ngIf="showMembers && members?.length" class="members-container">
       <h6>OWNER  -  1</h6>
       <div class="single-member">
         <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + members![0].username[0].toLowerCase() : ''"></i>

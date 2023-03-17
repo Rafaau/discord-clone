@@ -6,7 +6,8 @@ export interface DirectMessage {
     content: string,
     user: User,
     directConversation: DirectConversation,
-    postDate: Date
+    postDate: Date,
+    isFirst?: boolean
 }
 
 export interface CreateDirectMessageParams {

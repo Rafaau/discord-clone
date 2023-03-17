@@ -4,7 +4,7 @@ import { User, UserComplex } from "./Users";
 export interface DirectConversation {
     id: number,
     users: User[],
-    directMessages: DirectMessage[]
+    directMessages?: DirectMessage[]
 }
 
 export interface CreateDirectConversationParams {

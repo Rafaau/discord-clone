@@ -53,12 +53,7 @@ export class DirectConversationsService {
     async findConversationById(id: number) {
         const conversation = await this.directConversationRepository.findOne({
             where: { id },
-            order: {
-                directMessages: {
-                    postDate: 'asc'
-                }
-            },
-            relations: ['users', 'directMessages', 'directMessages.user']
+            relations: ['users']
         })
         if (!conversation)
             throw new NotFoundException()

@@ -32,12 +32,13 @@ export class ChatMessagesController {
     @Get()
     async getChatMessagesFromChannel(
         @Query('filterByChannel', ParseIntPipe) filterByChannel: number,
+        @Query('page', ParseIntPipe) page: number,
         @Res() response: Response
     ) {
         try {
             response
                 .status(HttpStatus.OK)
-                .json(await this.chatMessagesService.findChatMessagesByChannelId(filterByChannel))
+                .json(await this.chatMessagesService.findChatMessagesByChannelId(filterByChannel, page))
         } catch (e) {
             response
                 .status(e.status)

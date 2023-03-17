@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Response } from "express";
 import { CreateDirectMessageDto, UpdateDirectMessageDto } from "./direct-messages.dto";
 import { DirectMessagesService } from "./direct-messages.service";
@@ -35,15 +35,16 @@ export class DirectMessagesControler {
         }
     }
 
-    @Get(':conversationId')
+    @Get()
     async getDirectMessagesByConversation(
-        @Param('conversationId') conversationId: number,
+        @Query('conversation', ParseIntPipe) conversation: number,
+        @Query('page', ParseIntPipe) page: number,
         @Res() response: Response
     ) {
         try {
             response
                 .status(HttpStatus.OK)
-                .json(await this.directMessagesService.findDirectMessagesByConversation(conversationId))
+                .json(await this.directMessagesService.findDirectMessagesByConversation(conversation, page))
         } catch (e) {
             response
                 .status(e.status)

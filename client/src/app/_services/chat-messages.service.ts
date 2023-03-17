@@ -12,8 +12,14 @@ export class ChatMessagesService {
 
   constructor(private readonly httpClient: HttpClient) { }
 
-  getChatMessages(channelId: number): Observable<HttpResponse<any>> {
-    return this.httpClient.get(this.api+`/chatmessages?filterByChannel=${channelId}`, { observe: 'response' })
+  getChatMessages(
+    channelId: number,
+    page: number
+  ): Observable<HttpResponse<any>> {
+    return this.httpClient.get(
+      this.api+`/chatmessages?filterByChannel=${channelId}&page=${page}`, 
+      { observe: 'response' }
+    )
   }
 
   postChatMessage(

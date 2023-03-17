@@ -6,6 +6,19 @@
     width: 400px;
 }
 
+a {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.link-wrapper {
+    white-space: pre-wrap; /* CSS3 */    
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */    
+    white-space: -o-pre-wrap; /* Opera 7 */    
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
 .server-icon {
     background-color: #1b1c1e;
     border-radius: 50%;
@@ -90,4 +103,9 @@ p {
     font-weight: 500;
     cursor: pointer;
     margin-bottom: 10px;
+}
+
+img {
+    cursor: pointer;
+    max-width: 40vw;
 }

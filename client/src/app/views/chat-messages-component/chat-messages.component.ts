@@ -41,6 +41,8 @@ export class ChatMessagesComponent implements OnInit {
   currentMemberOptions: number = 0
   showEmojiPicker: boolean = false
   martToggle: number = 0
+  page: number = 1
+  loading: boolean = false
 
   constructor(
     private location: Location,
@@ -56,6 +58,8 @@ export class ChatMessagesComponent implements OnInit {
   ngOnInit() {
     this.init()
     this.location.onUrlChange(() => {
+      this.chatMessages = []
+      this.page = 1
       this.init()
     })
   }
@@ -63,17 +67,22 @@ export class ChatMessagesComponent implements OnInit {
   init() {
     this.doNotScroll = false
     const params = new URLSearchParams(this.currentRoute.route)
-    this.fetchChatMessages(Number(params.get('channel')))
-    this.getChatChannel(Number(params.get('channel')))
+    if (this.page == 1) {
+      this.fetchChatMessages(Number(params.get('channel')))
+      this.getChatChannel(Number(params.get('channel')))
+    }
     setTimeout(() => {
       this.doNotScroll = true // to avoid scrolling on tooltip display
     }, 500)
   }
 
   fetchChatMessages(channelId: number) {
-      this._chatMessagesService.getChatMessages(channelId).subscribe(
+      this._chatMessagesService.getChatMessages(channelId, this.page).subscribe(
         (data: HttpResponse<ChatMessage[]>) => {
-          this.chatMessages = data.body!
+          if (this.page > 1)
+            this.chatMessages = this.chatMessages.concat(data.body!)
+          else
+            this.chatMessages = data.body!
           console.log('messages fetched')
         },
         (error) => {
@@ -85,6 +94,10 @@ export class ChatMessagesComponent implements OnInit {
   scrollToLastMessage() {
     if (!this.doNotScroll)
       document.getElementById('target')?.scrollIntoView()
+  }
+
+  scrollAfterPageFetch() {
+    document.getElementsByClassName('single-message')[9]?.scrollIntoView({ behavior: 'smooth' })
   }
 
   getChatChannel(channelId: number) {
@@ -248,6 +261,19 @@ export class ChatMessagesComponent implements OnInit {
     this.onJoinCallback.emit()
   }
 
+  onScroll() {
+    if (!this.loading && !this.orderByPostDate(this.chatMessages)[0].isFirst) {
+      console.log('scrolled')
+      this.loading = true
+      setTimeout(() => {
+        this.page++
+        this.fetchChatMessages(this.chatChannel!.id)
+        this.loading = false
+        this.scrollAfterPageFetch()
+      }, 1000)
+    }
+  }
+
   isToday(date: Date) {
     return new Date(date).getDate() == new Date().getDate()
   }
@@ -262,5 +288,9 @@ export class ChatMessagesComponent implements OnInit {
 
   toDate(date: Date) {
     return new Date(date).getDate()
+  }
+
+  orderByPostDate(chatMessages: any[]): any[] {
+    return chatMessages.sort((a, b) => a.postDate > b.postDate ? 1 : -1)
   }
 }

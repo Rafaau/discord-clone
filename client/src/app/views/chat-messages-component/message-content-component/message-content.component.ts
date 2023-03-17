@@ -28,6 +28,8 @@ export class MessageContentComponent implements OnInit {
   videoId: string = ''
   videoTitle: string = ''
   videoChannel: string = ''
+  giphyUrl: string = ''
+  isImage: boolean = true
 
   constructor(
     private readonly _chatServerService: ChatServerService,
@@ -52,7 +54,6 @@ export class MessageContentComponent implements OnInit {
           this._chatServerService.getChatServerById(invData.body!.chatServer.id)
           .subscribe(
             (data: HttpResponse<ChatServer>) => {
-              console.log(data.body)
               this.chatServer = data.body!
               this.isAlreadyMember = data.body!.members!.some(x => x.id == this.currentUser?.id)
             },
@@ -97,11 +98,14 @@ export class MessageContentComponent implements OnInit {
 
   savePlayer(player: YT.Player) {
     this.player = player
-    console.log(player)
     this.videoTitle = (player as any).videoTitle
   }
 
   onStateChange(event: YT.PlayerEvent) {
     console.log((event as any).data)
+  }
+
+  isNotImage() {
+    this.isImage = false
   }
 }

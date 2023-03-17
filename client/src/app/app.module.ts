@@ -31,6 +31,7 @@ import { MessageContentComponent } from './views/chat-messages-component/message
 import { NgxYoutubePlayerModule } from 'ngx-youtube-player';
 import { GenerateInvitationDialog } from './views/chat-channels-component/generate-invitation-dialog/generate-invitation.component';
 import { ClipboardModule } from '@angular/cdk/clipboard'
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 
 @NgModule({
@@ -67,6 +68,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard'
     PickerModule,
     EmojiModule,
     ClipboardModule,
+    InfiniteScrollModule,
     NgxYoutubePlayerModule.forRoot(),
   ],
   providers: [

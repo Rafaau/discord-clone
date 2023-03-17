@@ -19,11 +19,17 @@
       *ngVar="directConversation!.users[0].id == currentUser!.id ? 
             directConversation!.users[1] : 
             directConversation!.users[0] as interlocutor ">
-      <div class="messages-wrapper">
+      <div 
+        class="messages-wrapper"
+        infiniteScroll
+        [infiniteScrollUpDistance]="1"
+        (scrolledUp)="onScroll()"
+        [scrollWindow]="false">
         <i class="fa-brands fa-discord interlocutor-avatar" [ngClass]="true ? 'av-' + interlocutor.username[0].toLowerCase() : ''"></i>
         <h1>{{ interlocutor.username }}</h1>
         <p>This is the beginning of your direct message history with <strong>@{{ interlocutor.username }}</strong></p>
-        <div *ngFor="let message of directMessages; index as i" class="single-message">
+        <mat-progress-spinner *ngIf="loading" mode="indeterminate" [diameter]="40"></mat-progress-spinner>
+        <div *ngFor="let message of orderByPostDate(directMessages); index as i" class="single-message">
 
           <div 
             *ngVar="directMessages[i-1]?.user!.username != message.user.username || 

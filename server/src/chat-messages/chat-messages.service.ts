@@ -39,16 +39,28 @@ export class ChatMessagesService {
         return this.chatMessageRepository.save(newChatMessage)
     }
 
-    async findChatMessagesByChannelId(channelId: number) {
+    async findChatMessagesByChannelId(channelId: number, page: number) {
         const chatChannel = await this.chatChannelRepository.findOneBy({ id: channelId })
         if (!chatChannel)
             throw new NotFoundException()
-        return this.chatMessageRepository.find({
+        const messages = await this.chatMessageRepository.find({
             where: {
                 chatChannel: chatChannel
             },
+            order: { postDate: 'DESC' },
+            skip: (page - 1) * 10,
+            take: 10,
             relations: ['user']
         })
+        const firstMessage = await this.chatMessageRepository.findOne({
+            where: { chatChannel: chatChannel },
+            order: { id: 'ASC' }
+        })
+        if (!firstMessage)
+            throw new NotFoundException()
+        if (messages.at(-1).id == firstMessage.id)
+            (messages.slice(-1)[0] as any).isFirst = true
+        return messages
     }
 
     async updateChatMessage(id: number, messageDetails: UpdateMessageParams) {

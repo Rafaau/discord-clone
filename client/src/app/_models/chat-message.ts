@@ -7,6 +7,7 @@ export interface ChatMessage {
     postDate: Date,
     user: User,
     chatChannel: ChatChannel
+    isFirst?: boolean
 }
 
 export interface CreateChatMessageParams {

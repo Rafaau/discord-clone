@@ -31,14 +31,30 @@ export class DirectMessagesService {
         return this.directMessageRepository.save(newDirectMessage)
     }
 
-    async findDirectMessagesByConversation(conversationId: number) {
+    async findDirectMessagesByConversation(conversationId: number, page: number) {
         const conversation = await this.directConversationRepository.findOneBy({ id: conversationId })
         if (!conversation)
             throw new NotFoundException()
-        return this.directMessageRepository.find({
+        const messages = await this.directMessageRepository.find({
             where: { directConversation: conversation },
-            relations: ['user', 'directConversation', 'directConversation.users']
+            order: { postDate: 'DESC' },
+            skip: (page - 1) * 10,
+            take: 10,
+            relations: [
+                'user', 
+                'directConversation', 
+                'directConversation.users'
+            ]
         })
+        const firstMessage = await this.directMessageRepository.findOne({
+            where: { directConversation: conversation },
+            order: { id: 'ASC' }
+        })
+        if (!firstMessage)
+            throw new NotFoundException()
+        if (messages.at(-1).id == firstMessage.id)
+            (messages.slice(-1)[0] as any).isFirst = true
+        return messages
     }
 
     async updateDirectMessage(id: number, messageDetails: UpdateMessageParams) {

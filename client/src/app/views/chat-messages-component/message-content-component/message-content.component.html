@@ -1,12 +1,17 @@
 <!-- COMMON MESSAGE -->
 <div *ngIf="!messageContent.includes('-->') 
          && !messageContent.includes('http://')
-         && !messageContent.includes('https://')">
+         && !messageContent.includes('https://')
+         && !messageContent.includes('https://media')">
   {{ messageContent }}
 </div>
 <!-- HYPERLINK MESSAGE -->
-<div *ngIf="messageContent.includes('http://') || messageContent.includes('https://')">
-  <a [href]="messageContent">{{ messageContent }}</a>
+<div *ngIf="messageContent.includes('http://') 
+         || messageContent.includes('https://')">
+  <div class="link-wrapper">
+    <a [href]="messageContent">{{ messageContent }}</a>
+  </div>
+  <!-- YOUTUBE -->
   <div 
     *ngIf="messageContent.includes('https://www.youtube.com/watch?')"
     class="youtube-player-container">
@@ -31,20 +36,24 @@
       (change)="onStateChange($event)">
     </youtube-player>
   </div>
+  <!-- IMAGE -->
+  <div *ngIf="isImage">
+    <img [src]="messageContent" (error)="isNotImage()"/>
+  </div>
 </div>
 <!-- INVITE MESSAGE -->
-<div class="invitation-container" *ngIf="messageContent.includes('http://localhost:4200/invitation?v=')">
+<div class="invitation-container" *ngIf="chatServer && messageContent.includes('http://localhost:4200/invitation?v=')">
   <h5>YOU'VE BEEN INVITED TO JOIN A SERVER</h5>
   <div style="position:relative; display: flex;">
     <div class="server-icon">
-      {{ chatServer!.name[0] }}
+      {{ chatServer.name[0] }}
     </div>
     <div>
       <h3>
-        {{ chatServer!.name }}
+        {{ chatServer.name }}
       </h3>
       <p>
-        • {{ chatServer!.members!.length }} Members
+        • {{ chatServer.members!.length }} Members
       </p>
     </div>
     <div 
@@ -61,3 +70,4 @@
     </div>
   </div>
 </div>
+<!-- IMAGE MESSAGE -->

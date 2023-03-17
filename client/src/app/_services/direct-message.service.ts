@@ -24,10 +24,11 @@ export class DirectMessageService {
   }
 
   getDirectMessagesByConversation(
-    conversationId: number
+    conversationId: number,
+    page: number
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
-      this.api+`/directmessages/${conversationId}`, 
+      this.api+`/directmessages?conversation=${conversationId}&page=${page}`, 
       { observe: 'response' }
     )
   }

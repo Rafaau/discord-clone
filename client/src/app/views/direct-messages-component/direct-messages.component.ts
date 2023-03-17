@@ -32,6 +32,8 @@ export class DirectMessagesComponent implements OnInit {
   messageToEditValue: string = ''
   showEmojiPicker: boolean = false
   martToggle: number = 0
+  page: number = 1
+  loading: boolean = false
 
   constructor(
     private location: Location,
@@ -43,6 +45,8 @@ export class DirectMessagesComponent implements OnInit {
   ngOnInit() {
     this.init()
     this.location.onUrlChange(() => {
+      this.directMessages = []
+      this.page = 1
       this.init()
     })
   }
@@ -51,7 +55,10 @@ export class DirectMessagesComponent implements OnInit {
     this.doNotScroll = false
     const urlObj = new URL(window.location.href)
     const params = new URLSearchParams(urlObj.search)
-    this.fetchDirectConversation(Number(params.get('conversation')))
+    if (this.page == 1) {
+      this.fetchDirectConversation(Number(params.get('conversation')))
+      this.fetchDirectMessages(Number(params.get('conversation')))
+    }
     setTimeout(() => {
       this.doNotScroll = true // to avoid scrolling on tooltip display
     }, 500)
@@ -61,6 +68,11 @@ export class DirectMessagesComponent implements OnInit {
     if (!this.doNotScroll)
       document.getElementById('target')?.scrollIntoView()
   }
+
+  scrollAfterPageFetch() {
+    document.getElementsByClassName('single-message')[9]?.scrollIntoView({ behavior: 'smooth' })
+  }
+
 
   onValueChange(event: Event) {
     const value = (event.target as any).value;
@@ -73,10 +85,25 @@ export class DirectMessagesComponent implements OnInit {
         (data: HttpResponse<DirectConversation>) => {
           console.log(data.body)
           this.directConversation = data.body!
-          this.directMessages = data.body!.directMessages
         },
         (error) => {
           console.log('error')
+        }
+      )
+  }
+
+  fetchDirectMessages(conversationId: number) {
+    this._directMessageService.getDirectMessagesByConversation(conversationId, this.page)
+      .subscribe(
+        (data: HttpResponse<DirectMessage[]>) => {
+          console.log('messages fetched')
+          if (this.page > 1)
+            this.directMessages = this.directMessages.concat(data.body!)
+          else
+            this.directMessages = data.body!
+        },
+        (error) => {
+          console.log('err')
         }
       )
   }
@@ -97,7 +124,7 @@ export class DirectMessagesComponent implements OnInit {
             setTimeout(() => {
               element.value = ''
             }, 0)
-            this.fetchDirectConversation(this.directConversation!.id)
+            this.fetchDirectMessages(this.directConversation!.id)
             document.getElementById('target')?.scrollIntoView()
           },
           (error) => {
@@ -135,7 +162,7 @@ export class DirectMessagesComponent implements OnInit {
             setTimeout(() => {
               element.value = ''
             }, 0)
-            this.fetchDirectConversation(this.directConversation!.id)
+            this.fetchDirectMessages(this.directConversation!.id)
             this.messageToEditId = 0
             this.messageToEditValue = ''
           },
@@ -153,7 +180,7 @@ export class DirectMessagesComponent implements OnInit {
       panelClass: 'dialog-container'
     })
     const sub = dialogRef.componentInstance.onDeleteEvent.subscribe(() => {
-      this.fetchDirectConversation(this.directConversation!.id)
+      this.fetchDirectMessages(this.directConversation!.id)
     })
     dialogRef.afterClosed().subscribe(() => {
       sub.unsubscribe()
@@ -183,6 +210,19 @@ export class DirectMessagesComponent implements OnInit {
     this.onJoinCallback.emit()
   }
 
+  onScroll() {
+    if (!this.loading && !this.orderByPostDate(this.directMessages)[0].isFirst) {
+      console.log('scrolled')
+      this.loading = true
+      setTimeout(() => {
+        this.page++
+        this.fetchDirectMessages(this.directConversation!.id)
+        this.loading = false
+        this.scrollAfterPageFetch()
+      }, 1000)
+    }
+  }
+
   isToday(date: Date) {
     return new Date(date).getDate() == new Date().getDate()
   }
@@ -197,5 +237,9 @@ export class DirectMessagesComponent implements OnInit {
 
   toDate(date: Date) {
     return new Date(date).getDate()
+  }
+
+  orderByPostDate(chatMessages: any[]): any[] {
+    return chatMessages.sort((a, b) => a.postDate > b.postDate ? 1 : -1)
   }
 }

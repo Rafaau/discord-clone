@@ -49,16 +49,18 @@ export class ChatServersComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getChatServers(this.currentUser!.id)
+    this.getChatServers(this.currentUser?.id)
   }
 
-  getChatServers(userId: number) {
-    this._chatServerService.getUserChatServers(userId).subscribe(
-      (data: HttpResponse<ChatServer[]>) => {
-        this.chatServers = data.body!
-        console.log("servers fetched")
-      }
-    )
+  getChatServers(userId?: number) {
+    if (userId) {
+      this._chatServerService.getUserChatServers(userId).subscribe(
+        (data: HttpResponse<ChatServer[]>) => {
+          this.chatServers = data.body!
+          console.log("servers fetched")
+        }
+      )
+    }
   }
 
   redirectTo(route: string) {
