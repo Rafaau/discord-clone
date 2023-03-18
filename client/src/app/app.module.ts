@@ -32,7 +32,9 @@ import { NgxYoutubePlayerModule } from 'ngx-youtube-player';
 import { GenerateInvitationDialog } from './views/chat-channels-component/generate-invitation-dialog/generate-invitation.component';
 import { ClipboardModule } from '@angular/cdk/clipboard'
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 
+const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 
 @NgModule({
   declarations: [
@@ -70,6 +72,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     ClipboardModule,
     InfiniteScrollModule,
     NgxYoutubePlayerModule.forRoot(),
+    SocketIoModule.forRoot(socketIoConfig)
   ],
   providers: [
     HttpClient,

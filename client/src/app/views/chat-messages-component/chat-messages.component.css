@@ -36,7 +36,6 @@
 .messages-container {
     position: relative;
     flex-grow: 1;
-    height: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none; /* IE and Edge */
     min-width: 400px;
@@ -230,7 +229,7 @@
     }
 
 .end-space {
-    height: 5px;
+    height: 15px;
 }
 
 .hashtag-big {

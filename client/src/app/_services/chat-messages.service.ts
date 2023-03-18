@@ -1,5 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from '../_models/chat-message';
 import { ApiHelpers } from './helpers';
@@ -10,7 +11,10 @@ import { ApiHelpers } from './helpers';
 export class ChatMessagesService {
   private readonly api = 'http://localhost:3000'
 
-  constructor(private readonly httpClient: HttpClient) { }
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly socket: Socket
+  ) { }
 
   getChatMessages(
     channelId: number,
@@ -32,6 +36,49 @@ export class ChatMessagesService {
       chatMessageParams,
       { observe: 'response' }
     )
+  }
+
+  sendMessage(
+    channelId: number,
+    userId: number,
+    chatMessageParams: CreateChatMessageParams
+  ) {
+    this.socket.emit(
+      'sendChatMessage',
+      channelId,
+      userId,
+      chatMessageParams
+    )
+  }
+
+  getNewMessage(): Observable<any> {
+    return this.socket.fromEvent<ChatMessage>('newChatMessage')
+  }
+
+  editMessage(
+    id: number,
+    chatMessageParams: UpdateChatMessageParams
+  ) {
+    this.socket.emit(
+      'editChatMessage',
+      id,
+      chatMessageParams
+    ) 
+  }
+
+  getEditedMessage(): Observable<any> {
+    return this.socket.fromEvent<ChatMessage>('editedChatMessage')
+  }
+
+  deleteMessage(id: number) {
+    this.socket.emit(
+      'deleteChatMessage',
+      id
+    )
+  }
+
+  getDeletedMessage(): Observable<any> {
+    return this.socket.fromEvent<number>('deletedChatMessage')
   }
 
   updateChatMessage(

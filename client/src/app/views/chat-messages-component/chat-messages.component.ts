@@ -1,8 +1,9 @@
 import { Location, ViewportScroller } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output, Renderer2 } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from 'src/app/_models/chat-message';
@@ -21,7 +22,7 @@ import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dial
     '../chat-channels-component/chat-channels.component.scss'
   ]
 })
-export class ChatMessagesComponent implements OnInit {
+export class ChatMessagesComponent implements OnInit, OnDestroy {
   @Input()
   public members?: User[] = []
   @Input()
@@ -52,7 +53,8 @@ export class ChatMessagesComponent implements OnInit {
     private readonly _chatChannelsService: ChatChannelService,
     private readonly _usersService: UsersService,
     private readonly _chatServerService: ChatServerService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private socket: Socket
   ) { }
 
   ngOnInit() {
@@ -62,6 +64,29 @@ export class ChatMessagesComponent implements OnInit {
       this.page = 1
       this.init()
     })
+    this._chatMessagesService.getNewMessage()
+      .subscribe(
+        (message: ChatMessage) => {
+          this.chatMessages.push(message)
+          document.getElementById('target')?.scrollIntoView()
+        }
+      )
+    this._chatMessagesService.getEditedMessage()
+      .subscribe(
+        (message: ChatMessage) => {
+          this.chatMessages.filter(x => x.id == message.id)[0].content = message.content
+        }
+      )
+    this._chatMessagesService.getDeletedMessage()
+        .subscribe(
+          (messageId: number) => {
+            this.chatMessages = this.chatMessages.filter(x => x.id != messageId)
+          }
+        )
+  }
+
+  ngOnDestroy() {
+    this.socket.removeAllListeners('newChatMessage')
   }
 
   init() {
@@ -122,20 +147,16 @@ export class ChatMessagesComponent implements OnInit {
       const reqBody: CreateChatMessageParams = {
         content: this.messageValue
       }
-      this._chatMessagesService.postChatMessage(this.chatChannel!.id, this.currentUser!.id, reqBody)
-        .subscribe(
-          (data: HttpResponse<{}>) => {
-            this.messageValue = ''
-            var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
-            setTimeout(() => {
-              element.value = ''
-            }, 0)
-            this.fetchChatMessages(this.chatChannel!.id)
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      this._chatMessagesService.sendMessage(
+        this.chatChannel!.id,
+        this.currentUser!.id,
+        reqBody
+      )
+      this.messageValue = ''
+      var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+      setTimeout(() => {
+        element.value = ''
+      }, 0)
     }
   }
 
@@ -160,21 +181,13 @@ export class ChatMessagesComponent implements OnInit {
       const reqBody: UpdateChatMessageParams = {
         content: this.messageToEditValue
       }
-      this._chatMessagesService.updateChatMessage(this.messageToEditId, reqBody)
-        .subscribe(
-          (data: HttpResponse<{}>) => {
-            var element = document.getElementsByClassName('edit-input')[0] as HTMLTextAreaElement
-            setTimeout(() => {
-              element.value = ''
-            }, 0)
-            this.fetchChatMessages(this.chatChannel!.id)
-            this.messageToEditId = 0
-            this.messageToEditValue = ''
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      this._chatMessagesService.editMessage(this.messageToEditId, reqBody)
+      var element = document.getElementsByClassName('edit-input')[0] as HTMLTextAreaElement
+      setTimeout(() => {
+        element.value = ''
+      }, 0)
+      this.messageToEditId = 0
+      this.messageToEditValue = ''
     }
   }
 

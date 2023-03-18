@@ -1,7 +1,9 @@
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Socket } from 'ngx-socket-io';
+import { Observable } from 'rxjs';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { DirectConversation } from 'src/app/_models/direct-conversation';
 import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from 'src/app/_models/direct-message';
@@ -18,7 +20,7 @@ import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-d
     '../chat-channels-component/chat-channels.component.scss'
   ]
 })
-export class DirectMessagesComponent implements OnInit {
+export class DirectMessagesComponent implements OnInit, OnDestroy {
   @Input()
   currentUser?: User
   @Output()
@@ -39,7 +41,8 @@ export class DirectMessagesComponent implements OnInit {
     private location: Location,
     private readonly _directConversationService: DirectConversationService,
     private readonly _directMessageService: DirectMessageService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private socket: Socket
   ) { }
 
   ngOnInit() {
@@ -49,6 +52,31 @@ export class DirectMessagesComponent implements OnInit {
       this.page = 1
       this.init()
     })
+    this._directMessageService.getNewMessage()
+      .subscribe(
+        (message: DirectMessage) => {
+          this.directMessages.push(message)
+          document.getElementById('target')?.scrollIntoView()
+        }
+      )
+    this._directMessageService.getEditedMessage()
+      .subscribe(
+        (message: DirectMessage) => {
+          this.directMessages.filter(x => x.id == message.id)[0].content = message.content
+        }
+      )
+    this._directMessageService.getDeletedMessage()
+        .subscribe(
+          (messageId: number) => {
+            console.log(messageId)
+            this.directMessages = this.directMessages.filter(x => x.id != messageId)
+          }
+        )
+  }
+
+  ngOnDestroy() {
+    this.socket.removeAllListeners('newDirectMessage')
+    this.socket.removeAllListeners('editedDirectMessage')
   }
 
   init() {
@@ -113,24 +141,16 @@ export class DirectMessagesComponent implements OnInit {
       const reqBody: CreateDirectMessageParams = {
         content: this.messageValue
       }
-      this._directMessageService.createDirectMessage(
+      this._directMessageService.sendMessage(
         this.directConversation!.id, 
-        this.currentUser!.id, 
+        this.currentUser!.id,
         reqBody
-      ).subscribe(
-          (data: HttpResponse<any>) => {
-            this.messageValue = '';
-            var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
-            setTimeout(() => {
-              element.value = ''
-            }, 0)
-            this.fetchDirectMessages(this.directConversation!.id)
-            document.getElementById('target')?.scrollIntoView()
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      )
+      this.messageValue = '';
+      var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+      setTimeout(() => {
+        element.value = ''
+      }, 0)
     }
   }
 
@@ -155,21 +175,13 @@ export class DirectMessagesComponent implements OnInit {
       const reqBody: UpdateDirectMessageParams = {
         content: this.messageToEditValue
       }
-      this._directMessageService.updateDirectMessage(this.messageToEditId, reqBody)
-        .subscribe(
-          (data: HttpResponse<{}>) => {
-            var element = document.getElementsByClassName('edit-input')[0] as HTMLTextAreaElement
-            setTimeout(() => {
-              element.value = ''
-            }, 0)
-            this.fetchDirectMessages(this.directConversation!.id)
-            this.messageToEditId = 0
-            this.messageToEditValue = ''
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      this._directMessageService.editMessage(this.messageToEditId, reqBody)
+      var element = document.getElementsByClassName('edit-input')[0] as HTMLTextAreaElement
+      setTimeout(() => {
+        element.value = ''
+      }, 0)
+      this.messageToEditId = 0
+      this.messageToEditValue = ''
     }
   }
 

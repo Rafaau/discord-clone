@@ -29,7 +29,7 @@ export class MessageContentComponent implements OnInit {
   videoTitle: string = ''
   videoChannel: string = ''
   giphyUrl: string = ''
-  isImage: boolean = true
+  isImage: boolean = false
 
   constructor(
     private readonly _chatServerService: ChatServerService,

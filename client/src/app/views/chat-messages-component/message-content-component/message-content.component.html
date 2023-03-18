@@ -37,7 +37,7 @@
     </youtube-player>
   </div>
   <!-- IMAGE -->
-  <div *ngIf="isImage">
+  <div *ngIf="messageContent.includes('https://media')">
     <img [src]="messageContent" (error)="isNotImage()"/>
   </div>
 </div>

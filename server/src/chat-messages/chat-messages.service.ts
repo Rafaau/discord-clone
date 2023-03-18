@@ -67,11 +67,10 @@ export class ChatMessagesService {
         const chatMessageToUpdate = await this.chatMessageRepository.findOneBy({ id })
         if (!chatMessageToUpdate)
             throw new NotFoundException()
-        await this.chatMessageRepository.update(chatMessageToUpdate, { ...messageDetails })
-        return {
-            statusCode: 200,
-            message: `Chat Message(id: ${id}) has been updated successfully`
-        }
+        return this.chatMessageRepository.save({
+            ...chatMessageToUpdate,
+            ...messageDetails
+        })
     }
 
     async deleteChatMessage(id: number) {

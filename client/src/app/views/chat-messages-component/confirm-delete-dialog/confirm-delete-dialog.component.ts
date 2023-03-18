@@ -30,27 +30,13 @@ export class ConfirmDeleteDialog implements OnInit {
 
   onDelete() {
     if (this.isTypeOfChatMessage(this.data.message)) {
-      this._chatMessagesService.deleteChatMessage(this.data.message.id)
-        .subscribe(
-          (data: HttpResponse<{}>) => {
-            this.onDeleteEvent.emit()
-            this.dialog.closeAll()
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      this._chatMessagesService.deleteMessage(this.data.message.id)
+      this.onDeleteEvent.emit()
+      this.dialog.closeAll()
     } else {
-      this._directMessageService.deleteDirectMessage(this.data.message.id)
-        .subscribe(
-          (data: HttpResponse<{}>) => {
-            this.onDeleteEvent.emit()
-            this.dialog.closeAll()
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      this._directMessageService.deleteMessage(this.data.message.id)
+      this.onDeleteEvent.emit()
+      this.dialog.closeAll()
     }
   }
 

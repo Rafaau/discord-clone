@@ -61,11 +61,11 @@ export class DirectMessagesService {
         const messageToUpdate = await this.directMessageRepository.findOneBy({ id })
         if (!messageToUpdate)
             throw new NotFoundException()
-        await this.directMessageRepository.update(messageToUpdate, { ...messageDetails })
-        return {
-            statusCode: 200,
-            message: `Direct Message(id: ${id}) has been updated successfully`
-        }
+        //await this.directMessageRepository.update(messageToUpdate, { ...messageDetails })
+        return this.directMessageRepository.save({
+            ...messageToUpdate,
+            ...messageDetails
+        })
     }
 
     async deleteDirectMessage(id: number) {

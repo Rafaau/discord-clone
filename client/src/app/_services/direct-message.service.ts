@@ -1,7 +1,8 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
-import { CreateDirectMessageParams, UpdateDirectMessageParams } from '../_models/direct-message';
+import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from '../_models/direct-message';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,10 @@ import { CreateDirectMessageParams, UpdateDirectMessageParams } from '../_models
 export class DirectMessageService {
   private readonly api = 'http://localhost:3000'
 
-  constructor(private readonly httpClient: HttpClient) { }
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly socket: Socket
+  ) { }
 
   createDirectMessage(
     conversationId: number,
@@ -21,6 +25,49 @@ export class DirectMessageService {
       directMessageParams,
       { observe: 'response' }
     )
+  }
+
+  sendMessage(
+    conversationId: number,
+    senderId: number,
+    directMessageParams: CreateDirectMessageParams
+  ) {
+    this.socket.emit(
+      'sendDirectMessage', 
+      conversationId,
+      senderId,
+      directMessageParams
+    )
+  }
+
+  getNewMessage(): Observable<any> {
+    return this.socket.fromEvent<DirectMessage>('newDirectMessage')
+  }
+
+  editMessage(
+    id: number,
+    directMessageParams: UpdateDirectMessageParams
+  ) {
+    this.socket.emit(
+      'editDirectMessage',
+      id,
+      directMessageParams
+    )
+  }
+
+  getEditedMessage(): Observable<any> {
+    return this.socket.fromEvent<DirectMessage>('editedDirectMessage')
+  }
+
+  deleteMessage(id: number) {
+    this.socket.emit(
+      'deleteDirectMessage',
+      id
+    )
+  }
+
+  getDeletedMessage(): Observable<any> {
+    return this.socket.fromEvent<number>('deletedDirectMessage')
   }
 
   getDirectMessagesByConversation(

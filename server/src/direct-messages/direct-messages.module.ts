@@ -5,6 +5,7 @@ import { DirectMessage } from "src/typeorm/direct-message";
 import { User } from "src/typeorm/user";
 import { DirectMessagesControler } from "./direct-messages.controller";
 import { DirectMessagesService } from "./direct-messages.service";
+import { DirectMessagesGateway } from "./gateway/direct-messages.gateway";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
@@ -13,6 +14,9 @@ import { DirectMessagesService } from "./direct-messages.service";
         DirectConversation,
     ])],
     controllers: [DirectMessagesControler],
-    providers: [DirectMessagesService]
+    providers: [
+        DirectMessagesService,
+        DirectMessagesGateway
+    ]
 })
 export class DirectMessagesModule {}

@@ -9,7 +9,8 @@ const routes: Routes = [
   { path: 'login', component: LoginPageComponent, pathMatch:'full' },
   { path: 'register', component: RegisterPageComponent, pathMatch:'full' },
   { path: 'chatserver', component: AppComponent },
-  { path: 'directmessages', component: AppComponent }
+  { path: 'directmessages', component: AppComponent },
+  { path: 'invitation', component: AppComponent }
 ]
 
 @NgModule({
