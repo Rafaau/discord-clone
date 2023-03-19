@@ -1,11 +1,17 @@
-<div [@slideIn] class="details-container">
+<div 
+  *ngIf="currentUser && user"
+  [@slideIn] 
+  class="details-container"
+  [ngStyle]="centered ? {
+    'left': (user.username.length*8)+365+'px'
+  } : {}">
   <div class="details-upper" [ngClass]="true ? 'av-' + user!.username[0].toLowerCase() : ''"></div>
   <i class="fa-brands fa-discord member-avatar" [ngClass]="true ? 'av-' + user!.username[0].toLowerCase() : ''"></i>
   <div class="details">
     <div class="username">
-      {{ user?.username }}
+      {{ user.username }}
     </div>
-    <div class="input-container">
+    <div *ngIf="currentUser.id != user.id" class="input-container">
       <input
         [placeholder]="'Message @'+user!.username"
         [value]="messageValue"

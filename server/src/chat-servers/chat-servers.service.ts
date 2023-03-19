@@ -68,7 +68,7 @@ export class ChatServersService {
                 throw new HttpException(
                     'Chat server not found. Cannot add new member.',
                     HttpStatus.BAD_REQUEST
-                )
+                );
         chatServer.members = [...chatServer.members, {...member}]
         return this.chatServerRepository.save(chatServer)
     }

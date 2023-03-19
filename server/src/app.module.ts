@@ -22,6 +22,8 @@ import { DirectConversationModule } from './direct-conversations/direct-conversa
 import { DirectMessagesModule } from './direct-messages/direct-messages.module';
 import { ChatServerInvitation } from './typeorm/chat-server-invitation';
 import { ChatServerInvitationsModule } from './chat-server-invitations/chat-server-invitations.module';
+import { MessageReaction } from './typeorm/message-reaction';
+import { MessageReactionsModule } from './message-reactions/message-reactions.module';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { ChatServerInvitationsModule } from './chat-server-invitations/chat-serv
     DirectConversationModule,
     DirectMessagesModule,
     ChatServerInvitationsModule,
+    MessageReactionsModule,
     AuthModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -50,6 +53,7 @@ import { ChatServerInvitationsModule } from './chat-server-invitations/chat-serv
         DirectConversation,
         DirectMessage,
         ChatServerInvitation,
+        MessageReaction,
         SessionEntity
       ],
       synchronize: true,

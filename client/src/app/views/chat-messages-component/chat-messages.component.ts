@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { Location, ViewportScroller } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
@@ -7,10 +8,12 @@ import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from 'src/app/_models/chat-message';
+import { CreateMessageReactionParams, MessageReaction } from 'src/app/_models/message-reaction';
 import { User } from 'src/app/_models/Users';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
+import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dialog.component';
 
@@ -20,6 +23,27 @@ import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dial
   styleUrls: [
     './chat-messages.component.css',
     '../chat-channels-component/chat-channels.component.scss'
+  ],
+  animations: [
+    trigger('onMartToggle', [
+      transition(':enter', [
+        style({
+          opacity: 0,
+          transform: 'translateY(50px)'
+        }),
+        animate('0.2s cubic-bezier(0.35, 0, 0.25, 1.75)',
+          style({
+            opacity: 1,
+            transform: 'translateY(*)'
+          }))
+      ]),
+      transition(':leave',
+        animate('0.1s',
+          style({
+            opacity: 0,
+            transform: 'translateY(-50px)'
+          })))
+    ])
   ]
 })
 export class ChatMessagesComponent implements OnInit, OnDestroy {
@@ -38,12 +62,18 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   messageToEditId: number = 0
   messageToEditValue: string = ''
   currentMemberDetails: number = 0
+  detailsMode: number = 0
   detailsToggle: number = 0
   currentMemberOptions: number = 0
   showEmojiPicker: boolean = false
   martToggle: number = 0
   page: number = 1
   loading: boolean = false
+  showReactionsPicker: boolean = false
+  reactionsMartToggle: number = 0
+  messageToReact: number = 0
+  reactionsGrouped: boolean = false
+  groupToIncrement = [0, '']
 
   constructor(
     private location: Location,
@@ -53,6 +83,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     private readonly _chatChannelsService: ChatChannelService,
     private readonly _usersService: UsersService,
     private readonly _chatServerService: ChatServerService,
+    private readonly _messageReactionsService: MessageReactionsService,
     public dialog: MatDialog,
     private socket: Socket
   ) { }
@@ -81,6 +112,19 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         .subscribe(
           (messageId: number) => {
             this.chatMessages = this.chatMessages.filter(x => x.id != messageId)
+          }
+        )
+    this._messageReactionsService.getNewMessageReaction()
+        .subscribe(
+          (reaction: MessageReaction) => {
+            this.chatMessages.filter(x => x.id == reaction.chatMessage!.id)[0].reactions!.push(reaction)
+          }
+        )
+      this._messageReactionsService.getDeletedReaction()
+        .subscribe(
+          (data: any) => {
+            this.chatMessages.filter(x => x.id == data[1])[0].reactions =
+              this.chatMessages.filter(x => x.id == data[1])[0].reactions!.filter(x => x.id != data[0])
           }
         )
   }
@@ -206,18 +250,20 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     })
   }
 
-  openMemberDetails(userId: number) {
+  openMemberDetails(userId: number, mode: number) {
     this.currentMemberDetails = userId
+    this.detailsMode = mode
     this.detailsToggle = 0
   }
 
   closeMemberDetails(event: Event) {
-    if (this.detailsToggle != 0) {
+    setTimeout(() => {
+      this.detailsToggle = 1
+    }, 100)
+    if (this.detailsToggle == 1){
       this.currentMemberDetails = 0
       this.detailsToggle = 0
-    }
-    else
-      this.detailsToggle = 1
+    }  
   }
 
   toggleEmojiPicker() {
@@ -274,10 +320,91 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this.onJoinCallback.emit()
   }
 
+  toggleReactionsMart(messageId: number) {
+    if (this.messageToReact == messageId)
+      this.showReactionsPicker = !this.showReactionsPicker
+    else
+      this.showReactionsPicker = true
+    this.reactionsMartToggle = 0
+    this.messageToReact = messageId
+  }
+
+  closeReactionsMart(event: Event) {
+    if (this.reactionsMartToggle != 0) {
+      this.showReactionsPicker = false
+      this.reactionsMartToggle = 0
+      this.messageToReact = 0
+    }
+    else
+      this.reactionsMartToggle = 1  
+  }
+
+  sendReaction(messageId: number, event: Event) {
+    const reqBody: CreateMessageReactionParams = {
+      reaction: (event as any).emoji.native
+    }
+    this._messageReactionsService.sendMessageReaction(
+      reqBody,
+      this.currentUser!.id,
+      messageId
+    )
+    this.messageToReact = 0
+    this.showReactionsPicker = false
+  } 
+
+  addOrRemoveReaction(messageId: number, reactionGroup: any) {
+    this.groupToIncrement = reactionGroup.reaction
+    if (this.isReactedByCurrentUser(reactionGroup.users)) {
+      this.groupToIncrement = [0, reactionGroup.reaction]
+      const reaction = reactionGroup.objects.filter((x: { user: { id: number; }; }) => x.user.id == this.currentUser!.id)[0] // 22 23
+      this._messageReactionsService
+        .deleteMessageReaction(reaction.id, reaction.chatMessage!.id)
+    } else {
+      this.groupToIncrement = [1, reactionGroup.reaction]
+      const eventObj: any = { 
+        emoji: {
+          native: reactionGroup.reaction
+        }
+      }
+      this.sendReaction(messageId, eventObj)
+    }
+    setTimeout(() => {
+      this.groupToIncrement = [0, '']
+    }, 300)
+  }
+
+  getReactionGroups(reactions: MessageReaction[]) {
+    const reactionGroups = reactions.reduce((accumulator: any, reaction) => {
+      const index = accumulator.findIndex(
+        (group: { reaction: string; }) => group.reaction === reaction.reaction
+      )
+      if (index !== -1) {
+        accumulator[index].count++
+        if (!accumulator[index].users.some((x: { id: number; }) => x.id == reaction.user.id))
+          accumulator[index].users.push(reaction.user)
+        accumulator[index].objects.push(reaction)
+      } else {
+        accumulator.push({ 
+          reaction: reaction.reaction, 
+          count: 1, 
+          users: [reaction.user],
+          objects: [reaction],
+        })
+      }
+      return accumulator
+    }, [])
+    return reactionGroups
+  }
+
+  isReactedByCurrentUser(users: User[]) {
+    return users.some(x => x.id == this.currentUser?.id)
+  }
+
   onScroll() {
     if (!this.loading && !this.orderByPostDate(this.chatMessages)[0].isFirst) {
-      console.log('scrolled')
       this.loading = true
+      this.currentMemberDetails = 0
+      this.detailsToggle = 0
       setTimeout(() => {
         this.page++
         this.fetchChatMessages(this.chatChannel!.id)

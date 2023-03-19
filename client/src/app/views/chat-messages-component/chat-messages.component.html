@@ -47,12 +47,16 @@
 
               <div 
                 *ngIf="firstOfMessages" 
-                class="user-avatar">
+                class="user-avatar"
+                (click)="openMemberDetails(message.user.id, 1)">
                 <i class="fa-brands fa-discord i-avatar" [ngClass]="true ? 'av-' + message.user.username[0].toLowerCase() : ''"></i>
               </div>
 
               <div [ngClass]="firstOfMessages ? 'margin-fix' : ''">
-                <div *ngIf="firstOfMessages" class="user-name">
+                <div 
+                  *ngIf="firstOfMessages" 
+                  class="user-name"
+                  (click)="openMemberDetails(message.user.id, 1)">
                   {{ message.user.username }}
                   <div class="post-date-first">
                     {{ isToday(message.postDate) ? 'Today at ' : '' }}
@@ -61,6 +65,14 @@
                     {{ message.postDate | date:'h:mm a' }}
                   </div>
                 </div>
+
+                <user-details 
+                  *ngIf="currentMemberDetails == message.user.id && detailsMode == 1"
+                  (clickOutside)="closeMemberDetails($event)"
+                  [centered]="true"
+                  [currentUser]="currentUser"
+                  [user]="message.user">
+                </user-details>
 
                 <div 
                   *ngIf="message.id != messageToEditId" 
@@ -88,14 +100,68 @@
                 </div>
 
                 <div 
+                  *ngIf="message.reactions.length"
+                  class="reactions-container">
+                  <div 
+                    *ngFor="let reactionGroup of getReactionGroups(message.reactions)"
+                    class="single-reaction"
+                    [ngClass]="isReactedByCurrentUser(reactionGroup.users) ? 'reacted' : ''"
+                    (click)="addOrRemoveReaction(message.id, reactionGroup)">
+                    <div class="reaction-users">
+                      {{ 
+                        reactionGroup.reaction + ' reacted by ' 
+                      }}
+                      <div style="display: inline-block; margin-right: 5px;" *ngFor="let user of reactionGroup.users; let i = index;">
+                        {{ user.username }} 
+                        {{ i == (reactionGroup.users.length - 2) ? 'and' : i < (reactionGroup.users.length - 2) ? ',' : '' }}
+                      </div>
+                    </div>
+                    {{ reactionGroup.reaction }}
+                    <div 
+                      [class.incrementing]="groupToIncrement[0] == 1
+                      && reactionGroup.reaction == groupToIncrement[1]"
+                      [class.decrementing]="groupToIncrement[0] == 0
+                      && reactionGroup.reaction == groupToIncrement[1]"
+                      style="display: inline-block;">
+                      {{ reactionGroup.count }}
+                    </div> 
+                  </div>
+                </div>
+
+                <div class="reactions-picker-container">
+                  <emoji-mart 
+                    class="emoji-mart" 
+                    *ngIf="showReactionsPicker && message.id == messageToReact"
+                    [@onMartToggle]
+                    (emojiSelect)="sendReaction(message.id, $event)"
+                    [showSingleCategory]="true"
+                    [isNative]="true"
+                    [darkMode]="true"
+                    [enableSearch]="false"
+                    color="#f3f4f5"
+                    [useButton]="true"
+                    (clickOutside)="closeReactionsMart($event)">
+                  </emoji-mart>
+                </div>
+
+                <div 
                   class="message-actions" 
-                  *ngIf="message.user.id == currentUser?.id && message.id != messageToEditId">
+                  *ngIf="message.id != messageToEditId"
+                  [ngStyle]="{ 'display': message.id == messageToReact ? 'block' : ''  }">
                   <i 
+                    matTooltip="Add Reaction"
+                    matTooltipPosition="above"
+                    class="fa-solid fa-face-grin-beam action-btn"
+                    (click)="toggleReactionsMart(message.id)"
+                    [ngStyle]="{ 'background-color': message.id == messageToReact ? '#3C3E43' : ''  }"></i>
+                  <i 
+                    *ngIf="message.user.id == currentUser?.id"
                     matTooltip="Edit"
                     matTooltipPosition="above"
                     class="fa-solid fa-pen action-btn" 
                     (click)="onEdit(message)"></i>
                   <i 
+                    *ngIf="message.user.id == currentUser?.id"
                     matTooltip="Delete"
                     matTooltipPosition="above"
                     class="fa-solid fa-trash-can action-btn" 
@@ -132,6 +198,7 @@
             <emoji-mart 
               class="emoji-mart" 
               *ngIf="showEmojiPicker"
+              [@onMartToggle]
               (emojiSelect)="addEmojiToMessage($event)"
               [showSingleCategory]="true"
               [isNative]="true"
@@ -147,14 +214,16 @@
     </div>
     <div *ngIf="showMembers && members?.length" class="members-container">
       <h6>OWNER  -  1</h6>
-      <div class="single-member">
+      <div 
+        class="single-member"
+        (click)="openMemberDetails(members![0].id, 0)">
         <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + members![0].username[0].toLowerCase() : ''"></i>
         {{ members![0].username }}
       </div>
       <h6 *ngIf="members!.length > 1">MEMBERS  - {{ members!.length - 1 }}</h6>
-      <div *ngFor="let member of members;">
+      <div *ngFor="let member of members; let i = index">
         <user-details 
-          *ngIf="currentMemberDetails == member.id"
+          *ngIf="currentMemberDetails == member.id && detailsMode == 0"
           (clickOutside)="closeMemberDetails($event)"
           [currentUser]="currentUser"
           [user]="member">
@@ -172,7 +241,7 @@
         <div *ngIf="!member.isOwner">
           <div 
             class="single-member"
-            (click)="openMemberDetails(member.id)"
+            (click)="openMemberDetails(member.id, 0)"
             (contextmenu)="onMemberRightClick(member.id)">
             <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + member.username[0].toLowerCase() : ''"></i>
             {{ member.username }}
@@ -181,4 +250,5 @@
       </div>
     </div>
   </div>
+
 </div>

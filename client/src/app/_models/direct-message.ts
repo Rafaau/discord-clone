@@ -1,4 +1,5 @@
 import { DirectConversation } from "./direct-conversation";
+import { MessageReaction } from "./message-reaction";
 import { User } from "./Users";
 
 export interface DirectMessage {
@@ -7,7 +8,8 @@ export interface DirectMessage {
     user: User,
     directConversation: DirectConversation,
     postDate: Date,
-    isFirst?: boolean
+    isFirst?: boolean,
+    reactions?: MessageReaction[]
 }
 
 export interface CreateDirectMessageParams {

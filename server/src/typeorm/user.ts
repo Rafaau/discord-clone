@@ -3,6 +3,7 @@ import { ChatMessage } from "./chat-message";
 import { ChatServer } from "./chat-server";
 import { DirectConversation } from "./direct-conversation";
 import { DirectMessage } from "./direct-message";
+import { MessageReaction } from "./message-reaction";
 
 @Entity({ name: 'users' })
 export class User {
@@ -54,4 +55,10 @@ export class User {
         nullable: true
     })
     directMessages?: DirectMessage[]
+
+    @ManyToMany(() => MessageReaction, (messageReaction) => messageReaction.user, {
+        onDelete: 'CASCADE'
+    })
+    @JoinTable({ name: 'users-message-reactions' })
+    messageReactions: MessageReaction[]
 }

@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
@@ -7,9 +8,11 @@ import { Observable } from 'rxjs';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { DirectConversation } from 'src/app/_models/direct-conversation';
 import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from 'src/app/_models/direct-message';
+import { CreateMessageReactionParams, MessageReaction } from 'src/app/_models/message-reaction';
 import { User } from 'src/app/_models/Users';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
+import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
 import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
@@ -18,6 +21,27 @@ import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-d
   styleUrls: [
     './direct-messages.component.css',
     '../chat-channels-component/chat-channels.component.scss'
+  ],
+  animations: [
+    trigger('onMartToggle', [
+      transition(':enter', [
+        style({
+          opacity: 0,
+          transform: 'translateY(50px)'
+        }),
+        animate('0.2s cubic-bezier(0.35, 0, 0.25, 1.75)',
+          style({
+            opacity: 1,
+            transform: 'translateY(*)'
+          }))
+      ]),
+      transition(':leave',
+        animate('0.1s',
+          style({
+            opacity: 0,
+            transform: 'translateY(-50px)'
+          })))
+    ])
   ]
 })
 export class DirectMessagesComponent implements OnInit, OnDestroy {
@@ -36,11 +60,16 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   martToggle: number = 0
   page: number = 1
   loading: boolean = false
+  showReactionsPicker: boolean = false
+  reactionsMartToggle: number = 0
+  messageToReact: number = 0
+  groupToIncrement = [0, '']
 
   constructor(
     private location: Location,
     private readonly _directConversationService: DirectConversationService,
     private readonly _directMessageService: DirectMessageService,
+    private readonly _messageReactionsService: MessageReactionsService,
     public dialog: MatDialog,
     private socket: Socket
   ) { }
@@ -68,10 +97,22 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this._directMessageService.getDeletedMessage()
         .subscribe(
           (messageId: number) => {
-            console.log(messageId)
             this.directMessages = this.directMessages.filter(x => x.id != messageId)
           }
         )
+    this._messageReactionsService.getNewMessageReaction()
+    .subscribe(
+      (reaction: MessageReaction) => {
+        this.directMessages.filter(x => x.id == reaction.directMessage!.id)[0].reactions!.push(reaction)
+      }
+    )
+    this._messageReactionsService.getDeletedReaction()
+      .subscribe(
+        (data: any) => {
+          this.directMessages.filter(x => x.id == data[1])[0].reactions =
+            this.directMessages.filter(x => x.id == data[1])[0].reactions!.filter(x => x.id != data[0])
+        }
+      )        
   }
 
   ngOnDestroy() {
@@ -221,6 +262,87 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   handleJoinCallback(event: Event) {
     this.onJoinCallback.emit()
   }
+
+  toggleReactionsMart(messageId: number) {
+    if (this.messageToReact == messageId)
+      this.showReactionsPicker = !this.showReactionsPicker
+    else
+      this.showReactionsPicker = true
+    this.reactionsMartToggle = 0
+    this.messageToReact = messageId
+  }
+
+  closeReactionsMart(event: Event) {
+    if (this.reactionsMartToggle != 0) {
+      this.showReactionsPicker = false
+      this.reactionsMartToggle = 0
+      this.messageToReact = 0
+    }
+    else
+      this.reactionsMartToggle = 1  
+  }
+
+  sendReaction(messageId: number, event: Event) {
+    const reqBody: CreateMessageReactionParams = {
+      reaction: (event as any).emoji.native
+    }
+    this._messageReactionsService.sendMessageReaction(
+      reqBody,
+      this.currentUser!.id,
+      undefined,
+      messageId
+    )
+    this.messageToReact = 0
+    this.showReactionsPicker = false
+  } 
+
+  addOrRemoveReaction(messageId: number, reactionGroup: any) {
+    this.groupToIncrement = reactionGroup.reaction
+    if (this.isReactedByCurrentUser(reactionGroup.users)) {
+      this.groupToIncrement = [0, reactionGroup.reaction]
+      const reaction = reactionGroup.objects.filter((x: { user: { id: number; }; }) => x.user.id == this.currentUser!.id)[0] // 22 23
+      this._messageReactionsService
+        .deleteMessageReaction(reaction.id, reaction.directMessage!.id)
+    } else {
+      this.groupToIncrement = [1, reactionGroup.reaction]
+      const eventObj: any = { 
+        emoji: {
+          native: reactionGroup.reaction
+        }
+      }
+      this.sendReaction(messageId, eventObj)
+    }
+    setTimeout(() => {
+      this.groupToIncrement = [0, '']
+    }, 300)
+  }
+
+  getReactionGroups(reactions: MessageReaction[]) {
+    const reactionGroups = reactions.reduce((accumulator: any, reaction) => {
+      const index = accumulator.findIndex(
+        (group: { reaction: string; }) => group.reaction === reaction.reaction
+      )
+      if (index !== -1) {
+        accumulator[index].count++
+        if (!accumulator[index].users.some((x: { id: number; }) => x.id == reaction.user.id))
+          accumulator[index].users.push(reaction.user)
+        accumulator[index].objects.push(reaction)
+      } else {
+        accumulator.push({ 
+          reaction: reaction.reaction, 
+          count: 1, 
+          users: [reaction.user],
+          objects: [reaction],
+        })
+      }
+      return accumulator
+    }, [])
+    return reactionGroups
+  }
+
+  isReactedByCurrentUser(users: User[]) {
+    return users.some(x => x.id == this.currentUser?.id)
+  } 
 
   onScroll() {
     if (!this.loading && !this.orderByPostDate(this.directMessages)[0].isFirst) {

@@ -27,6 +27,7 @@ export class DirectMessagesService {
             ...createDirectMessageDetails,
             directConversation: conversation as any,
             user: user as any,
+            reactions: []
         })
         return this.directMessageRepository.save(newDirectMessage)
     }
@@ -43,7 +44,10 @@ export class DirectMessagesService {
             relations: [
                 'user', 
                 'directConversation', 
-                'directConversation.users'
+                'directConversation.users',
+                'reactions',
+                'reactions.directMessage',
+                'reactions.user'
             ]
         })
         const firstMessage = await this.directMessageRepository.findOne({
@@ -61,7 +65,6 @@ export class DirectMessagesService {
         const messageToUpdate = await this.directMessageRepository.findOneBy({ id })
         if (!messageToUpdate)
             throw new NotFoundException()
-        //await this.directMessageRepository.update(messageToUpdate, { ...messageDetails })
         return this.directMessageRepository.save({
             ...messageToUpdate,
             ...messageDetails

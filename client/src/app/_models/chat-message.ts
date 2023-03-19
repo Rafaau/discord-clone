@@ -1,4 +1,5 @@
 import { ChatChannel } from "./chat-channels";
+import { MessageReaction } from "./message-reaction";
 import { User } from "./Users";
 
 export interface ChatMessage {
@@ -7,7 +8,8 @@ export interface ChatMessage {
     postDate: Date,
     user: User,
     chatChannel: ChatChannel
-    isFirst?: boolean
+    isFirst?: boolean,
+    reactions?: MessageReaction[]
 }
 
 export interface CreateChatMessageParams {

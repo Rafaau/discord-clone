@@ -35,6 +35,8 @@ export class UserDetailsComponent implements OnInit {
   @Input()
   user?: User | UserComplex
   messageValue: string = ''
+  @Input()
+  centered?: boolean
 
   constructor(
     private router: Router,

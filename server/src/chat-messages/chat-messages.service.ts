@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestj
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChatChannel } from "src/typeorm/chat-channel";
 import { ChatMessage } from "src/typeorm/chat-message";
+import { MessageReaction } from "src/typeorm/message-reaction";
 import { User } from "src/typeorm/user";
 import { CreateChatMessageParams, UpdateMessageParams } from "src/utils/types";
 import { Repository } from "typeorm";
@@ -11,7 +12,8 @@ export class ChatMessagesService {
     constructor(
         @InjectRepository(ChatMessage) private readonly chatMessageRepository: Repository<ChatMessage>,
         @InjectRepository(ChatChannel) private readonly chatChannelRepository: Repository<ChatChannel>,
-        @InjectRepository(User) private readonly userRepository: Repository<User>
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        @InjectRepository(MessageReaction) private readonly reactionRepository: Repository<MessageReaction>
     ) {}
 
     async createChatMessage(
@@ -34,7 +36,8 @@ export class ChatMessagesService {
         const newChatMessage = await this.chatMessageRepository.create({
             ...chatMessageDetails,
             chatChannel,
-            user
+            user,
+            reactions: []
         })
         return this.chatMessageRepository.save(newChatMessage)
     }
@@ -50,7 +53,12 @@ export class ChatMessagesService {
             order: { postDate: 'DESC' },
             skip: (page - 1) * 10,
             take: 10,
-            relations: ['user']
+            relations: [
+                'user', 
+                'reactions',
+                'reactions.chatMessage',
+                'reactions.user'
+            ]
         })
         const firstMessage = await this.chatMessageRepository.findOne({
             where: { chatChannel: chatChannel },
