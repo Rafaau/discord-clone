@@ -1,12 +1,13 @@
 <div class="base-container">
-  <div class="row">
+  <div class="row" [@settingsToggle]="settingsState ? 'open' : 'closed'">
     <div class="primary-side-bar">
       <app-chat-servers [currentUser]="currentUser"></app-chat-servers>
     </div>
     <div class="secondary-side-bar">
       <app-chat-channels 
         *ngIf="router.url.includes('/chatserver')" 
-        (members)="fetchUsersFromServer($event)">
+        (members)="fetchUsersFromServer($event)"
+        (onServerSettingsToggle)="toggleServerSettingsView($event)">
       </app-chat-channels>
       <app-direct-messages-list 
         *ngIf="router.url.includes('/directmessages') && currentUser" 
@@ -38,4 +39,8 @@
       </app-direct-messages>
     </div>
   </div>
+  <chat-server-settings 
+    *ngIf="settingsState" 
+    (onClose)="toggleServerSettingsView($event)">
+  </chat-server-settings>
 </div>

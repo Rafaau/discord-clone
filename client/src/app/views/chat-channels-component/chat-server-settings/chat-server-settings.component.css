@@ -1,7 +1,7 @@
 .server-settings-container {
     position: absolute;
     background-color: #313338;
-    top: 0;
+    top: 20px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -11,7 +11,7 @@
 
 .side-menu {
     background-color: #2B2D31;
-    width: 400px;
+    width: 215px;
     height: 100%;
     padding: 30px 0 0 150px;
     color: #98999F;

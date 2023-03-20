@@ -55,6 +55,7 @@ export class ChatMessagesService {
             take: 10,
             relations: [
                 'user', 
+                'chatChannel',
                 'reactions',
                 'reactions.chatMessage',
                 'reactions.user'

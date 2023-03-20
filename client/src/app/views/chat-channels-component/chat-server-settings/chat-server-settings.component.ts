@@ -11,19 +11,21 @@ import { ChatServer } from 'src/app/_models/chat-servers';
       transition(':enter', [
         style({
           opacity: 0,
-          transform: 'scale(0.8)'
+          transform: 'scale(1.2)',
+          filter: 'blur(4px)'
         }),
         animate('0.2s ease-in',
           style({
             opacity: 1,
-            transform: 'scale(1.0)'
+            transform: 'scale(*)'
           }))
       ]),
       transition(':leave', [
         animate('0.2s ease-out', 
           style({
             opacity: 0,
-            transform: 'scale(0.8)'
+            transform: 'scale(1.2)',
+            filter: 'blur(4px)'
           }))
       ])
     ])
@@ -45,6 +47,6 @@ export class ChatServerSettingsComponent implements OnInit {
     this.isOpen = false
     setTimeout(() => {
       this.onClose.emit()
-    }, 300)
+    }, 50)
   }
 }

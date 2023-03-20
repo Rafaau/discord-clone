@@ -49,17 +49,31 @@
     </div>
     <ng-container *ngIf="toExpand[i]">
       <div 
-        [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id ? 'chat-channel-current' : 'chat-channel'" 
+        [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id ? 
+        'chat-channel chat-channel-current' : 'chat-channel'" 
         *ngFor="let channel of orderById(category.chatChannels)"
         (click)="redirectToChatChannel(channel.id)">
         <div class="hashtag"> # </div>
         <div class="channel-name">{{ channel.name }}</div>
+        <i 
+          [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id
+          || currentChannelSettings == channel.id ?
+          'settings' : 'settings hide-settings'"
+          matTooltip="Edit Channel"
+          matTooltipPosition="above"
+          (click)="openChannelSettings(channel.id)"
+          class="fa-solid fa-gear"></i>
+        <div 
+          *ngIf="currentChannelSettings == channel.id"
+          class="channel-settings"
+          (clickOutside)="closeChannelSettings()">
+          <div
+            (click)="deleteChannel()" 
+            class="settings-option-warn">
+            Delete Channel
+          </div>
+        </div>
       </div>
   </ng-container>
   </div>
 </div>
-<chat-server-settings 
-  *ngIf="isServerSettingsOn" 
-  (onClose)="toggleServerSettings()"
-  [chatServer]="chatServer">
-</chat-server-settings>

@@ -91,34 +91,10 @@
                     </div>
                 </div>
 
-                <div 
-                  *ngIf="message.reactions.length"
-                  class="reactions-container">
-                  <div 
-                    *ngFor="let reactionGroup of getReactionGroups(message.reactions)"
-                    class="single-reaction"
-                    [ngClass]="isReactedByCurrentUser(reactionGroup.users) ? 'reacted' : ''"
-                    (click)="addOrRemoveReaction(message.id, reactionGroup)">
-                    <div class="reaction-users">
-                      {{ 
-                        reactionGroup.reaction + ' reacted by ' 
-                      }}
-                      <div style="display: inline-block; margin-right: 5px;" *ngFor="let user of reactionGroup.users; let i = index;">
-                        {{ user.username }} 
-                        {{ i == (reactionGroup.users.length - 2) ? 'and' : i < (reactionGroup.users.length - 2) ? ',' : '' }}
-                      </div>
-                    </div>
-                    {{ reactionGroup.reaction }}
-                    <div 
-                      [class.incrementing]="groupToIncrement[0] == 1
-                      && reactionGroup.reaction == groupToIncrement[1]"
-                      [class.decrementing]="groupToIncrement[0] == 0
-                      && reactionGroup.reaction == groupToIncrement[1]"
-                      style="display: inline-block;">
-                      {{ reactionGroup.count }}
-                    </div> 
-                  </div>
-                </div>
+                <message-reactions
+                  [currentUser]="currentUser"
+                  [message]="message">
+                </message-reactions>
 
                 <div class="reactions-picker-container">
                   <emoji-mart 

@@ -1,4 +1,4 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, Output, ViewChild } from '@angular/core';
@@ -14,7 +14,28 @@ import { FriendsComponent } from '../friends-component/friends.component';
 @Component({
   selector: 'app-main-layout',
   templateUrl: './main-layout.component.html',
-  styleUrls: ['./main-layout.component.css']
+  styleUrls: ['./main-layout.component.css'],
+  animations: [
+    trigger('settingsToggle', [
+      state('open', 
+        style({
+         opacity: 0,
+         transform: 'scale(0.9)',
+         filter: 'blur(4px)' 
+        })),
+      state('closed', 
+        style({
+          opacity: 1,
+          transform: 'scale(*)'
+        })),
+      transition('closed => open', [
+        animate('0.2s ease-in')
+      ]),
+      transition('open => closed', [
+        animate('0.2s ease-out')
+      ])
+    ])
+  ]
 })
 export class MainLayoutComponent implements OnInit {
   members?: User[]
@@ -23,36 +44,13 @@ export class MainLayoutComponent implements OnInit {
   @ViewChild(FriendsComponent) friendsChild?: FriendsComponent
   @ViewChild(DirectMessagesListComponent) directMessagesChild?: DirectMessagesListComponent
   @ViewChild(ChatServersComponent) chatServersChild?: ChatServersComponent
-  cols = '3'
-
-  displayMap = new Map([
-    [Breakpoints.XSmall, '1'],
-    [Breakpoints.Small, '1'],
-    [Breakpoints.Medium, '2'],
-    [Breakpoints.Large, '3'],
-    [Breakpoints.XLarge, '3'],
-  ])
+  settingsState: boolean = false
 
   constructor(
-    private breakpointsObserver: BreakpointObserver,
     private _authService: AuthService,
     public router: Router,
     private location: Location
-  ) { 
-      breakpointsObserver.observe([
-        Breakpoints.XSmall,
-        Breakpoints.Small,
-        Breakpoints.Medium,
-        Breakpoints.Large,
-        Breakpoints.XLarge
-      ]).subscribe(result =>  {
-        for (const query of Object.keys(result.breakpoints)) {
-          if (result.breakpoints[query]) {
-            this.cols = this.displayMap.get(query) as string
-          }
-        }
-      })
-    }
+  ) { }
 
   async ngOnInit() {
     await this.authorizeUser()
@@ -85,5 +83,9 @@ export class MainLayoutComponent implements OnInit {
 
   passUserToChild() {
     this.directMessagesChild?.fetchUserConversations(this.currentUser!.id)
+  }
+
+  toggleServerSettingsView(event: Event) {
+    this.settingsState = !this.settingsState
   }
 }

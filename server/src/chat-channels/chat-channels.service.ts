@@ -65,4 +65,15 @@ export class ChatChannelsService {
             message: `Chat Category(id : ${id}) has been deleted successfully`
         }
     }
+
+    async deleteChatChannel(id: number) {
+        const chatChannelToDelete = await this.chatChannelRepository.findOneBy({ id })
+        if (!chatChannelToDelete)
+            throw new NotFoundException()
+        await this.chatChannelRepository.delete(chatChannelToDelete)
+        return {
+            statusCode: 200,
+            message: `Chat Channel(id : ${id}) has been deleted successfully`
+        }
+    }
 }

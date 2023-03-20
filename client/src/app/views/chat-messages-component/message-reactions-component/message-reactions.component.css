@@ -1,0 +1,99 @@
+.reactions-container {
+    display: flex;
+    margin: 6px 0 0 0;
+}
+
+.single-reaction {
+    background-color: #2B2D31;
+    border-radius: 8px;
+    padding: 4px;
+    transition: 0.2s;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-size: 16px;
+    margin-left: 5px;
+    position: relative;
+}
+
+    .single-reaction:hover {
+        border: 1px solid #505256;
+    }
+
+    .single-reaction:hover > .reaction-users {
+        display: block;
+    }
+
+.reactions-picker-container {
+    position: fixed;
+    top: 20vh;
+    right: 400px;
+    z-index: 5;
+}
+
+.reaction-users {
+    position: absolute;
+    background-color: #111214;
+    border-radius: 5px;
+    padding: 8px;
+    top: -40px;
+    z-index: 5;
+    left: -60px;
+    display: none;
+    width: auto;
+    white-space: nowrap;
+}
+
+.reacted {
+    background-color: #373A54;
+    border: 1px solid #5865F2;
+}
+
+.incrementing {
+    animation: pulse 0.3s linear;
+  }
+  
+  @keyframes pulse {
+    0% {
+        transform: translateY(0);
+    }
+    15% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    75% {
+        transform: translateY(5px);   
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0);
+    }
+  }
+
+.decrementing {
+    animation: pulse-invert  0.3s;
+}
+
+    @keyframes pulse-invert {
+        0% {
+            transform: translateY(0);
+        }
+        15% {
+            transform: translateY(5px);   
+            opacity: 0;
+        }
+        50% {
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        75% {
+            transform: translateY(-5px);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }

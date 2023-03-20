@@ -33,6 +33,7 @@ import { GenerateInvitationDialog } from './views/chat-channels-component/genera
 import { ClipboardModule } from '@angular/cdk/clipboard'
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+import { MessageReactionsComponent } from './views/chat-messages-component/message-reactions-component/message-reactions.component';
 
 const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 
@@ -57,6 +58,7 @@ const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: 
     UserDetailsComponent,
     ChatServerSettingsComponent,
     MessageContentComponent,
+    MessageReactionsComponent
   ],
   imports: [
     BrowserModule,

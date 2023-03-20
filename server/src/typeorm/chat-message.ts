@@ -18,14 +18,13 @@ export class ChatMessage {
     @ManyToOne(() => User, (user) => user.chatMessages)
     user: User
 
-    @ManyToOne(() => ChatChannel, (chatChannel) => chatChannel.chatMessages)
+    @ManyToOne(() => ChatChannel, (chatChannel) => chatChannel.chatMessages, {
+        onDelete: 'CASCADE'
+    })
     chatChannel: ChatChannel
 
     @OneToMany(() => MessageReaction, (messageReaction) => messageReaction.chatMessage, {
         nullable: true
     })
-    // @PolymorphicChildren(() => MessageReaction, {
-    //     eager: false
-    // })
     reactions?: MessageReaction[]
 }

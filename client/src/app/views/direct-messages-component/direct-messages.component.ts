@@ -63,7 +63,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   showReactionsPicker: boolean = false
   reactionsMartToggle: number = 0
   messageToReact: number = 0
-  groupToIncrement = [0, '']
 
   constructor(
     private location: Location,
@@ -76,10 +75,12 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.init()
-    this.location.onUrlChange(() => {
-      this.directMessages = []
-      this.page = 1
-      this.init()
+    this.location.onUrlChange((url) => {
+      if (url.includes('/directmessages')) {
+        this.directMessages = []
+        this.page = 1
+        this.init()
+      }
     })
     this._directMessageService.getNewMessage()
       .subscribe(
@@ -97,34 +98,23 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this._directMessageService.getDeletedMessage()
         .subscribe(
           (messageId: number) => {
+            console.log('cipka')
             this.directMessages = this.directMessages.filter(x => x.id != messageId)
           }
-        )
-    this._messageReactionsService.getNewMessageReaction()
-    .subscribe(
-      (reaction: MessageReaction) => {
-        this.directMessages.filter(x => x.id == reaction.directMessage!.id)[0].reactions!.push(reaction)
-      }
-    )
-    this._messageReactionsService.getDeletedReaction()
-      .subscribe(
-        (data: any) => {
-          this.directMessages.filter(x => x.id == data[1])[0].reactions =
-            this.directMessages.filter(x => x.id == data[1])[0].reactions!.filter(x => x.id != data[0])
-        }
-      )        
+        )   
   }
 
   ngOnDestroy() {
-    this.socket.removeAllListeners('newDirectMessage')
-    this.socket.removeAllListeners('editedDirectMessage')
+    console.log('destroyed')
+    // this.socket.removeListener('newMessageReaction')
+    // this.socket.removeListener('deletedReaction')
   }
 
   init() {
     this.doNotScroll = false
     const urlObj = new URL(window.location.href)
     const params = new URLSearchParams(urlObj.search)
-    if (this.page == 1) {
+    if (this.page == 1 && Number(params.get('conversation')) != 0) {
       this.fetchDirectConversation(Number(params.get('conversation')))
       this.fetchDirectMessages(Number(params.get('conversation')))
     }
@@ -152,11 +142,10 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this._directConversationService.getDirectConversationById(conversationId)
       .subscribe(
         (data: HttpResponse<DirectConversation>) => {
-          console.log(data.body)
           this.directConversation = data.body!
         },
         (error) => {
-          console.log('error')
+          console.log('err')
         }
       )
   }
@@ -294,54 +283,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     )
     this.messageToReact = 0
     this.showReactionsPicker = false
-  } 
-
-  addOrRemoveReaction(messageId: number, reactionGroup: any) {
-    this.groupToIncrement = reactionGroup.reaction
-    if (this.isReactedByCurrentUser(reactionGroup.users)) {
-      this.groupToIncrement = [0, reactionGroup.reaction]
-      const reaction = reactionGroup.objects.filter((x: { user: { id: number; }; }) => x.user.id == this.currentUser!.id)[0] // 22 23
-      this._messageReactionsService
-        .deleteMessageReaction(reaction.id, reaction.directMessage!.id)
-    } else {
-      this.groupToIncrement = [1, reactionGroup.reaction]
-      const eventObj: any = { 
-        emoji: {
-          native: reactionGroup.reaction
-        }
-      }
-      this.sendReaction(messageId, eventObj)
-    }
-    setTimeout(() => {
-      this.groupToIncrement = [0, '']
-    }, 300)
-  }
-
-  getReactionGroups(reactions: MessageReaction[]) {
-    const reactionGroups = reactions.reduce((accumulator: any, reaction) => {
-      const index = accumulator.findIndex(
-        (group: { reaction: string; }) => group.reaction === reaction.reaction
-      )
-      if (index !== -1) {
-        accumulator[index].count++
-        if (!accumulator[index].users.some((x: { id: number; }) => x.id == reaction.user.id))
-          accumulator[index].users.push(reaction.user)
-        accumulator[index].objects.push(reaction)
-      } else {
-        accumulator.push({ 
-          reaction: reaction.reaction, 
-          count: 1, 
-          users: [reaction.user],
-          objects: [reaction],
-        })
-      }
-      return accumulator
-    }, [])
-    return reactionGroups
-  }
-
-  isReactedByCurrentUser(users: User[]) {
-    return users.some(x => x.id == this.currentUser?.id)
   } 
 
   onScroll() {

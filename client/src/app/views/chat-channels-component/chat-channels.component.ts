@@ -13,6 +13,7 @@ import { User } from 'src/app/_models/Users';
 import { UsersService } from 'src/app/_services/users.service';
 import { AddCategoryDialog } from './add-category-dialog/add-category-dialog.component';
 import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-invitation.component';
+import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 
 @Component({
   selector: 'app-chat-channels',
@@ -45,7 +46,11 @@ export class ChatChannelsComponent implements OnInit {
   isOpen: boolean[] = []
   isServerMenuExpanded: boolean = false
   isServerSettingsOn: boolean = false
+  @Output()
+  onServerSettingsToggle = new EventEmitter()
   currentRoute = new LocationHrefProvider(this.location)
+  currentChannelSettings: number = 0
+  doNotInterrupt: boolean = false // to avoid instant close (clickOutside)
 
   constructor(
     private route: ActivatedRoute,
@@ -53,6 +58,7 @@ export class ChatChannelsComponent implements OnInit {
     public dialog: MatDialog,
     private readonly _chatServerService: ChatServerService,
     private readonly _usersService: UsersService,
+    private readonly _chatChannelService: ChatChannelService,
     private location: Location
   ) { }
 
@@ -65,6 +71,15 @@ export class ChatChannelsComponent implements OnInit {
         }
       }
     )
+    this._chatChannelService.getDeletedChannel()
+      .subscribe(
+        (channelId: number) => {
+          const actualCategory = this.chatServer!.chatCategories!
+            .filter(x => x.chatChannels
+              .filter(x => x.id == channelId))[0]
+          actualCategory.chatChannels = actualCategory.chatChannels.filter(x => x.id != channelId)
+        }
+      )
   }
 
   getChatServerDetails(id: number) {
@@ -105,18 +120,20 @@ export class ChatChannelsComponent implements OnInit {
   }
 
   redirectToChatChannel(channelId: number) {
-    const url = this.router.createUrlTree(
-      [], 
-      { 
-        relativeTo: this.route,
-        queryParamsHandling: 'merge',
-        queryParams: { 
-          id: this.chatServer!.id,
-          channel: channelId
-        } 
-      }
-    ).toString()
-    this.location.replaceState(url);
+    if (!this.doNotInterrupt) {
+      const url = this.router.createUrlTree(
+        [], 
+        { 
+          relativeTo: this.route,
+          queryParamsHandling: 'merge',
+          queryParams: { 
+            id: this.chatServer!.id,
+            channel: channelId
+          } 
+        }
+      ).toString()
+      this.location.replaceState(url);
+    }
   }
 
   openCreateChannelDialog(category: ChatCategory, doNotCollapse: number) {
@@ -135,6 +152,14 @@ export class ChatChannelsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(() => {
       sub.unsubscribe()
     })
+  }
+
+  deleteChannel() {
+    this.doNotInterrupt = true
+    this._chatChannelService.deleteChatChannel(this.currentChannelSettings)
+    setTimeout(() => {
+      this.doNotInterrupt = false
+    }, 500)
   }
 
   toggleServerMenu() {
@@ -159,6 +184,7 @@ export class ChatChannelsComponent implements OnInit {
   toggleServerSettings() {
     this.isServerSettingsOn = !this.isServerSettingsOn
     this.isServerMenuExpanded = false
+    this.onServerSettingsToggle.emit()
   }
 
   openGenerateInvitationDialog() {
@@ -168,6 +194,19 @@ export class ChatChannelsComponent implements OnInit {
       width: '450px',
       panelClass: 'dialog-container',
     })
+  }
+
+  openChannelSettings(channelId: number) {
+    this.doNotInterrupt = true
+    this.currentChannelSettings = channelId
+    setTimeout(() => {
+      this.doNotInterrupt = false
+    }, 500)
+  }
+
+  closeChannelSettings() {
+    if (!this.doNotInterrupt)
+      this.currentChannelSettings = 0
   }
 
   orderById(chatChannels: any[]): any[] {

@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Location, ViewportScroller } from '@angular/common';
+import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,6 +16,7 @@ import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dialog.component';
+import { groupBy } from 'lodash';
 
 @Component({
   selector: 'app-chat-messages',
@@ -46,7 +47,7 @@ import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dial
     ])
   ]
 })
-export class ChatMessagesComponent implements OnInit, OnDestroy {
+export class ChatMessagesComponent implements OnInit {
   @Input()
   public members?: User[] = []
   @Input()
@@ -72,8 +73,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   showReactionsPicker: boolean = false
   reactionsMartToggle: number = 0
   messageToReact: number = 0
-  reactionsGrouped: boolean = false
-  groupToIncrement = [0, '']
 
   constructor(
     private location: Location,
@@ -90,10 +89,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.init()
-    this.location.onUrlChange(() => {
-      this.chatMessages = []
-      this.page = 1
-      this.init()
+    this.location.onUrlChange((url) => {
+      if (url.includes('/chatserver')) {
+        this.chatMessages = []
+        this.page = 1
+        this.init()
+      }
     })
     this._chatMessagesService.getNewMessage()
       .subscribe(
@@ -114,29 +115,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatMessages = this.chatMessages.filter(x => x.id != messageId)
           }
         )
-    this._messageReactionsService.getNewMessageReaction()
-        .subscribe(
-          (reaction: MessageReaction) => {
-            this.chatMessages.filter(x => x.id == reaction.chatMessage!.id)[0].reactions!.push(reaction)
-          }
-        )
-      this._messageReactionsService.getDeletedReaction()
-        .subscribe(
-          (data: any) => {
-            this.chatMessages.filter(x => x.id == data[1])[0].reactions =
-              this.chatMessages.filter(x => x.id == data[1])[0].reactions!.filter(x => x.id != data[0])
-          }
-        )
-  }
-
-  ngOnDestroy() {
-    this.socket.removeAllListeners('newChatMessage')
   }
 
   init() {
     this.doNotScroll = false
     const params = new URLSearchParams(this.currentRoute.route)
-    if (this.page == 1) {
+    if (this.page == 1 && Number(params.get('channel')) != 0) {
       this.fetchChatMessages(Number(params.get('channel')))
       this.getChatChannel(Number(params.get('channel')))
     }
@@ -351,54 +335,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this.messageToReact = 0
     this.showReactionsPicker = false
   } 
-
-  addOrRemoveReaction(messageId: number, reactionGroup: any) {
-    this.groupToIncrement = reactionGroup.reaction
-    if (this.isReactedByCurrentUser(reactionGroup.users)) {
-      this.groupToIncrement = [0, reactionGroup.reaction]
-      const reaction = reactionGroup.objects.filter((x: { user: { id: number; }; }) => x.user.id == this.currentUser!.id)[0] // 22 23
-      this._messageReactionsService
-        .deleteMessageReaction(reaction.id, reaction.chatMessage!.id)
-    } else {
-      this.groupToIncrement = [1, reactionGroup.reaction]
-      const eventObj: any = { 
-        emoji: {
-          native: reactionGroup.reaction
-        }
-      }
-      this.sendReaction(messageId, eventObj)
-    }
-    setTimeout(() => {
-      this.groupToIncrement = [0, '']
-    }, 300)
-  }
-
-  getReactionGroups(reactions: MessageReaction[]) {
-    const reactionGroups = reactions.reduce((accumulator: any, reaction) => {
-      const index = accumulator.findIndex(
-        (group: { reaction: string; }) => group.reaction === reaction.reaction
-      )
-      if (index !== -1) {
-        accumulator[index].count++
-        if (!accumulator[index].users.some((x: { id: number; }) => x.id == reaction.user.id))
-          accumulator[index].users.push(reaction.user)
-        accumulator[index].objects.push(reaction)
-      } else {
-        accumulator.push({ 
-          reaction: reaction.reaction, 
-          count: 1, 
-          users: [reaction.user],
-          objects: [reaction],
-        })
-      }
-      return accumulator
-    }, [])
-    return reactionGroups
-  }
-
-  isReactedByCurrentUser(users: User[]) {
-    return users.some(x => x.id == this.currentUser?.id)
-  }
 
   onScroll() {
     if (!this.loading && !this.orderByPostDate(this.chatMessages)[0].isFirst) {
