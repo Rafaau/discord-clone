@@ -54,9 +54,7 @@ export class DirectMessagesService {
             where: { directConversation: conversation },
             order: { id: 'ASC' }
         })
-        if (!firstMessage)
-            throw new NotFoundException()
-        if (messages.at(-1).id == firstMessage.id)
+        if (firstMessage && messages.at(-1).id == firstMessage.id)
             (messages.slice(-1)[0] as any).isFirst = true
         return messages
     }

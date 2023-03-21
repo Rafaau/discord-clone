@@ -10,6 +10,9 @@ export class ChatChannel {
     @Column()
     name: string
 
+    @Column()
+    index: number
+
     @ManyToOne(() => ChatCategory, (chatCategory) => chatCategory.chatChannels, {
         onDelete: 'CASCADE'
     })

@@ -14,6 +14,8 @@ import { UsersService } from 'src/app/_services/users.service';
 import { AddCategoryDialog } from './add-category-dialog/add-category-dialog.component';
 import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-invitation.component';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { ChatChannel } from 'src/app/_models/chat-channels';
 
 @Component({
   selector: 'app-chat-channels',
@@ -51,6 +53,8 @@ export class ChatChannelsComponent implements OnInit {
   currentRoute = new LocationHrefProvider(this.location)
   currentChannelSettings: number = 0
   doNotInterrupt: boolean = false // to avoid instant close (clickOutside)
+  movedChannel?: ChatChannel
+  categorySrc?: ChatCategory
 
   constructor(
     private route: ActivatedRoute,
@@ -74,10 +78,23 @@ export class ChatChannelsComponent implements OnInit {
     this._chatChannelService.getDeletedChannel()
       .subscribe(
         (channelId: number) => {
+          this.chatServer!.chatCategories
           const actualCategory = this.chatServer!.chatCategories!
             .filter(x => x.chatChannels
               .filter(x => x.id == channelId))[0]
           actualCategory.chatChannels = actualCategory.chatChannels.filter(x => x.id != channelId)
+        }
+      )
+    this._chatChannelService.getMovedChannel()
+      .subscribe(
+        (data: any) => {
+          const actualCategory = this.chatServer!.chatCategories!
+            .filter(x => x.id == data[0].id)[0]
+          actualCategory.chatChannels = data[0].chatChannels
+          const previousCategory = this.chatServer!.chatCategories!
+          .filter(x => x.chatChannels
+            .filter(x => x.id == data[1]) && x.id != actualCategory.id)[0]
+        previousCategory.chatChannels = previousCategory.chatChannels.filter(x => x.id != data[1])
         }
       )
   }
@@ -91,7 +108,7 @@ export class ChatChannelsComponent implements OnInit {
         }
         console.log(data.body)
         this.redirectToChatChannel(
-          this.orderById(
+          this.orderByIndex(
             data.body!.chatCategories![0].chatChannels!
           )[0].id
         )
@@ -209,7 +226,19 @@ export class ChatChannelsComponent implements OnInit {
       this.currentChannelSettings = 0
   }
 
-  orderById(chatChannels: any[]): any[] {
-    return chatChannels.sort((a, b) => a.id > b.id ? 1 : -1)
+  onChannelDrop(event: CdkDragDrop<string[]>) {
+    const previousIndex = event.previousIndex
+    const destinationIndex = event.currentIndex
+    const previousCategory = (event.previousContainer.data[0] as any).chatCategory.id
+    const destinationCategory = (event.container.data[0] as any).chatCategory.id
+    const channelId = (event.item.data as any).id
+    this.movedChannel = event.item.data
+    this.categorySrc = this.chatServer!.chatCategories!
+      .filter(x => x.id == previousCategory)[0]
+    this._chatChannelService.moveChannel(channelId, destinationIndex, destinationCategory)
+  }
+
+  orderByIndex(chatChannels: any[]): any[] {
+    return chatChannels.sort((a, b) => a.index > b.index ? 1 : -1)
   }
 }

@@ -21,4 +21,14 @@ export class ChatChannelsGateway {
         if (deletedChannel.statusCode == 200)
             this.server.emit('deletedChatChannel', id)
     }
+
+    @SubscribeMessage('moveChannel')
+    async handleMoveChannel(
+        socket: Socket,
+        params: any
+    ) {
+        const movedChannelCategory = await this.chatChannelsService
+            .moveChannel(params[0], params[1], params[2])
+        this.server.emit('movedChannelCategory', [movedChannelCategory, params[0]])
+    }
 }

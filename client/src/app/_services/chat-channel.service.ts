@@ -2,7 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
-import { CreateChatCategoryParams } from '../_models/chat-category';
+import { ChatCategory, CreateChatCategoryParams } from '../_models/chat-category';
 import { ChatChannel, CreateChatChannelParams } from '../_models/chat-channels';
 
 @Injectable({
@@ -48,5 +48,22 @@ export class ChatChannelService {
 
   getDeletedChannel(): Observable<number> {
     return this.socket.fromEvent<number>('deletedChatChannel')
+  }
+
+  moveChannel(
+    channelId: number,
+    destinationIndex: number,
+    destinationCategory: number
+  ) {
+    this.socket.emit(
+      'moveChannel', 
+      channelId,
+      destinationIndex,
+      destinationCategory
+    )
+  }
+
+  getMovedChannel(): Observable<any> {
+    return this.socket.fromEvent<any>('movedChannelCategory')
   }
 }

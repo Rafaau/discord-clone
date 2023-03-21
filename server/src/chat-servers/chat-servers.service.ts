@@ -109,8 +109,14 @@ export class ChatServersService {
             relations: [
                 'chatCategories', 
                 'chatCategories.chatChannels',
+                'chatCategories.chatChannels.chatCategory',
                 'members'
-            ]
+            ],
+            order: {
+                chatCategories: {
+                    chatChannels: { index: 'ASC' }
+                }
+            }
         })
         if (!user)
             throw new NotFoundException()

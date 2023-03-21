@@ -4,6 +4,7 @@ import { ChatMessage } from "./chat-message";
 export interface ChatChannel {
     id: number,
     name: string,
+    index: number,
     chatCategory: ChatCategory,
     chatMessages: ChatMessage[],
 }
