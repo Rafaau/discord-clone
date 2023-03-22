@@ -163,6 +163,60 @@
             (input)="onValueChange($event)"
             (keydown.enter)="onSubmit($event)">
           </textarea>
+
+          <div 
+            class="gif-picker"
+            (click)="toggleGifPicker()">GIF</div>
+          <div
+            *ngIf="showGifPicker"
+            [@onMartToggle] 
+            (clickOutside)="closeGifPicker($event)"
+            class="gif-mart">
+            <div class="mart-header">
+              <div class="input-container">
+                <input 
+                  [(ngModel)]="searchTerm"
+                  class="gif-search-input"
+                  placeholder="Search Giphy"
+                  (input)="search($event)"/>
+                <mat-icon
+                  class="search-btn"
+                  (click)="search()">
+                  search
+                </mat-icon>
+              </div>
+            </div>
+            <div 
+              class="results-container"        
+              infiniteScroll
+              [infiniteScrollDistance]="1"
+              (scrolled)="onGifMartScroll()"
+              [scrollWindow]="false">
+              <div>
+              <div 
+                *ngFor="let result of giphyService.searchResults$ | async; let i = index;"
+                class="single-gif"
+                (click)="sendGif(result.images)">
+                  <img
+                    *ngIf="i % 2 == 0" 
+                    [src]="result.images.fixed_width.url" 
+                    [alt]="result.title"/>
+              </div>
+              </div>
+              <div>
+              <div 
+                *ngFor="let result of giphyService.searchResults$ | async; let i = index;"
+                class="single-gif"
+                (click)="sendGif(result.images)">
+                  <img 
+                    *ngIf="i % 2 != 0"
+                    [src]="result.images.fixed_width.url" 
+                    [alt]="result.title"/>
+              </div>
+              </div>
+            </div>
+          </div>
+
           <div 
             class="picker-container"
             (click)="toggleEmojiPicker()">
@@ -185,6 +239,7 @@
               (clickOutside)="closeEmojiPicker($event)">
             </emoji-mart>
           </div>
+
         </div>
       </div>
     </div>

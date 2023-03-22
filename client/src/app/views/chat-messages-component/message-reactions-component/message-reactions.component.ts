@@ -52,8 +52,6 @@ export class MessageReactionsComponent implements OnInit {
   }
 
   getReactionGroups(reactions: MessageReaction[]) {
-    //console.log(++this.counter)
-    console.log((this.message as any).chatChannel ? 'channel' : 'direct')
     const reactionGroups = Object.values(groupBy(reactions, 'reaction'))
       .map((group: any) => {
         return {

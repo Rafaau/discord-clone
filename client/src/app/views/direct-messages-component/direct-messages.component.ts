@@ -12,6 +12,7 @@ import { CreateMessageReactionParams, MessageReaction } from 'src/app/_models/me
 import { User } from 'src/app/_models/Users';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
+import { GiphyService } from 'src/app/_services/giphy.service';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
 import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-dialog/confirm-delete-dialog.component';
 
@@ -57,12 +58,14 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   messageToEditId: number = 0
   messageToEditValue: string = ''
   showEmojiPicker: boolean = false
-  martToggle: number = 0
+  martToggle: boolean = false
   page: number = 1
   loading: boolean = false
   showReactionsPicker: boolean = false
   reactionsMartToggle: number = 0
   messageToReact: number = 0
+  searchTerm: string = ''
+  showGifPicker: boolean = false
 
   constructor(
     private location: Location,
@@ -70,6 +73,7 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     private readonly _directMessageService: DirectMessageService,
     private readonly _messageReactionsService: MessageReactionsService,
     public dialog: MatDialog,
+    public readonly giphyService: GiphyService,
     private socket: Socket
   ) { }
 
@@ -166,7 +170,7 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       )
   }
 
-  onSubmit(event: Event) {
+  onSubmit(event?: Event) {
     if (this.messageValue != '') {
       const reqBody: CreateDirectMessageParams = {
         content: this.messageValue
@@ -230,17 +234,19 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   }
 
   toggleEmojiPicker() {
+    this.martToggle = false
+    this.showGifPicker = false
     this.showEmojiPicker = !this.showEmojiPicker
-    this.martToggle = 0
+    setTimeout(() => {
+      this.martToggle = true
+    }, 500)
   }
 
   closeEmojiPicker(event: Event) {
-    if (this.martToggle != 0) {
+    if (this.martToggle) {
       this.showEmojiPicker = false
-      this.martToggle = 0
+      this.martToggle = false
     }
-    else
-      this.martToggle = 1
   }
 
   addEmojiToMessage(event: Event) {
@@ -284,6 +290,40 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this.messageToReact = 0
     this.showReactionsPicker = false
   } 
+
+  toggleGifPicker() {
+    this.martToggle = false
+    this.showEmojiPicker = false
+    this.showGifPicker = !this.showGifPicker
+    setTimeout(() => {
+      this.martToggle = true
+    }, 500)
+    this.giphyService.search('meme')
+  }
+
+  closeGifPicker(event: Event) {
+    if (this.martToggle) {
+      this.showGifPicker = false
+      this.martToggle = false
+      this.searchTerm = ''
+    }
+  }
+
+  search(event?: Event) {
+    this.giphyService.search(this.searchTerm)
+  }
+
+  onGifMartScroll() {
+    this.giphyService.next()
+  }
+
+  sendGif(gif: any) {
+    const gifUrl = gif.original.url
+    this.messageValue = gifUrl
+    this.onSubmit()
+    this.showGifPicker = false
+    this.martToggle = false
+  }
 
   onScroll() {
     if (!this.loading && !this.orderByPostDate(this.directMessages)[0].isFirst) {

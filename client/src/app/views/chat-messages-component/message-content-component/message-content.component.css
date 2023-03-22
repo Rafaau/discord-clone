@@ -109,3 +109,7 @@ img {
     cursor: pointer;
     max-width: 40vw;
 }
+
+.gif-img {
+    max-width: 500px;
+}

@@ -114,6 +114,7 @@ export class ChatServersService {
             ],
             order: {
                 chatCategories: {
+                    id: 'ASC',
                     chatChannels: { index: 'ASC' }
                 }
             }

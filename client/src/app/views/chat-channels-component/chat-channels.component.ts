@@ -108,9 +108,7 @@ export class ChatChannelsComponent implements OnInit {
         }
         console.log(data.body)
         this.redirectToChatChannel(
-          this.orderByIndex(
-            data.body!.chatCategories![0].chatChannels!
-          )[0].id
+          data.body!.chatCategories![0].chatChannels![0].id
         )
       },
       (error) => {
@@ -226,7 +224,7 @@ export class ChatChannelsComponent implements OnInit {
       this.currentChannelSettings = 0
   }
 
-  onChannelDrop(event: CdkDragDrop<string[]>) {
+  onChannelDrop(event: CdkDragDrop<ChatChannel[]>) {
     const previousIndex = event.previousIndex
     const destinationIndex = event.currentIndex
     const previousCategory = (event.previousContainer.data[0] as any).chatCategory.id
@@ -235,10 +233,7 @@ export class ChatChannelsComponent implements OnInit {
     this.movedChannel = event.item.data
     this.categorySrc = this.chatServer!.chatCategories!
       .filter(x => x.id == previousCategory)[0]
+    console.log(destinationCategory)
     this._chatChannelService.moveChannel(channelId, destinationIndex, destinationCategory)
-  }
-
-  orderByIndex(chatChannels: any[]): any[] {
-    return chatChannels.sort((a, b) => a.index > b.index ? 1 : -1)
   }
 }

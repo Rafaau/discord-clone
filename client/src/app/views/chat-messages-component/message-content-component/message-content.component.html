@@ -8,7 +8,9 @@
 <!-- HYPERLINK MESSAGE -->
 <div *ngIf="messageContent.includes('http://') 
          || messageContent.includes('https://')">
-  <div class="link-wrapper">
+  <div
+    *ngIf="!messageContent.includes('https://media')" 
+    class="link-wrapper">
     <a [href]="messageContent">{{ messageContent }}</a>
   </div>
   <!-- YOUTUBE -->
@@ -36,9 +38,12 @@
       (change)="onStateChange($event)">
     </youtube-player>
   </div>
-  <!-- IMAGE -->
+  <!-- GIPHY -->
   <div *ngIf="messageContent.includes('https://media')">
-    <img [src]="messageContent" (error)="isNotImage()"/>
+    <img 
+      class="gif-img" 
+      [src]="messageContent" 
+      (error)="isNotImage()"/>
   </div>
 </div>
 <!-- INVITE MESSAGE -->

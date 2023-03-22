@@ -1,22 +1,21 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from 'src/app/_models/chat-message';
-import { CreateMessageReactionParams, MessageReaction } from 'src/app/_models/message-reaction';
+import { CreateMessageReactionParams } from 'src/app/_models/message-reaction';
 import { User } from 'src/app/_models/Users';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
-import { UsersService } from 'src/app/_services/users.service';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dialog.component';
-import { groupBy } from 'lodash';
+import { GiphyService } from 'src/app/_services/giphy.service';
 
 @Component({
   selector: 'app-chat-messages',
@@ -67,12 +66,14 @@ export class ChatMessagesComponent implements OnInit {
   detailsToggle: number = 0
   currentMemberOptions: number = 0
   showEmojiPicker: boolean = false
-  martToggle: number = 0
+  martToggle: boolean = false
   page: number = 1
   loading: boolean = false
   showReactionsPicker: boolean = false
   reactionsMartToggle: number = 0
   messageToReact: number = 0
+  showGifPicker: boolean = false
+  searchTerm: string = ''
 
   constructor(
     private location: Location,
@@ -80,7 +81,7 @@ export class ChatMessagesComponent implements OnInit {
     private router: Router,
     private readonly _chatMessagesService: ChatMessagesService,
     private readonly _chatChannelsService: ChatChannelService,
-    private readonly _usersService: UsersService,
+    public readonly giphyService: GiphyService,
     private readonly _chatServerService: ChatServerService,
     private readonly _messageReactionsService: MessageReactionsService,
     public dialog: MatDialog,
@@ -170,7 +171,7 @@ export class ChatMessagesComponent implements OnInit {
     this.messageValue = value
   }
 
-  onSubmit(event: Event) {
+  onSubmit(event?: Event) {
     if (this.messageValue != '') {
       const reqBody: CreateChatMessageParams = {
         content: this.messageValue
@@ -251,17 +252,19 @@ export class ChatMessagesComponent implements OnInit {
   }
 
   toggleEmojiPicker() {
+    this.martToggle = false
+    this.showGifPicker = false
     this.showEmojiPicker = !this.showEmojiPicker
-    this.martToggle = 0
+    setTimeout(() => {
+      this.martToggle = true
+    }, 500)
   }
 
   closeEmojiPicker(event: Event) {
-    if (this.martToggle != 0) {
+    if (this.martToggle) {
       this.showEmojiPicker = false
-      this.martToggle = 0
+      this.martToggle = false
     }
-    else
-      this.martToggle = 1
   }
 
   addEmojiToMessage(event: Event) {
@@ -335,6 +338,40 @@ export class ChatMessagesComponent implements OnInit {
     this.messageToReact = 0
     this.showReactionsPicker = false
   } 
+
+  toggleGifPicker() {
+    this.martToggle = false
+    this.showEmojiPicker = false
+    this.showGifPicker = !this.showGifPicker
+    setTimeout(() => {
+      this.martToggle = true
+    }, 500)
+    this.giphyService.search('meme')
+  }
+
+  closeGifPicker(event: Event) {
+    if (this.martToggle) {
+      this.showGifPicker = false
+      this.martToggle = false
+      this.searchTerm = ''
+    }
+  }
+
+  search(event?: Event) {
+    this.giphyService.search(this.searchTerm)
+  }
+
+  onGifMartScroll() {
+    this.giphyService.next()
+  }
+
+  sendGif(gif: any) {
+    const gifUrl = gif.original.url
+    this.messageValue = gifUrl
+    this.onSubmit()
+    this.showGifPicker = false
+    this.martToggle = false
+  }
 
   onScroll() {
     if (!this.loading && !this.orderByPostDate(this.chatMessages)[0].isFirst) {

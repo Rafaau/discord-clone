@@ -34,6 +34,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard'
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { MessageReactionsComponent } from './views/chat-messages-component/message-reactions-component/message-reactions.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 
@@ -74,7 +75,8 @@ const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: 
     ClipboardModule,
     InfiniteScrollModule,
     NgxYoutubePlayerModule.forRoot(),
-    SocketIoModule.forRoot(socketIoConfig)
+    SocketIoModule.forRoot(socketIoConfig),
+    BrowserAnimationsModule,
   ],
   providers: [
     HttpClient,

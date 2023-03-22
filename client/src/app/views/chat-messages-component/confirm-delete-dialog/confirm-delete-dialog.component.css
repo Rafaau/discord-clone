@@ -134,6 +134,8 @@ h2 {
     top: -22px;
     font-size: 14px;
     padding-right: 70px;
+    width: 340px;
+    overflow-wrap: break-word;
 }
 
 

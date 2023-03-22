@@ -52,13 +52,13 @@
         <div 
           cdkDropList 
           (cdkDropListDropped)="onChannelDrop($event)"
-          [cdkDropListData]="orderByIndex(category.chatChannels)">
+          [cdkDropListData]="category.chatChannels">
           <div
             cdkDrag
             [cdkDragData]="channel"
             [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id ? 
             'chat-channel chat-channel-current' : 'chat-channel'" 
-            *ngFor="let channel of orderByIndex(category.chatChannels)"
+            *ngFor="let channel of category.chatChannels"
             (click)="redirectToChatChannel(channel.id)">
             <div class="hashtag"> # </div>
             <div class="channel-name">{{ channel.name }}</div>
