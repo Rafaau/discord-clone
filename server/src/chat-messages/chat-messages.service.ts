@@ -70,6 +70,16 @@ export class ChatMessagesService {
         return messages
     }
 
+    async getSingleChatMessage(id: number) {
+        const message = await this.chatMessageRepository.findOne({
+            where: { id },
+            relations: ['user']
+        })
+        if (!message)
+            throw new NotFoundException()
+        return message
+    }
+
     async updateChatMessage(id: number, messageDetails: UpdateMessageParams) {
         const chatMessageToUpdate = await this.chatMessageRepository.findOneBy({ id })
         if (!chatMessageToUpdate)

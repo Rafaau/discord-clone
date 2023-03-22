@@ -80,6 +80,13 @@ export class DirectMessageService {
     )
   }
 
+  getSingleMessage(id: number): Observable<HttpResponse<any>> {
+    return this.httpClient.get(
+      this.api+`/directmessages/${id}`,
+      { observe: 'response' }
+    )
+  }
+
   updateDirectMessage(
     id: number,
     directMessageParams: UpdateDirectMessageParams

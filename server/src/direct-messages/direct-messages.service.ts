@@ -59,6 +59,16 @@ export class DirectMessagesService {
         return messages
     }
 
+    async getSingleDirectMessage(id: number) {
+        const message = await this.directMessageRepository.findOne({
+            where: { id },
+            relations: ['user']
+        })
+        if (!message)
+            throw new NotFoundException()
+        return message
+    }
+
     async updateDirectMessage(id: number, messageDetails: UpdateMessageParams) {
         const messageToUpdate = await this.directMessageRepository.findOneBy({ id })
         if (!messageToUpdate)

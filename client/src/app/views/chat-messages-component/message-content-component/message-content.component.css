@@ -113,3 +113,54 @@ img {
 .gif-img {
     max-width: 500px;
 }
+
+.message-to-reply {
+    display: flex;
+    position: absolute;
+    top: -55px;
+}
+
+.reply-username {
+    font-weight: 500;
+    line-height: 24px;
+    margin-right: 10px;
+    cursor: pointer;
+    color: #A7A9AC;
+}
+
+    .reply-username:hover {
+        text-decoration: underline;
+    }
+
+.reply-content {
+    font-size: 13px;
+    line-height: 25px;
+    color: #B5BAC1;
+    cursor: pointer;
+}
+
+    .reply-content:hover {
+        color: #f3f4f5;
+    }
+
+.i-avatar {
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    font-size: 12px;
+    text-align: center;
+    margin-right: 5px;
+}
+
+.reply-path {
+    position: absolute;
+    border: 2.5px solid #4E5058;
+    width: 22px;
+    height: 15px;
+    border-radius: 8px 0 0 0;
+    border-bottom: none;
+    border-right: none;
+    top: -45px;
+    left: -30px;
+}

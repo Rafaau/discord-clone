@@ -2,11 +2,15 @@ import { HttpResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import { indexOf } from 'lodash';
+import { ChatMessage } from 'src/app/_models/chat-message';
 import { ChatServerInvitation } from 'src/app/_models/chat-server-invitation';
 import { ChatServer } from 'src/app/_models/chat-servers';
 import { User } from 'src/app/_models/Users';
+import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
 import { ChatServerInvitationService } from 'src/app/_services/chat-server-invitation.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
+import { DirectMessageService } from 'src/app/_services/direct-message.service';
 
 @Component({
   selector: 'message-content',
@@ -30,10 +34,14 @@ export class MessageContentComponent implements OnInit {
   videoChannel: string = ''
   giphyUrl: string = ''
   isImage: boolean = false
+  messageToReply?: ChatMessage
+  replied: string = ''
 
   constructor(
     private readonly _chatServerService: ChatServerService,
     private readonly _invitationService: ChatServerInvitationService,
+    private readonly _chatMessageService: ChatMessagesService,
+    private readonly _directMessageService: DirectMessageService,
     private router: Router,
   ) { }
 
@@ -42,6 +50,39 @@ export class MessageContentComponent implements OnInit {
       this.getInvitationParams()
     if (this.messageContent.includes('https://www.youtube.com/watch?'))
       this.getVideoIdFromLink()
+    if (this.messageContent.includes('<!replyTo'))
+      this.getReplyDetails()
+  }
+
+  getReplyDetails() {
+    const messageId = this.messageContent.slice(
+      indexOf(this.messageContent, ':') + 1,
+      indexOf(this.messageContent, '%')
+    )
+    if (this.messageContent.includes('ChatMessage')) {
+      this._chatMessageService.getSingleMessage(Number(messageId))
+        .subscribe(
+          (data: HttpResponse<ChatMessage>) => {
+            this.messageToReply = data.body!
+          },
+          (error) => {
+            console.log('err')
+          }
+        )
+    } else if (this.messageContent.includes('DirectMessage')) {
+      this._directMessageService.getSingleMessage(Number(messageId))
+        .subscribe(
+          (data: HttpResponse<ChatMessage>) => {
+            this.messageToReply = data.body!
+          },
+          (error) => {
+            console.log('err')
+          }
+        )
+    }
+      this.replied = this.messageContent.slice(
+        indexOf(this.messageContent, '>') + 1
+      )
   }
 
   getInvitationParams() {

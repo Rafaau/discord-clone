@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Response } from "express";
+import { response, Response } from "express";
 import { CreateChatMessageDto, UpdateChatMessageDto } from "./chat-messages.dto";
 import { ChatMessagesService } from "./chat-messages.service";
 
@@ -46,6 +46,25 @@ export class ChatMessagesController {
                     statusCode: e.status,
                     message: e.message
                 })
+        }
+    }
+
+    @Get(':id')
+    async getSingleChatMessage(
+        @Param('id') id: number,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(HttpStatus.OK)
+                .json(await this.chatMessagesService.getSingleChatMessage(id))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })         
         }
     }
 

@@ -1,14 +1,13 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Socket } from 'ngx-socket-io';
-import { Observable } from 'rxjs';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { DirectConversation } from 'src/app/_models/direct-conversation';
 import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from 'src/app/_models/direct-message';
-import { CreateMessageReactionParams, MessageReaction } from 'src/app/_models/message-reaction';
+import { CreateMessageReactionParams } from 'src/app/_models/message-reaction';
 import { User } from 'src/app/_models/Users';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
@@ -45,11 +44,12 @@ import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-d
     ])
   ]
 })
-export class DirectMessagesComponent implements OnInit, OnDestroy {
+export class DirectMessagesComponent implements OnInit {
   @Input()
   currentUser?: User
   @Output()
   onJoinCallback = new EventEmitter()
+  @ViewChild('wrapper') myScrollContainer?: ElementRef
   currentRoute = new LocationHrefProvider(this.location)
   directConversation?: DirectConversation
   directMessages: DirectMessage[] = []
@@ -66,6 +66,7 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   messageToReact: number = 0
   searchTerm: string = ''
   showGifPicker: boolean = false
+  messageToReply?: DirectMessage
 
   constructor(
     private location: Location,
@@ -90,7 +91,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       .subscribe(
         (message: DirectMessage) => {
           this.directMessages.push(message)
-          document.getElementById('target')?.scrollIntoView()
         }
       )
     this._directMessageService.getEditedMessage()
@@ -106,12 +106,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
             this.directMessages = this.directMessages.filter(x => x.id != messageId)
           }
         )   
-  }
-
-  ngOnDestroy() {
-    console.log('destroyed')
-    // this.socket.removeListener('newMessageReaction')
-    // this.socket.removeListener('deletedReaction')
   }
 
   init() {
@@ -173,7 +167,9 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   onSubmit(event?: Event) {
     if (this.messageValue != '') {
       const reqBody: CreateDirectMessageParams = {
-        content: this.messageValue
+        content: this.messageToReply ? 
+        `<!replyToDirectMessage:${this.messageToReply.id}%!> ${this.messageValue}`
+        : this.messageValue
       }
       this._directMessageService.sendMessage(
         this.directConversation!.id, 
@@ -185,6 +181,13 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         element.value = ''
       }, 0)
+      this.messageToReply = undefined
+      setTimeout(() => {
+        this.myScrollContainer!.nativeElement.scroll({
+          top: this.myScrollContainer!.nativeElement.scrollHeight,
+          behavior: 'smooth'
+        })
+      }, 100)
     }
   }
 
@@ -323,6 +326,16 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this.onSubmit()
     this.showGifPicker = false
     this.martToggle = false
+  }
+
+  onReply(message: DirectMessage) {
+    this.messageToReply = message
+    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+    element.focus()
+  }
+
+  cancelReply() {
+    this.messageToReply = undefined
   }
 
   onScroll() {

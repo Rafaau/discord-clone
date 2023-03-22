@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
@@ -53,6 +53,7 @@ export class ChatMessagesComponent implements OnInit {
   currentUser?: User
   @Output()
   onJoinCallback = new EventEmitter()
+  @ViewChild('wrapper') myScrollContainer?: ElementRef
   currentRoute = new LocationHrefProvider(this.location)
   chatMessages: ChatMessage[] = []
   chatChannel?: ChatChannel
@@ -74,6 +75,7 @@ export class ChatMessagesComponent implements OnInit {
   messageToReact: number = 0
   showGifPicker: boolean = false
   searchTerm: string = ''
+  messageToReply?: ChatMessage
 
   constructor(
     private location: Location,
@@ -101,7 +103,6 @@ export class ChatMessagesComponent implements OnInit {
       .subscribe(
         (message: ChatMessage) => {
           this.chatMessages.push(message)
-          document.getElementById('target')?.scrollIntoView()
         }
       )
     this._chatMessagesService.getEditedMessage()
@@ -174,7 +175,9 @@ export class ChatMessagesComponent implements OnInit {
   onSubmit(event?: Event) {
     if (this.messageValue != '') {
       const reqBody: CreateChatMessageParams = {
-        content: this.messageValue
+        content: this.messageToReply ? 
+        `<!replyToChatMessage:${this.messageToReply.id}%!> ${this.messageValue}`
+        : this.messageValue
       }
       this._chatMessagesService.sendMessage(
         this.chatChannel!.id,
@@ -186,6 +189,13 @@ export class ChatMessagesComponent implements OnInit {
       setTimeout(() => {
         element.value = ''
       }, 0)
+      this.messageToReply = undefined
+      setTimeout(() => {
+        this.myScrollContainer!.nativeElement.scroll({
+          top: this.myScrollContainer!.nativeElement.scrollHeight,
+          behavior: 'smooth'
+        })
+      }, 100)
     }
   }
 
@@ -371,6 +381,16 @@ export class ChatMessagesComponent implements OnInit {
     this.onSubmit()
     this.showGifPicker = false
     this.martToggle = false
+  }
+
+  onReply(message: ChatMessage) {
+    this.messageToReply = message
+    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+    element.focus()
+  }
+
+  cancelReply() {
+    this.messageToReply = undefined
   }
 
   onScroll() {

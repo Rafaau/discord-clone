@@ -21,6 +21,7 @@
             directConversation!.users[0] as interlocutor ">
       <div 
         class="messages-wrapper"
+        #wrapper
         infiniteScroll
         [infiniteScrollUpDistance]="1"
         (scrolledUp)="onScroll()"
@@ -32,10 +33,12 @@
         <div *ngFor="let message of orderByPostDate(directMessages); index as i" class="single-message">
 
           <div 
-            *ngVar="directMessages[i-1]?.user!.username != message.user.username || 
-                    toDate(directMessages[i-1]?.postDate!) != toDate(message.postDate) 
+            *ngVar="directMessages[i-1]?.user!.username != message.user.username 
+                    || toDate(directMessages[i-1]?.postDate!) != toDate(message.postDate)
+                    || message.content.includes('<!replyToDirectMessage')
                     as firstOfMessages;" 
-            class="single-message">
+            class="single-message"
+            [class.reply-message]="message.content.includes('<!replyToDirectMessage')">
             <div 
               *ngIf="toDate(directMessages[i-1]?.postDate!) != toDate(message.postDate)"
               class="date-hr">
@@ -44,7 +47,10 @@
               <hr/>
             </div>
 
-            <div class="message-content" [ngClass]="!firstOfMessages ? 'not-first' : 'first'">
+            <div 
+              class="message-content" 
+              [ngClass]="!firstOfMessages ? 'not-first' : 'first'"
+              [class.message-to-reply]="message == messageToReply">
               <div *ngIf="!firstOfMessages" class="post-date-not-first">
                 {{ message.postDate | date:'h:mm a' }}
               </div>
@@ -122,6 +128,11 @@
                     class="fa-solid fa-face-grin-beam action-btn"
                     (click)="toggleReactionsMart(message.id)"
                     [ngStyle]="{ 'background-color': message.id == messageToReact ? '#3C3E43' : ''  }"></i>                 
+                  <i
+                    matTooltip="Reply"
+                    matTooltipPosition="above"
+                    class="fa-solid fa-reply action-btn"
+                    (click)="onReply(message)"></i>    
                   <i 
                     *ngIf="message.user.id == currentUser?.id"
                     matTooltip="Edit"
@@ -142,12 +153,30 @@
           </div>
 
         </div>
-        <div id="target" class="end-space">
+        <div 
+          id="target" 
+          class="end-space">
+        </div>
           {{ scrollToLastMessage() }}
         </div>
-      </div>
       <div class="bottom-section">
-        <div class="input-container">
+
+        <div 
+          class="input-container"
+          [ngStyle]="{ 'border-radius': messageToReply ? '0 0 8px 8px': '8px' }">
+
+          <div
+            *ngIf="messageToReply" 
+            class="replying-tab">
+            Replying to 
+            <div class="replying-username">
+              {{ messageToReply.user.username }}
+            </div>
+            <i 
+              (click)="cancelReply()"
+              class="fa-solid fa-circle-xmark cancel-reply-btn"></i>
+          </div>
+          
           <textarea 
             class="chat-input" 
             cdkTextareaAutosize 

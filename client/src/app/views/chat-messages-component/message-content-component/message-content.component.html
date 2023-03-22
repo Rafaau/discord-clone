@@ -2,8 +2,27 @@
 <div *ngIf="!messageContent.includes('-->') 
          && !messageContent.includes('http://')
          && !messageContent.includes('https://')
-         && !messageContent.includes('https://media')">
+         && !messageContent.includes('https://media')
+         && !messageContent.includes('<!replyTo')">
   {{ messageContent }}
+</div>
+<!-- REPLY MESSAGE -->
+<div *ngIf="messageContent.includes('<!replyTo')">
+  {{ replied }}
+  <div class="reply-path"></div>
+  <div
+    *ngIf="messageToReply"
+    class="message-to-reply">
+    <div class="reply-avatar">
+      <i class="fa-brands fa-discord i-avatar" [ngClass]="true ? 'av-' + messageToReply.user.username[0].toLowerCase() : ''"></i>
+    </div>
+    <div class="reply-username">
+      {{ messageToReply.user.username }}
+    </div>
+    <div class="reply-content">
+      {{ messageToReply.content }}
+    </div>
+  </div>
 </div>
 <!-- HYPERLINK MESSAGE -->
 <div *ngIf="messageContent.includes('http://') 

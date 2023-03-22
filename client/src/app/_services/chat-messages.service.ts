@@ -26,6 +26,13 @@ export class ChatMessagesService {
     )
   }
 
+  getSingleMessage(id: number): Observable<HttpResponse<any>> {
+    return this.httpClient.get(
+      this.api+`/chatmessages/${id}`,
+      { observe: 'response' }
+    )
+  }
+
   postChatMessage(
     channelId: number, 
     userId: number,

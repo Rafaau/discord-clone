@@ -55,6 +55,25 @@ export class DirectMessagesControler {
         }
     }
 
+    @Get(':id')
+    async getSingleDirectMessage(
+        @Param('id') id: number,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(HttpStatus.OK)
+                .json(await this.directMessagesService.getSingleDirectMessage(id))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })         
+        }
+    }
+
     @Patch(':id')
     @UsePipes(new ValidationPipe())
     async updateDirectMessage(
