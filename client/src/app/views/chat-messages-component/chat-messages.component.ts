@@ -80,6 +80,7 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
   usernames: string[] = []
   showUsersToMention: boolean = false
   usersToMentionFiltered: string[] = []
+  inputElement = () => document.querySelector('.chat-input') as HTMLTextAreaElement
 
   constructor(
     private location: Location,
@@ -230,8 +231,7 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     this.fakeInputValue += `<span class="mention-highlight-input">@${username}</span>`
 
     this.showUsersToMention = false
-    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
-    element.focus()
+    this.inputElement().focus()
   }
 
   onSubmit(event?: Event) {
@@ -247,7 +247,7 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
         reqBody
       )
       this.messageValue = ''
-      var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+      var element = this.inputElement()
       setTimeout(() => {
         element.value = ''
       }, 0)
@@ -336,7 +336,9 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
 
   addEmojiToMessage(event: Event) {
     this.messageValue += (event as any).emoji.native
+    this.fakeInputValue += (event as any).emoji.native
     this.showEmojiPicker = false
+    this.inputElement().focus()
   }
 
   onMemberRightClick(userId: number) {

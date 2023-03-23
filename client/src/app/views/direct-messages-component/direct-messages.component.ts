@@ -71,6 +71,7 @@ export class DirectMessagesComponent implements OnInit {
   fakeInputValue: string = ''
   showUsersToMention: boolean = false
   usersToMentionFiltered: string[] = []
+  inputElement = () => document.querySelector('.chat-input') as HTMLTextAreaElement
 
   constructor(
     private location: Location,
@@ -187,8 +188,7 @@ export class DirectMessagesComponent implements OnInit {
     this.fakeInputValue += `<span class="mention-highlight-input">@${username}</span>`
 
     this.showUsersToMention = false
-    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
-    element.focus()
+    this.inputElement().focus()
   }
 
   fetchDirectConversation(conversationId: number) {
@@ -236,7 +236,7 @@ export class DirectMessagesComponent implements OnInit {
         reqBody
       )
       this.messageValue = '';
-      var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+      var element = this.inputElement()
       setTimeout(() => {
         element.value = ''
       }, 0)
@@ -308,7 +308,9 @@ export class DirectMessagesComponent implements OnInit {
 
   addEmojiToMessage(event: Event) {
     this.messageValue += (event as any).emoji.native
+    this.fakeInputValue += (event as any).emoji.native
     this.showEmojiPicker = false
+    this.inputElement().focus()
   }
 
   handleJoinCallback(event: Event) {
@@ -384,8 +386,7 @@ export class DirectMessagesComponent implements OnInit {
 
   onReply(message: DirectMessage) {
     this.messageToReply = message
-    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
-    element.focus()
+    this.inputElement().focus()
   }
 
   cancelReply() {
