@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
@@ -57,6 +57,7 @@ export class DirectMessagesComponent implements OnInit {
   messageValue: string = ''
   messageToEditId: number = 0
   messageToEditValue: string = ''
+  interlocutor?: User
   showEmojiPicker: boolean = false
   martToggle: boolean = false
   page: number = 1
@@ -67,6 +68,9 @@ export class DirectMessagesComponent implements OnInit {
   searchTerm: string = ''
   showGifPicker: boolean = false
   messageToReply?: DirectMessage
+  fakeInputValue: string = ''
+  showUsersToMention: boolean = false
+  usersToMentionFiltered: string[] = []
 
   constructor(
     private location: Location,
@@ -102,7 +106,6 @@ export class DirectMessagesComponent implements OnInit {
     this._directMessageService.getDeletedMessage()
         .subscribe(
           (messageId: number) => {
-            console.log('cipka')
             this.directMessages = this.directMessages.filter(x => x.id != messageId)
           }
         )   
@@ -126,6 +129,15 @@ export class DirectMessagesComponent implements OnInit {
       document.getElementById('target')?.scrollIntoView()
   }
 
+  smoothScroll() {
+    setTimeout(() => {
+      this.myScrollContainer!.nativeElement.scroll({
+        top: this.myScrollContainer!.nativeElement.scrollHeight,
+        behavior: 'smooth'
+      })
+    }, 100)
+  }
+
   scrollAfterPageFetch() {
     document.getElementsByClassName('single-message')[9]?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -134,6 +146,49 @@ export class DirectMessagesComponent implements OnInit {
   onValueChange(event: Event) {
     const value = (event.target as any).value;
     this.messageValue = value;
+
+    // USERS TO MENTION LIST
+    const lastword = value.split(' ').pop()
+    const usernames = [this.currentUser!.username, this.interlocutor!.username]
+    if (lastword.includes('@')) {
+      this.showUsersToMention = true
+      if (lastword.length > 1)
+        this.usersToMentionFiltered = usernames.filter(x => x.includes(lastword.slice(1)))
+      else
+        this.usersToMentionFiltered = usernames
+    } else {
+      this.showUsersToMention = false
+    }
+
+    // HIGHLIGHTING MENTIONS
+    const regex = /@([a-zA-Z0-9_-]+)/g
+    let match: any
+    let startIndex = 0
+    let highlightedText = ''
+    while ((match = regex.exec(value)) !== null) {
+      for (let i = 0; i < usernames.length; i++) {
+        if (match[0].slice(1) == usernames[i]) {
+          highlightedText += value.substring(startIndex, match.index) +
+                              `<span class="mention-highlight-input">${match[0]}</span>`
+          startIndex = regex.lastIndex
+        }       
+      }
+    }
+    highlightedText += value.substring(startIndex)
+    this.fakeInputValue = highlightedText
+  }
+
+  mentionUser(username: string) {
+    const lastword = this.messageValue.split(' ').pop()
+
+    this.messageValue = this.messageValue.slice(0, this.messageValue.length - lastword!.length) 
+    this.messageValue += `@${username}`
+    this.fakeInputValue = this.fakeInputValue.slice(0, this.fakeInputValue.length - lastword!.length)
+    this.fakeInputValue += `<span class="mention-highlight-input">@${username}</span>`
+
+    this.showUsersToMention = false
+    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+    element.focus()
   }
 
   fetchDirectConversation(conversationId: number) {
@@ -141,6 +196,10 @@ export class DirectMessagesComponent implements OnInit {
       .subscribe(
         (data: HttpResponse<DirectConversation>) => {
           this.directConversation = data.body!
+          this.interlocutor = 
+          data.body!.users[0].id == this.currentUser!.id ? 
+          data.body!.users[1] : 
+          data.body!.users[0] 
         },
         (error) => {
           console.log('err')
@@ -182,12 +241,7 @@ export class DirectMessagesComponent implements OnInit {
         element.value = ''
       }, 0)
       this.messageToReply = undefined
-      setTimeout(() => {
-        this.myScrollContainer!.nativeElement.scroll({
-          top: this.myScrollContainer!.nativeElement.scrollHeight,
-          behavior: 'smooth'
-        })
-      }, 100)
+      this.smoothScroll()
     }
   }
 

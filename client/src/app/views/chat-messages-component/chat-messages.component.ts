@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
@@ -46,7 +46,7 @@ import { GiphyService } from 'src/app/_services/giphy.service';
     ])
   ]
 })
-export class ChatMessagesComponent implements OnInit {
+export class ChatMessagesComponent implements OnInit, OnChanges {
   @Input()
   public members?: User[] = []
   @Input()
@@ -76,6 +76,10 @@ export class ChatMessagesComponent implements OnInit {
   showGifPicker: boolean = false
   searchTerm: string = ''
   messageToReply?: ChatMessage
+  fakeInputValue: string = ''
+  usernames: string[] = []
+  showUsersToMention: boolean = false
+  usersToMentionFiltered: string[] = []
 
   constructor(
     private location: Location,
@@ -119,6 +123,13 @@ export class ChatMessagesComponent implements OnInit {
         )
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['members'] && !this.usernames.length)
+      this.members?.forEach(x => {
+        this.usernames.push(x.username)
+      })
+  }
+
   init() {
     this.doNotScroll = false
     const params = new URLSearchParams(this.currentRoute.route)
@@ -151,6 +162,15 @@ export class ChatMessagesComponent implements OnInit {
       document.getElementById('target')?.scrollIntoView()
   }
 
+  smoothScroll() {
+    setTimeout(() => {
+      this.myScrollContainer!.nativeElement.scroll({
+        top: this.myScrollContainer!.nativeElement.scrollHeight,
+        behavior: 'smooth'
+      })
+    }, 100)
+  }
+
   scrollAfterPageFetch() {
     document.getElementsByClassName('single-message')[9]?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -170,6 +190,48 @@ export class ChatMessagesComponent implements OnInit {
   onValueChange(event: Event) {
     const value = (event.target as any).value
     this.messageValue = value
+
+    // USERS TO MENTION LIST
+    const lastword = value.split(' ').pop()
+    if (lastword.includes('@')) {
+      this.showUsersToMention = true
+      if (lastword.length > 1)
+        this.usersToMentionFiltered = this.usernames.filter(x => x.includes(lastword.slice(1)))
+      else
+        this.usersToMentionFiltered = this.usernames
+    } else {
+      this.showUsersToMention = false
+    }
+
+    // HIGHLIGHTING MENTIONS
+    const regex = /@([a-zA-Z0-9_-]+)/g
+    let match: any
+    let startIndex = 0
+    let highlightedText = ''
+    while ((match = regex.exec(value)) !== null) {
+      for (let i = 0; i < this.usernames.length; i++) {
+        if (match[0].slice(1) == this.usernames[i]) {
+          highlightedText += value.substring(startIndex, match.index) +
+                             `<span class="mention-highlight-input">${match[0]}</span>`
+          startIndex = regex.lastIndex
+        }       
+      }
+    }
+    highlightedText += value.substring(startIndex)
+    this.fakeInputValue = highlightedText
+  }
+
+  mentionUser(username: string) {
+    const lastword = this.messageValue.split(' ').pop()
+
+    this.messageValue = this.messageValue.slice(0, this.messageValue.length - lastword!.length) 
+    this.messageValue += `@${username}`
+    this.fakeInputValue = this.fakeInputValue.slice(0, this.fakeInputValue.length - lastword!.length)
+    this.fakeInputValue += `<span class="mention-highlight-input">@${username}</span>`
+
+    this.showUsersToMention = false
+    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
+    element.focus()
   }
 
   onSubmit(event?: Event) {
@@ -190,12 +252,7 @@ export class ChatMessagesComponent implements OnInit {
         element.value = ''
       }, 0)
       this.messageToReply = undefined
-      setTimeout(() => {
-        this.myScrollContainer!.nativeElement.scroll({
-          top: this.myScrollContainer!.nativeElement.scrollHeight,
-          behavior: 'smooth'
-        })
-      }, 100)
+      this.smoothScroll()
     }
   }
 
@@ -387,6 +444,7 @@ export class ChatMessagesComponent implements OnInit {
     this.messageToReply = message
     var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
     element.focus()
+    this.smoothScroll()
   }
 
   cancelReply() {

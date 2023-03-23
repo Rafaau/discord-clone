@@ -23,10 +23,13 @@ export class MessageContentComponent implements OnInit {
   messageContent: string = ''
   @Input()
   currentUser?: User
+  @Input()
+  usernames: string[] = []
   @Output()
   onJoinCallback = new EventEmitter()
   chatServer?: ChatServer
   isAlreadyMember: boolean = false
+  isExpired: boolean = false
   isLoading: boolean = false
   player?: YT.Player
   videoId: string = ''
@@ -48,10 +51,31 @@ export class MessageContentComponent implements OnInit {
   ngOnInit() {
     if (this.messageContent.includes('http://localhost:4200/invitation?v='))
       this.getInvitationParams()
-    if (this.messageContent.includes('https://www.youtube.com/watch?'))
+    else if (this.messageContent.includes('https://www.youtube.com/watch?'))
       this.getVideoIdFromLink()
-    if (this.messageContent.includes('<!replyTo'))
+    else if (this.messageContent.includes('<!replyTo'))
       this.getReplyDetails()
+    else
+      this.checkMentions()
+  }
+
+  checkMentions() {
+    // HIGHLIGHTING MENTIONS
+    const regex = /@([a-zA-Z0-9_-]+)/g
+    let match: any
+    let startIndex = 0
+    let highlightedText = ''
+    while ((match = regex.exec(this.messageContent)) !== null) {
+      this.usernames!.forEach(x => {
+        if (match[0].slice(1) == x) {
+          highlightedText += this.messageContent.substring(startIndex, match.index) +
+                              `<span class="mention-highlight">${match[0]}</span>`
+          startIndex = regex.lastIndex
+        }
+      })
+    }
+    highlightedText += this.messageContent.substring(startIndex)
+    this.messageContent = highlightedText
   }
 
   getReplyDetails() {
@@ -102,6 +126,8 @@ export class MessageContentComponent implements OnInit {
               console.log('err')
             }
           )
+          console.log(new Date(invData.body!.expirationTime))
+          this.isExpired = new Date(invData.body!.expirationTime).getDate() + 7 == new Date().getDate()
         },
         (error) => {
           console.log('err')

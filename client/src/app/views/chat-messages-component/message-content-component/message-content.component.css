@@ -164,3 +164,18 @@ img {
     top: -45px;
     left: -30px;
 }
+
+::ng-deep .mention-highlight {
+    background-color: #3D4270;
+    border-radius: 5px;
+    padding: 2px 4px 2px 4px;
+    cursor: pointer;
+    transition: 0.05s;
+    font-weight: 500;
+    color: #C9CDFB;
+}
+
+    ::ng-deep .mention-highlight:hover {
+        background-color: #5865F2;
+        color: #f3f4f5;
+    }

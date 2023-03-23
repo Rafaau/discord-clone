@@ -3,8 +3,8 @@
          && !messageContent.includes('http://')
          && !messageContent.includes('https://')
          && !messageContent.includes('https://media')
-         && !messageContent.includes('<!replyTo')">
-  {{ messageContent }}
+         && !messageContent.includes('<!replyTo')"
+         [innerHTML]="messageContent">
 </div>
 <!-- REPLY MESSAGE -->
 <div *ngIf="messageContent.includes('<!replyTo')">
@@ -67,7 +67,7 @@
 </div>
 <!-- INVITE MESSAGE -->
 <div class="invitation-container" *ngIf="chatServer && messageContent.includes('http://localhost:4200/invitation?v=')">
-  <h5>YOU'VE BEEN INVITED TO JOIN A SERVER</h5>
+  <h5 *ngIf="!isExpired">YOU'VE BEEN INVITED TO JOIN A SERVER</h5>
   <div style="position:relative; display: flex;">
     <div class="server-icon">
       {{ chatServer.name[0] }}

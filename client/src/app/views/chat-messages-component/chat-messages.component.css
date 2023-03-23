@@ -208,7 +208,8 @@
     background-color: transparent;
     height: 20px;
     max-height: 120px;
-    color: #D8D8DC;
+    color: transparent;
+    caret-color: #D8D8DC;
     width: 80%;
     margin-left: 20px;
     resize: none;
@@ -217,6 +218,18 @@
     border: none;
     outline: none;
     padding-top: 13px;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-weight: 300;
+}
+
+.fake-input {
+    color: #D8D8DC;
+    position: absolute;
+    left: 29px;
+    top: 13px;
+    font-weight: 300;
+    font-size: 15px;
+    width: 80%;
 }
 
     .chat-input::placeholder {
@@ -438,7 +451,7 @@ i {
 
 .emoji-container {
     position: absolute;
-    bottom: 100px;
+    bottom: 60px;
     right: 0;
     padding: 10px;
 }
@@ -468,7 +481,7 @@ i {
 
 .gif-mart {
     position: absolute;
-    bottom: 110px;
+    bottom: 70px;
     right: 10px;
     width: 500px;
     height: 68vh;
@@ -694,3 +707,48 @@ mat-progress-spinner {
     color: #B5BAC1;
 }
   
+::ng-deep .mention-highlight-input {
+    background-color: #3D4270;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.mentioned-in-message {
+    background-color: #444037;
+    border-left: 3px solid #F0B132;
+    border-radius: 2px 0 0 2px;
+}
+
+.users-to-mention {
+    position: absolute;
+    background-color: #2B2D31;
+    border-radius: 8px;
+    -webkit-box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.3);
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    height: auto;
+    z-index: 6;
+    padding: 0 10px 10px 10px;
+}
+
+.single-user-to-mention {
+    position: relative;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+    .single-user-to-mention:hover {
+        background-color: #36373D;
+    }
+
+.mention-avatar {
+    font-size: 12px;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+}

@@ -1,11 +1,7 @@
 <div class="container">
   <div class="top-bar">
-    <div *ngIf="directConversation && currentUser">
-      <div 
-        class="interlocutor" 
-        *ngVar="directConversation!.users[0].id == currentUser!.id ? 
-                directConversation!.users[1] : 
-                directConversation!.users[0] as interlocutor ">
+    <div *ngIf="directConversation && currentUser && interlocutor">
+      <div class="interlocutor">
         <div class="at">
           @
         </div>
@@ -13,12 +9,8 @@
       </div>
     </div>
   </div>
-  <div class="flex" *ngIf="directConversation && currentUser">
-    <div 
-      class="messages-container" 
-      *ngVar="directConversation!.users[0].id == currentUser!.id ? 
-            directConversation!.users[1] : 
-            directConversation!.users[0] as interlocutor ">
+  <div class="flex" *ngIf="directConversation && currentUser && interlocutor">
+    <div class="messages-container">
       <div 
         class="messages-wrapper"
         #wrapper
@@ -79,7 +71,8 @@
                   <message-content 
                     [currentUser]="currentUser" 
                     [messageContent]="message.content"
-                    (onJoinCallback)="handleJoinCallback($event)">
+                    (onJoinCallback)="handleJoinCallback($event)"
+                    [usernames]="[currentUser.username, interlocutor.username]">
                   </message-content>
                 </div>
 
@@ -166,6 +159,22 @@
           [ngStyle]="{ 'border-radius': messageToReply ? '0 0 8px 8px': '8px' }">
 
           <div
+            *ngIf="showUsersToMention"
+            class="users-to-mention">
+              <h6>MEMBERS</h6>
+              <div 
+                *ngFor="let user of [currentUser.username, interlocutor.username]"
+                class="single-user-to-mention"
+                (click)="mentionUser(user)">
+                <i 
+                  class="fa-brands fa-discord mention-avatar" 
+                  [ngClass]="true ? 'av-' + user[0].toLowerCase() : ''">
+                </i>
+                {{ user }}
+              </div>
+          </div>
+
+          <div
             *ngIf="messageToReply" 
             class="replying-tab">
             Replying to 
@@ -185,6 +194,10 @@
             (input)="onValueChange($event)"
             (keydown.enter)="onSubmit($event)">
           </textarea>
+          <div 
+            class="fake-input"
+            [innerHTML]="fakeInputValue">
+          </div>
 
           <div 
             class="gif-picker"

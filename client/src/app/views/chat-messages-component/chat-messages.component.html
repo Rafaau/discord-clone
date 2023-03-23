@@ -29,8 +29,8 @@
         <div *ngFor="let message of orderByPostDate(chatMessages); index as i" class="single-message">
 
           <div 
-            *ngVar="chatMessages[i-1]?.user!.username != message.user.username || 
-                    toDate(chatMessages[i-1]?.postDate!) != toDate(message.postDate)
+            *ngVar="chatMessages[i-1]?.user!.username != message.user.username 
+                    || toDate(chatMessages[i-1]?.postDate!) != toDate(message.postDate)
                     || message.content.includes('<!replyToChatMessage') 
                     as firstOfMessages;" 
             class="single-message"
@@ -47,7 +47,8 @@
             <div 
               class="message-content" 
               [ngClass]="!firstOfMessages ? 'not-first' : 'first'"
-              [class.message-to-reply]="message == messageToReply">
+              [class.message-to-reply]="message == messageToReply"
+              [class.mentioned-in-message]="">
               <div *ngIf="!firstOfMessages" class="post-date-not-first">
                 {{ message.postDate | date:'h:mm a' }}
               </div>
@@ -88,6 +89,7 @@
                   <message-content 
                     [currentUser]="currentUser" 
                     [messageContent]="message.content"
+                    [usernames]="usernames"
                     (onJoinCallback)="handleJoinCallback($event)">
                   </message-content>
                 </div>
@@ -173,6 +175,23 @@
         <div 
           class="input-container"
           [ngStyle]="{ 'border-radius': messageToReply ? '0 0 8px 8px': '8px' }">
+          
+          <div
+            *ngIf="showUsersToMention"
+            class="users-to-mention">
+              <h6>MEMBERS</h6>
+              <div 
+                *ngFor="let user of usersToMentionFiltered"
+                class="single-user-to-mention"
+                (click)="mentionUser(user)">
+                <i 
+                  class="fa-brands fa-discord mention-avatar" 
+                  [ngClass]="true ? 'av-' + user[0].toLowerCase() : ''">
+                </i>
+                {{ user }}
+              </div>
+          </div>
+          
           <div
             *ngIf="messageToReply" 
             class="replying-tab">
@@ -193,6 +212,10 @@
             (input)="onValueChange($event)"
             (keydown.enter)="onSubmit($event)">
           </textarea>
+          <div 
+            class="fake-input"
+            [innerHTML]="fakeInputValue">
+          </div>
 
           <div 
             class="gif-picker"
