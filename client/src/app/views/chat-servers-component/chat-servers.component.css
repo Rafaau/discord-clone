@@ -104,6 +104,11 @@ mat-icon {
     border-radius: 35%;
 }
 
+.mat-badge-medium.mat-badge-above .mat-badge-content {
+    top: -4px;
+    right: -10px;
+}
+
 
 
 

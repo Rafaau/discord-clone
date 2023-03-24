@@ -24,6 +24,8 @@ import { ChatServerInvitation } from './typeorm/chat-server-invitation';
 import { ChatServerInvitationsModule } from './chat-server-invitations/chat-server-invitations.module';
 import { MessageReaction } from './typeorm/message-reaction';
 import { MessageReactionsModule } from './message-reactions/message-reactions.module';
+import { Notification } from './typeorm/notification';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -36,6 +38,7 @@ import { MessageReactionsModule } from './message-reactions/message-reactions.mo
     DirectMessagesModule,
     ChatServerInvitationsModule,
     MessageReactionsModule,
+    NotificationsModule,
     AuthModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -54,6 +57,7 @@ import { MessageReactionsModule } from './message-reactions/message-reactions.mo
         DirectMessage,
         ChatServerInvitation,
         MessageReaction,
+        Notification,
         SessionEntity
       ],
       synchronize: true,

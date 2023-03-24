@@ -69,7 +69,13 @@ export class ChatChannelsService {
     }
 
     async findChatChannelById(id: number) {
-        const chatChannel = await this.chatChannelRepository.findOneBy({ id })
+        const chatChannel = await this.chatChannelRepository.findOne({ 
+            where: { id },
+            relations: [
+                'chatCategory',
+                'chatCategory.chatServer'
+            ]
+        })
         if (!chatChannel)
             throw new NotFoundException()
         return chatChannel

@@ -40,3 +40,12 @@ export type CreateDirectMessageParams = {
 export type UpdateMessageParams = {
     content: string
 }
+
+export type CreateMessageReactionParams = {
+    reaction: string
+}
+
+export type CreateNotificationParams = {
+    message: string
+    source: string
+}

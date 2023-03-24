@@ -7,6 +7,7 @@ export interface ChatChannel {
     index: number,
     chatCategory: ChatCategory,
     chatMessages: ChatMessage[],
+    hasNotification?: boolean
 }
 
 export interface CreateChatChannelParams {

@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChatCategory } from 'src/app/_models/chat-category';
@@ -16,6 +16,8 @@ import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ChatChannel } from 'src/app/_models/chat-channels';
+import { Notification } from 'src/app/_models/notification';
+import { NotificationsService } from 'src/app/_services/notifications.service';
 
 @Component({
   selector: 'app-chat-channels',
@@ -40,7 +42,7 @@ import { ChatChannel } from 'src/app/_models/chat-channels';
     ])
   ]
 })
-export class ChatChannelsComponent implements OnInit {
+export class ChatChannelsComponent implements OnInit, OnChanges {
   chatServer?: ChatServer
   @Output()
   members = new EventEmitter<User[]>()
@@ -50,6 +52,8 @@ export class ChatChannelsComponent implements OnInit {
   isServerSettingsOn: boolean = false
   @Output()
   onServerSettingsToggle = new EventEmitter()
+  @Input()
+  notifications: Notification[] = []
   currentRoute = new LocationHrefProvider(this.location)
   currentChannelSettings: number = 0
   doNotInterrupt: boolean = false // to avoid instant close (clickOutside)
@@ -63,6 +67,7 @@ export class ChatChannelsComponent implements OnInit {
     private readonly _chatServerService: ChatServerService,
     private readonly _usersService: UsersService,
     private readonly _chatChannelService: ChatChannelService,
+    private readonly _notificationsService: NotificationsService,
     private location: Location
   ) { }
 
@@ -99,6 +104,12 @@ export class ChatChannelsComponent implements OnInit {
       )
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['notifications'] && this.chatServer) {
+      this.checkNotifications()
+    }
+  }
+
   getChatServerDetails(id: number) {
     this._chatServerService.getChatServerById(id).subscribe(
       (data: HttpResponse<ChatServer>) => {
@@ -106,7 +117,7 @@ export class ChatChannelsComponent implements OnInit {
         for (let i = 0; i < data.body!.chatCategories!.length; i++) {
           this.toExpand.push(true)
         }
-        console.log(data.body)
+
         this.redirectToChatChannel(
           data.body!.chatCategories![0].chatChannels![0].id
         )
@@ -148,6 +159,13 @@ export class ChatChannelsComponent implements OnInit {
         }
       ).toString()
       this.location.replaceState(url);
+      
+      const notificationsFromChannel = this.notifications.filter(
+        x => x.source.includes(`Channel=${channelId}`)
+      ) 
+      notificationsFromChannel.forEach(x => {
+        this._notificationsService.markAsRead(x.id)
+      })
     }
   }
 
@@ -166,6 +184,29 @@ export class ChatChannelsComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(() => {
       sub.unsubscribe()
+    })
+  }
+
+  checkNotifications() {
+    this.chatServer!.chatCategories!.forEach(category => {
+      category.chatChannels.forEach(channel => {
+        if (this.notifications.length) {
+          const actualNotifications = this.notifications.filter(x => x.source.includes(`Channel=${channel.id}`))
+          if (actualNotifications[0]) {
+            if (actualNotifications[0].source.slice(actualNotifications[0].source.indexOf('Channel=')).slice(8)
+                == this.currentRoute.route.slice(this.currentRoute.route.indexOf('channel=')).slice(8)) {
+              channel.hasNotification = false
+              this._notificationsService.markAsRead(actualNotifications[0].id)
+            } else {
+              channel.hasNotification = true
+            }
+          } else {
+            channel.hasNotification = false
+          }
+        } else {
+          channel.hasNotification = false
+        }
+      })
     })
   }
 

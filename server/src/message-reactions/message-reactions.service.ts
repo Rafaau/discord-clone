@@ -4,8 +4,8 @@ import { ChatMessage } from "src/typeorm/chat-message";
 import { DirectMessage } from "src/typeorm/direct-message";
 import { MessageReaction } from "src/typeorm/message-reaction";
 import { User } from "src/typeorm/user";
+import { CreateMessageReactionParams } from "src/utils/types";
 import { Repository } from "typeorm";
-import { CreateMessageReactionDto } from "./message-reactions.dto";
 
 @Injectable()
 export class MessageReactionsService {
@@ -17,7 +17,7 @@ export class MessageReactionsService {
     ) {}
 
     async createMessageReaction(
-        reactionDetails: CreateMessageReactionDto,
+        reactionDetails: CreateMessageReactionParams,
         userId: number,
         chatMessageId?: number,
         directMessageId?: number

@@ -247,7 +247,7 @@
               [scrollWindow]="false">
               <div>
               <div 
-                *ngFor="let result of giphyService.searchResults$ | async; let i = index;"
+                *ngFor="let result of _giphyService.searchResults$ | async; let i = index;"
                 class="single-gif"
                 (click)="sendGif(result.images)">
                   <img
@@ -258,7 +258,7 @@
               </div>
               <div>
               <div 
-                *ngFor="let result of giphyService.searchResults$ | async; let i = index;"
+                *ngFor="let result of _giphyService.searchResults$ | async; let i = index;"
                 class="single-gif"
                 (click)="sendGif(result.images)">
                   <img 

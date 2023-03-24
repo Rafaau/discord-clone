@@ -126,7 +126,6 @@ export class MessageContentComponent implements OnInit {
               console.log('err')
             }
           )
-          console.log(new Date(invData.body!.expirationTime))
           this.isExpired = new Date(invData.body!.expirationTime).getDate() + 7 == new Date().getDate()
         },
         (error) => {

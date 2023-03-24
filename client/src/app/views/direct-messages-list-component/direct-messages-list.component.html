@@ -13,7 +13,10 @@
   <div
     class="single-conversation" 
     [ngClass]="currentRoute.route.includes('conversation='+conversation.id) ? 'current' : ''"
-    (click)="redirectToConversation(conversation.id)">
+    (click)="redirectToConversation(conversation.id)"
+    [matBadgeHidden]="!conversation.hasNotification"
+    [matBadge]="conversation.notificationsCount"
+    matBadgeColor="warn">
     <i class="fa-brands fa-discord" [ngClass]="true ? 'av-'+conversation.users[1].username[0].toLowerCase() : ''"></i>
     {{ conversation.users[1].username }}
   </div>

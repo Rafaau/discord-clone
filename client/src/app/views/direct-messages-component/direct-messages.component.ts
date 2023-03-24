@@ -8,11 +8,13 @@ import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { DirectConversation } from 'src/app/_models/direct-conversation';
 import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from 'src/app/_models/direct-message';
 import { CreateMessageReactionParams } from 'src/app/_models/message-reaction';
+import { CreateNotificationParams, Notification } from 'src/app/_models/notification';
 import { User } from 'src/app/_models/Users';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
 import { GiphyService } from 'src/app/_services/giphy.service';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
+import { NotificationsService } from 'src/app/_services/notifications.service';
 import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
@@ -78,8 +80,9 @@ export class DirectMessagesComponent implements OnInit {
     private readonly _directConversationService: DirectConversationService,
     private readonly _directMessageService: DirectMessageService,
     private readonly _messageReactionsService: MessageReactionsService,
+    public readonly _giphyService: GiphyService,
+    private readonly _notificationsService: NotificationsService,
     public dialog: MatDialog,
-    public readonly giphyService: GiphyService,
     private socket: Socket
   ) { }
 
@@ -95,7 +98,10 @@ export class DirectMessagesComponent implements OnInit {
     this._directMessageService.getNewMessage()
       .subscribe(
         (message: DirectMessage) => {
-          this.directMessages.push(message)
+          if (message.directConversation.id == this.directConversation!.id) {
+            this.directMessages.push(message)
+            this.smoothScroll()
+          }
         }
       )
     this._directMessageService.getEditedMessage()
@@ -109,7 +115,7 @@ export class DirectMessagesComponent implements OnInit {
           (messageId: number) => {
             this.directMessages = this.directMessages.filter(x => x.id != messageId)
           }
-        )   
+        )  
   }
 
   init() {
@@ -240,9 +246,23 @@ export class DirectMessagesComponent implements OnInit {
       setTimeout(() => {
         element.value = ''
       }, 0)
+
+      this.sendNotification(
+        this.interlocutor!.id,
+        `${this.currentUser!.username} sent you a message.`
+      )
+
       this.messageToReply = undefined
       this.smoothScroll()
     }
+  }
+
+  sendNotification(userId: number, message: string) {
+    const reqBody: CreateNotificationParams = {
+      message: message,
+      source: `DirectConversation=${this.directConversation!.id}`
+    }
+    this._notificationsService.createNotification(userId, reqBody)
   }
 
   onEdit(message: DirectMessage) {
@@ -357,7 +377,7 @@ export class DirectMessagesComponent implements OnInit {
     setTimeout(() => {
       this.martToggle = true
     }, 500)
-    this.giphyService.search('meme')
+    this._giphyService.search('meme')
   }
 
   closeGifPicker(event: Event) {
@@ -369,11 +389,11 @@ export class DirectMessagesComponent implements OnInit {
   }
 
   search(event?: Event) {
-    this.giphyService.search(this.searchTerm)
+    this._giphyService.search(this.searchTerm)
   }
 
   onGifMartScroll() {
-    this.giphyService.next()
+    this._giphyService.next()
   }
 
   sendGif(gif: any) {

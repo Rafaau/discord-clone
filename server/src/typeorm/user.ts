@@ -4,6 +4,7 @@ import { ChatServer } from "./chat-server";
 import { DirectConversation } from "./direct-conversation";
 import { DirectMessage } from "./direct-message";
 import { MessageReaction } from "./message-reaction";
+import { Notification } from "./notification";
 
 @Entity({ name: 'users' })
 export class User {
@@ -61,4 +62,9 @@ export class User {
     })
     @JoinTable({ name: 'users-message-reactions' })
     messageReactions: MessageReaction[]
+
+    @OneToMany(() => Notification, notification => notification.recipient, {
+        nullable: true
+    })
+    notifications?: Notification[]
 }

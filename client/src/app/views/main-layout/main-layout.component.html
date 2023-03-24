@@ -1,22 +1,30 @@
 <div class="base-container">
   <div class="row" [@settingsToggle]="settingsState ? 'open' : 'closed'">
     <div class="primary-side-bar">
-      <app-chat-servers [currentUser]="currentUser"></app-chat-servers>
+      <app-chat-servers 
+        [currentUser]="currentUser"
+        (notificationsToPass)="fetchNotificationsFromServers($event)">
+      </app-chat-servers>
     </div>
     <div class="secondary-side-bar">
       <app-chat-channels 
         *ngIf="router.url.includes('/chatserver')" 
         (members)="fetchUsersFromServer($event)"
-        (onServerSettingsToggle)="toggleServerSettingsView($event)">
+        (onServerSettingsToggle)="toggleServerSettingsView($event)"
+        [notifications]="notifications">
       </app-chat-channels>
       <app-direct-messages-list 
         *ngIf="router.url.includes('/directmessages') && currentUser" 
         [currentUser]="currentUser" 
-        (rendered)="passUserToChild()">
+        (rendered)="passUserToChild()"
+        [notifications]="notifications">
       </app-direct-messages-list>
       <div class="user-tab">
         <div *ngIf="currentUser">
-          <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + currentUser!.username[0].toLowerCase() : ''"></i>
+          <i 
+            class="fa-brands fa-discord" 
+            [ngClass]="true ? 'av-' + currentUser!.username[0].toLowerCase() : ''">
+          </i>
           {{ currentUser.username }}
         </div>
       </div>

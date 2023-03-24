@@ -16,6 +16,8 @@ import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dialog.component';
 import { GiphyService } from 'src/app/_services/giphy.service';
+import { CreateNotificationParams, Notification } from 'src/app/_models/notification';
+import { NotificationsService } from 'src/app/_services/notifications.service';
 
 @Component({
   selector: 'app-chat-messages',
@@ -80,6 +82,7 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
   usernames: string[] = []
   showUsersToMention: boolean = false
   usersToMentionFiltered: string[] = []
+  usersToNotify: number[] = []
   inputElement = () => document.querySelector('.chat-input') as HTMLTextAreaElement
 
   constructor(
@@ -88,9 +91,10 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     private router: Router,
     private readonly _chatMessagesService: ChatMessagesService,
     private readonly _chatChannelsService: ChatChannelService,
-    public readonly giphyService: GiphyService,
+    public readonly _giphyService: GiphyService,
     private readonly _chatServerService: ChatServerService,
     private readonly _messageReactionsService: MessageReactionsService,
+    private readonly _notificationsService: NotificationsService,
     public dialog: MatDialog,
     private socket: Socket
   ) { }
@@ -107,7 +111,10 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     this._chatMessagesService.getNewMessage()
       .subscribe(
         (message: ChatMessage) => {
-          this.chatMessages.push(message)
+          if (message.chatChannel.id == this.chatChannel!.id) {
+            this.chatMessages.push(message)
+            this.smoothScroll()
+          }
         }
       )
     this._chatMessagesService.getEditedMessage()
@@ -210,12 +217,16 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     let startIndex = 0
     let highlightedText = ''
     while ((match = regex.exec(value)) !== null) {
-      for (let i = 0; i < this.usernames.length; i++) {
-        if (match[0].slice(1) == this.usernames[i]) {
+      for (let i = 0; i < this.members!.length; i++) {
+        if (match[0].slice(1) == this.members![i].username) {
+          if (!this.usersToNotify.includes(this.members![i].id))
+            this.usersToNotify.push(this.members![i].id)
           highlightedText += value.substring(startIndex, match.index) +
                              `<span class="mention-highlight-input">${match[0]}</span>`
           startIndex = regex.lastIndex
-        }       
+        } else {
+          //this.usersToNotify = []
+        }      
       }
     }
     highlightedText += value.substring(startIndex)
@@ -251,7 +262,25 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
       setTimeout(() => {
         element.value = ''
       }, 0)
+
+      if (this.usersToNotify.length) {
+        this.usersToNotify.forEach(x => {
+          this.sendNotification(
+            x, 
+            `You have been mentioned in ${this.chatChannel!.name} by ${this.currentUser!.username}`
+          )
+        })
+      }
+
+      if (this.messageToReply) {
+        this.sendNotification(
+          this.messageToReply.user.id,
+          `${this.currentUser!.username} has replied to your message.`
+        )
+      }
+
       this.messageToReply = undefined
+      this.usersToNotify = []
       this.smoothScroll()
     }
   }
@@ -415,7 +444,7 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     setTimeout(() => {
       this.martToggle = true
     }, 500)
-    this.giphyService.search('meme')
+    this._giphyService.search('meme')
   }
 
   closeGifPicker(event: Event) {
@@ -427,11 +456,11 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
   }
 
   search(event?: Event) {
-    this.giphyService.search(this.searchTerm)
+    this._giphyService.search(this.searchTerm)
   }
 
   onGifMartScroll() {
-    this.giphyService.next()
+    this._giphyService.next()
   }
 
   sendGif(gif: any) {
@@ -444,13 +473,20 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
 
   onReply(message: ChatMessage) {
     this.messageToReply = message
-    var element = document.getElementsByClassName('chat-input')[0] as HTMLTextAreaElement
-    element.focus()
+    this.inputElement().focus()
     this.smoothScroll()
   }
 
   cancelReply() {
     this.messageToReply = undefined
+  }
+
+  sendNotification(userId: number, message: string) {
+    const reqBody: CreateNotificationParams = {
+      message: message,
+      source: `ChatServer=${this.chatChannel!.chatCategory.chatServer.id},Channel=${this.chatChannel!.id}`
+    }
+    this._notificationsService.createNotification(userId, reqBody)
   }
 
   onScroll() {

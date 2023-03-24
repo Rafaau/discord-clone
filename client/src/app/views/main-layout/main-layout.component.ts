@@ -2,11 +2,12 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, Output, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
+import { Notification } from 'src/app/_models/notification';
 import { User } from 'src/app/_models/Users';
 import { AuthService } from 'src/app/_services/auth.service';
-import { UsersService } from 'src/app/_services/users.service';
+import { ChatChannelsComponent } from '../chat-channels-component/chat-channels.component';
 import { ChatServersComponent } from '../chat-servers-component/chat-servers.component';
 import { DirectMessagesListComponent } from '../direct-messages-list-component/direct-messages-list.component';
 import { FriendsComponent } from '../friends-component/friends.component';
@@ -38,12 +39,14 @@ import { FriendsComponent } from '../friends-component/friends.component';
   ]
 })
 export class MainLayoutComponent implements OnInit {
-  members?: User[]
+  members: User[] = []
+  notifications: Notification[] = []
   currentUser?: User
   currentRoute = new LocationHrefProvider(this.location)
   @ViewChild(FriendsComponent) friendsChild?: FriendsComponent
   @ViewChild(DirectMessagesListComponent) directMessagesChild?: DirectMessagesListComponent
   @ViewChild(ChatServersComponent) chatServersChild?: ChatServersComponent
+  @ViewChild(ChatChannelsComponent) chatChannelsChild?: ChatChannelsComponent
   settingsState: boolean = false
 
   constructor(
@@ -60,6 +63,17 @@ export class MainLayoutComponent implements OnInit {
     this.members = users
   }
 
+  fetchNotificationsFromServers(notifications: Notification[]) {
+    this.notifications = notifications
+    if (this.chatChannelsChild) {
+      this.chatChannelsChild.notifications = notifications
+      this.chatChannelsChild.checkNotifications()
+    } else if (this.directMessagesChild) {
+        this.directMessagesChild.notifications = notifications
+        this.directMessagesChild.checkNotifications()
+      }
+  }
+
   refreshChatServers(event: Event) {
     this.chatServersChild?.getChatServers(this.currentUser!.id)
   }
@@ -71,7 +85,7 @@ export class MainLayoutComponent implements OnInit {
         console.log(data.body)
         this.currentUser = data.body!
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
-        this.chatServersChild?.getChatServers(data.body!.id)
+        //this.chatServersChild?.getChatServers(data.body!.id)
         //this.router.navigate(['/directmessages'])
       },
       (error) => {

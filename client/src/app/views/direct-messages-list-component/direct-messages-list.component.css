@@ -77,3 +77,8 @@ i {
     text-align: center;
     margin-right: 5px;
 }
+
+.mat-badge-medium.mat-badge-above .mat-badge-content {
+    top: 13px;
+    right: 10px;
+}
