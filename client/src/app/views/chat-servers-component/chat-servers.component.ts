@@ -67,6 +67,7 @@ export class ChatServersComponent implements OnInit, OnChanges {
     if (this.currentUser) {
       this.getChatServers(this.currentUser.id)
       this.getNotifications(this.currentUser.id)
+
       this._notificationsService.getNewNotification()
         .subscribe(
           (notification: Notification) => {

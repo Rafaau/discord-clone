@@ -11,7 +11,8 @@
         *ngIf="router.url.includes('/chatserver')" 
         (members)="fetchUsersFromServer($event)"
         (onServerSettingsToggle)="toggleServerSettingsView($event)"
-        [notifications]="notifications">
+        [notifications]="notifications"
+        [currentUser]="currentUser">
       </app-chat-channels>
       <app-direct-messages-list 
         *ngIf="router.url.includes('/directmessages') && currentUser" 

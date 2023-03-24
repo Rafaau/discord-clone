@@ -54,6 +54,8 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   onServerSettingsToggle = new EventEmitter()
   @Input()
   notifications: Notification[] = []
+  @Input()
+  currentUser?: User
   currentRoute = new LocationHrefProvider(this.location)
   currentChannelSettings: number = 0
   doNotInterrupt: boolean = false // to avoid instant close (clickOutside)
@@ -164,7 +166,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
         x => x.source.includes(`Channel=${channelId}`)
       ) 
       notificationsFromChannel.forEach(x => {
-        this._notificationsService.markAsRead(x.id)
+        this._notificationsService.markAsRead(x.id, this.currentUser!.id)
       })
     }
   }
@@ -188,26 +190,29 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   }
 
   checkNotifications() {
-    this.chatServer!.chatCategories!.forEach(category => {
-      category.chatChannels.forEach(channel => {
-        if (this.notifications.length) {
-          const actualNotifications = this.notifications.filter(x => x.source.includes(`Channel=${channel.id}`))
-          if (actualNotifications[0]) {
-            if (actualNotifications[0].source.slice(actualNotifications[0].source.indexOf('Channel=')).slice(8)
-                == this.currentRoute.route.slice(this.currentRoute.route.indexOf('channel=')).slice(8)) {
-              channel.hasNotification = false
-              this._notificationsService.markAsRead(actualNotifications[0].id)
-            } else {
-              channel.hasNotification = true
-            }
-          } else {
-            channel.hasNotification = false
-          }
-        } else {
-          channel.hasNotification = false
-        }
-      })
-    })
+    const { chatChannels } = this.chatServer!.chatCategories![0];
+    for (const channel of chatChannels) {
+      const channelNotification = this.notifications.find(
+        notification => notification.source.includes(`Channel=${channel.id}`)
+      );
+  
+      if (!channelNotification) {
+        channel.hasNotification = false;
+        continue;
+      }
+  
+      if (
+        channelNotification.source
+          .slice(channelNotification.source.indexOf("Channel="))
+          .slice(8) ===
+        this.currentRoute.route.slice(this.currentRoute.route.indexOf("channel=")).slice(8)
+      ) {
+        channel.hasNotification = false;
+        this._notificationsService.markAsRead(channelNotification.id, this.currentUser!.id);
+      } else {
+        channel.hasNotification = true;
+      }
+    }
   }
 
   deleteChannel() {

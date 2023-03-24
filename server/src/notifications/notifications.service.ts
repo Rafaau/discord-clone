@@ -31,7 +31,8 @@ export class NotificationsService {
 
     async markAsRead(id: number) {
         const notification = await this.notificationRepository.findOne({
-            where: { id }
+            where: { id },
+            relations: ['recipient']
         })
         if (!notification)
             throw new NotFoundException()

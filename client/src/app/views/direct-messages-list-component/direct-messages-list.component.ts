@@ -59,24 +59,16 @@ export class DirectMessagesListComponent implements OnInit, OnChanges {
 
   checkNotifications() {
     this.directConversations!.forEach(conversation => {
-      if (this.notifications.length) {
-        const actualNotifications = this.notifications
-          .filter(x => x.source.includes(`DirectConversation=${conversation.id}`))
-        if (actualNotifications[0]) {
-          if (actualNotifications[0].source.slice(19) == this.currentRoute.route.slice(29)) {
-            conversation.hasNotification = false
-            conversation.notificationsCount = 0
-            this._notificationsService.markAsRead(actualNotifications[0].id)
-          } else {
-            conversation.hasNotification = true
-            conversation.notificationsCount = actualNotifications.length
-          }
-        } else {
-          conversation.hasNotification = false
-          conversation.notificationsCount = 0
-        }
-      } else {
+      const source = `DirectConversation=${conversation.id}`
+      const actualNotifications = this.notifications.filter(x => x.source.includes(source))
+      conversation.hasNotification = actualNotifications.length > 0
+      conversation.notificationsCount = conversation.hasNotification ? actualNotifications.length : 0
+  
+      const currentConversationId = this.currentRoute.route.slice(29)
+      if (conversation.hasNotification && actualNotifications[0].source.slice(19) === currentConversationId) {
         conversation.hasNotification = false
+        conversation.notificationsCount = 0
+        this._notificationsService.markAsRead(actualNotifications[0].id, this.currentUser!.id)
       }
     })
   }
@@ -97,7 +89,7 @@ export class DirectMessagesListComponent implements OnInit, OnChanges {
       x => x.source.includes(`DirectConversation=${conversationId}`)
     ) 
     notificationsFromConversation.forEach(x => {
-      this._notificationsService.markAsRead(x.id)
+      this._notificationsService.markAsRead(x.id, this.currentUser!.id)
     })
   }
 

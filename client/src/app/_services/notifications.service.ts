@@ -37,10 +37,14 @@ export class NotificationsService {
     return this.socket.fromEvent<Notification>('newNotification')
   }
 
-  markAsRead(id: number) {
+  markAsRead(
+    id: number, 
+    userId: number
+  ) {
     this.socket.emit(
       'markAsRead',
-      id
+      id,
+      userId
     )
   }
 

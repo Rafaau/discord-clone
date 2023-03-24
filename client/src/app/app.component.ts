@@ -14,9 +14,7 @@ export class AppComponent {
 
   constructor (public router: Router) {}
 
-  ngOnInit() {
-    console.log(window.location.pathname)
-  }
+  ngOnInit() { }
 
   title = 'client';
 }

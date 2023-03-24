@@ -3,6 +3,7 @@ import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { Notification } from 'src/app/_models/notification';
 import { User } from 'src/app/_models/Users';
@@ -85,7 +86,6 @@ export class MainLayoutComponent implements OnInit {
         console.log(data.body)
         this.currentUser = data.body!
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
-        //this.chatServersChild?.getChatServers(data.body!.id)
         //this.router.navigate(['/directmessages'])
       },
       (error) => {

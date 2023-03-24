@@ -12,7 +12,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
     server: Server
 
     handleConnection() {
-        
+
     }
 
     handleDisconnect() {
@@ -26,16 +26,18 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
     ) {
         const notification = await this.notificationsService
             .createNotification(params[0], params[1])
-        this.server.emit('newNotification', notification)
+        if (params[1] == notification.recipient.id)
+            this.server.emit('newNotification', notification)
     }
 
     @SubscribeMessage('markAsRead')
     async handleMarkAsRead(
         socket: Socket,
-        id: number
+        params: any
     ) {
         const readed = await this.notificationsService
-            .markAsRead(id)
-        this.server.emit('readedNotification', readed)
+            .markAsRead(params[0])
+        if (params[1] == readed.recipient.id)
+            this.server.emit('readedNotification', readed)
     }
 }
