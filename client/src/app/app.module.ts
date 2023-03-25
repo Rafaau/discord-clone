@@ -35,6 +35,8 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { MessageReactionsComponent } from './views/chat-messages-component/message-reactions-component/message-reactions.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { UserSettingsComponent } from './views/main-layout/user-settings-component/user-settings.component';
+import { ChangePasswordDialog } from './views/main-layout/user-settings-component/change-password-dialog/change-password-dialog.component';
 
 const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 
@@ -58,6 +60,8 @@ const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: 
     GenerateInvitationDialog,
     UserDetailsComponent,
     ChatServerSettingsComponent,
+    UserSettingsComponent,
+    ChangePasswordDialog,
     MessageContentComponent,
     MessageReactionsComponent
   ],

@@ -1,6 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { UpdateUserParams } from '../_models/Users';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,27 @@ export class UsersService {
   getConversationsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directconversations/user/${userId}`,
+      { observe: 'response' }
+    )
+  }
+
+  updateUser(
+    userId: number,
+    userDetails: UpdateUserParams
+  ): Observable<HttpResponse<any>> {
+    return this.httpClient.patch(
+      this.api+`/users/${userId}`,
+      userDetails,
+      { observe: 'response' }
+    )
+  }
+
+  checkIfPasswordDoesMatch(
+    userId: number,
+    rawPassword: string
+  ): Observable<HttpResponse<any>> {
+    return this.httpClient.get(
+      this.api+`/users/${userId}/query?passwordToCheck=${rawPassword}`,
       { observe: 'response' }
     )
   }

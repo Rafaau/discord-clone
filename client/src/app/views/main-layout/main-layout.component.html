@@ -1,5 +1,5 @@
 <div class="base-container">
-  <div class="row" [@settingsToggle]="settingsState ? 'open' : 'closed'">
+  <div class="row" [@settingsToggle]="serverSettingsState || userSettingsState ? 'open' : 'closed'">
     <div class="primary-side-bar">
       <app-chat-servers 
         [currentUser]="currentUser"
@@ -21,13 +21,17 @@
         [notifications]="notifications">
       </app-direct-messages-list>
       <div class="user-tab">
-        <div *ngIf="currentUser">
           <i 
             class="fa-brands fa-discord" 
             [ngClass]="true ? 'av-' + currentUser!.username[0].toLowerCase() : ''">
           </i>
-          {{ currentUser.username }}
-        </div>
+          {{ currentUser!.username }}
+          <i 
+            class="fa-solid fa-gear options-icon"
+            matTooltip="User Settings"
+            matTooltipPosition="above"
+            (click)="toggleUserSettingsView($event)">
+          </i>
       </div>
     </div>
     <div class="main-container">
@@ -49,7 +53,13 @@
     </div>
   </div>
   <chat-server-settings 
-    *ngIf="settingsState" 
+    *ngIf="serverSettingsState" 
     (onClose)="toggleServerSettingsView($event)">
   </chat-server-settings>
+  <user-settings
+    *ngIf="userSettingsState"
+    [user]="currentUser"
+    (onClose)="toggleUserSettingsView($event)"
+    (onUserUpdate)="refreshUser($event)">
+  </user-settings>
 </div>

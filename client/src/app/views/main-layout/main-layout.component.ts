@@ -48,7 +48,8 @@ export class MainLayoutComponent implements OnInit {
   @ViewChild(DirectMessagesListComponent) directMessagesChild?: DirectMessagesListComponent
   @ViewChild(ChatServersComponent) chatServersChild?: ChatServersComponent
   @ViewChild(ChatChannelsComponent) chatChannelsChild?: ChatChannelsComponent
-  settingsState: boolean = false
+  serverSettingsState: boolean = false
+  userSettingsState: boolean = true
 
   constructor(
     private _authService: AuthService,
@@ -73,6 +74,11 @@ export class MainLayoutComponent implements OnInit {
         this.directMessagesChild.notifications = notifications
         this.directMessagesChild.checkNotifications()
       }
+  }
+
+  refreshUser(user: User) {
+    console.log(user)
+    this.currentUser = user
   }
 
   refreshChatServers(event: Event) {
@@ -100,6 +106,10 @@ export class MainLayoutComponent implements OnInit {
   }
 
   toggleServerSettingsView(event: Event) {
-    this.settingsState = !this.settingsState
+    this.serverSettingsState = !this.serverSettingsState
+  }
+
+  toggleUserSettingsView(event: Event) {
+    this.userSettingsState = !this.userSettingsState
   }
 }

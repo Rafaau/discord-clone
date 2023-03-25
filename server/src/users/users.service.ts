@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../typeorm/user";
-import { encodePassword } from "../utils/bcrypt";
+import { comparePassword, encodePassword } from "../utils/bcrypt";
 import { CreateUserParams, UpdateUserParams } from "../utils/types";
 import { Repository } from "typeorm";
 
@@ -32,6 +32,8 @@ export class UsersService {
         const user = await this.userRepository.findOneBy({ id })
         if (!user)
             throw new NotFoundException()
+        if (userDetails.password) 
+            userDetails.password = encodePassword(userDetails.password)
         return this.userRepository.save({
             ...user,
             ...userDetails
@@ -96,5 +98,15 @@ export class UsersService {
         if (!user)
             throw new NotFoundException()
         return user.friends
+    }
+
+    async checkIfPasswordDoesMatch(
+        id: number, 
+        rawPassword: string
+    ) {
+        const user = await this.userRepository.findOneBy({ id })
+        if (!user)
+            throw new NotFoundException()
+        return comparePassword(rawPassword, user.password)
     }
 }

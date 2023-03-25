@@ -11,8 +11,9 @@ export class AuthService {
         console.log(userDB)
         if (userDB) {
             const matched = comparePassword(password, (await userDB).password)
-            if (matched)
+            if (matched) {
                 return userDB
+            }
             else
                 return null
         }

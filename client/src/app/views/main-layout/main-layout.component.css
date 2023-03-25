@@ -37,13 +37,15 @@
     position: absolute;
     background-color: #232428;
     height: 45px;
-    width: 100%;
+    line-height: 35px;
+    width: 220px;
     bottom: 20px;
     padding-left: 10px;
     display: flex;
     padding-top: 10px;
     font-size: 14px;
     font-weight: 500;
+    z-index: 10;
 }
 
 i {
@@ -55,3 +57,14 @@ i {
     text-align: center;
     margin-right: 8px;
 }
+
+.options-icon {
+    color: #B5BAC1;
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .options-icon:hover {
+        color: #DADDE0;
+    }

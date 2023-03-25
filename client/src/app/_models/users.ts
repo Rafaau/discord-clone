@@ -5,6 +5,8 @@ export interface User {
     username: string,
     email: string,
     password: string,
+    rawPassword?: string,
+    phoneNumber?: string,
     isOwner?: boolean
 }
 
@@ -21,6 +23,13 @@ export interface CreateUserParams {
     email: string,
     password: string,
     isOwner?: boolean
+}
+
+export interface UpdateUserParams {
+    username: string,
+    email: string,
+    phoneNumber: string,
+    password: string
 }
 
 export interface LoginUserParams {

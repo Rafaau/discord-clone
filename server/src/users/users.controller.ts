@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query, Res, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Response } from "express";
 import { CreateUserDto, UpdateUserDto } from "./users.dto";
 import { UsersService } from "./users.service";
@@ -67,6 +67,26 @@ export class UsersController {
             response
                 .status(HttpStatus.OK)
                 .json(await this.usersService.findFriendsOfUser(id))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
+    @Get(':id/query')
+    async checkIfPasswordDoesMatch(
+        @Param('id') id: number,
+        @Query('passwordToCheck') rawPassword: string,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(200)
+                .json(await this.usersService.checkIfPasswordDoesMatch(id, rawPassword))
         } catch (e) {
             response
                 .status(e.status)

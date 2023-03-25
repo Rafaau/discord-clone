@@ -1,0 +1,111 @@
+.user-details-container {
+    position: relative;
+    background-color: #36393F;
+    border-radius: 8px;
+    height: 375px;
+}
+
+.bottom-section {
+    position: absolute;
+    bottom: 0;
+    border-radius: 0 0 8px 8px;
+    height: 75%;
+    width: 100%;
+    background-color: #1E1F22;
+}
+
+.user-avatar {
+    position: absolute;
+    height: 80px;
+    width: 80px;
+    text-align: center;
+    line-height: 80px;
+    border-radius: 50%;
+    font-size: 40px;
+    border: 7px solid #1E1F22;
+    top: -25px;
+    left: 20px;
+}
+
+.username {
+    position: absolute;
+    left: 120px;
+    font-size: 20px;
+    font-weight: 500;
+    top: 15px;
+}
+
+.to-profile-btn {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+}
+
+.personal-data {
+    position: absolute;
+    background-color: #2B2D31;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    height: auto;
+    border-radius: 8px;
+    padding: 15px 15px 0 15px;
+}
+
+.single-section {
+    position: relative;
+    padding-bottom: 15px;
+}
+
+label {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.data-value {
+    padding-top: 3px;
+    font-size: 15px;
+}
+
+.action-btn {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    background-color: #4E5058;
+    border: none;
+    color: #f3f4f5;
+    border-radius: 4px;
+    padding: 8px 15px 8px 15px;
+    font-weight: 550;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .action-btn:hover {
+        background-color: #6D6F78;
+    }
+
+.save-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #A1ABB0;
+    transition: 0.1s;
+}
+
+    .save-btn:hover {
+        color: #f3f4f5;
+        transform: scale(1.1);
+    }
+
+.details-input {
+    background-color: transparent;
+    border: none;
+    color: #f3f4f5;
+    outline: none;
+    font-size: 15px;
+    padding: 0;
+}

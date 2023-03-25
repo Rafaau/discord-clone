@@ -68,19 +68,33 @@
 <!-- INVITE MESSAGE -->
 <div class="invitation-container" *ngIf="chatServer && messageContent.includes('http://localhost:4200/invitation?v=')">
   <h5 *ngIf="!isExpired">YOU'VE BEEN INVITED TO JOIN A SERVER</h5>
+  <h5 *ngIf="isExpired">YOU RECEIVED AN INVITE, BUT...</h5>
   <div style="position:relative; display: flex;">
-    <div class="server-icon">
+    <div
+      *ngIf="!isExpired" 
+      class="server-icon">
       {{ chatServer.name[0] }}
     </div>
+    <i 
+      *ngIf="isExpired"
+      class="fa-solid fa-calendar-xmark expired-icon">
+    </i>
     <div>
-      <h3>
+      <h3 *ngIf="!isExpired">
         {{ chatServer.name }}
       </h3>
-      <p>
+      <h3 style="color: #F23F42; font-size: 14px;" *ngIf="isExpired">
+        Invitation Link has expired
+      </h3>
+      <p *ngIf="!isExpired">
         • {{ chatServer.members!.length }} Members
+      </p>
+      <p *ngIf="isExpired">
+        Ask for a new invite!
       </p>
     </div>
     <div 
+      *ngIf="!isExpired"
       class="join-btn"
       [ngClass]="isAlreadyMember ? 'disabled' : ''"
       (click)="handleJoinChatServer()"

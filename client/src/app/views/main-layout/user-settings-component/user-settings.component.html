@@ -1,0 +1,122 @@
+<div [@fadeIn] *ngIf="isOpen" class="server-settings-container">
+  <div class="side-menu">
+    <div *ngIf="user">
+      <h5>USER SETTINGS</h5>
+      <div 
+        class="settings-option"
+        [class.current-option]="currentView == View.MyAccount">
+        My Account
+      </div>
+    </div>
+  </div>
+  <div class="main-container">
+    <div *ngIf="user">
+      <h3>{{ currentView }}</h3>
+      <div *ngIf="currentView == View.MyAccount">
+        <div class="user-details-container">
+          <div class="bottom-section">
+            <i 
+              class="fa-brands fa-discord user-avatar" 
+              [ngClass]="true ? 'av-' + user.username[0].toLowerCase() : ''">
+            </i>
+            <div class="username">
+              {{ user.username }}
+            </div>
+            <button 
+              mat-raised-button
+              color="primary"
+              class="to-profile-btn">
+              Edit User Profile
+            </button>
+            <div class="personal-data">
+              <form *ngIf="userDetailsForm" [formGroup]="userDetailsForm">
+                <div class="single-section">
+                  <label>USERNAME</label>
+                  <div class="data-value">
+                    <div *ngIf="currentForm != Form.Username">
+                      {{ user.username }}
+                    </div>
+                    <input
+                      *ngIf="currentForm == Form.Username"
+                      class="details-input"
+                      formControlName="username"
+                      spellcheck="false"/>
+                  </div>
+                  <button 
+                    *ngIf="currentForm != Form.Username"
+                    class="action-btn"
+                    (click)="editUsername()">Edit</button>
+                  <i 
+                    *ngIf="currentForm == Form.Username"
+                    class="fa-solid fa-check save-btn"
+                    (click)="saveUserDetails()"></i>
+                </div>
+                <div class="single-section">
+                  <label>EMAIL</label>
+                  <div class="data-value">
+                    <div *ngIf="currentForm != Form.Email">
+                      {{ user.email }}
+                    </div>
+                    <input
+                      *ngIf="currentForm == Form.Email"
+                      class="details-input"
+                      formControlName="email"
+                      spellcheck="false"/>
+                  </div>
+                  <button 
+                    *ngIf="currentForm != Form.Email"
+                    class="action-btn"
+                    (click)="editEmail()">Edit</button>
+                  <i 
+                    *ngIf="currentForm == Form.Email"
+                    class="fa-solid fa-check save-btn"
+                    (click)="saveUserDetails()"></i>
+                </div>
+                <div class="single-section">
+                  <label>PHONE NUMBER</label>
+                  <div class="data-value">
+                    <div *ngIf="user.phoneNumber && currentForm != Form.PhoneNumber">
+                      {{ user.phoneNumber }}
+                    </div>
+                    <div *ngIf="!user.phoneNumber && currentForm != Form.PhoneNumber">
+                      You haven't added a phone number yet.
+                    </div>
+                    <input
+                      *ngIf="currentForm == Form.PhoneNumber"
+                      class="details-input"
+                      formControlName="phoneNumber"
+                      spellcheck="false"/>
+                  </div>
+                  <button 
+                    *ngIf="currentForm != Form.PhoneNumber"
+                    class="action-btn"
+                    (click)="editPhoneNumber()">
+                    <div *ngIf="user.phoneNumber">Edit</div>
+                    <div *ngIf="!user.phoneNumber">Add</div>
+                  </button>
+                  <i 
+                    *ngIf="currentForm == Form.PhoneNumber"
+                    class="fa-solid fa-check save-btn"
+                    (click)="saveUserDetails()"></i>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <hr/>
+        <h3>Password and Authentication</h3>
+        <button 
+          mat-raised-button
+          color="primary"
+          class="change-pw-btn"
+          (click)="openPasswordDialog()">
+          Change Password
+        </button>
+      </div>
+    </div>
+    <div class="close-btn" (click)="onCloseClick()">
+      <mat-icon>close</mat-icon>
+      ESC
+    </div>
+  </div>
+</div>
