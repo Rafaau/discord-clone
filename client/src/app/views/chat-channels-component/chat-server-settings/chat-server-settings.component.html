@@ -1,12 +1,53 @@
 <div [@fadeIn] *ngIf="isOpen" class="server-settings-container">
   <div class="side-menu">
     <div *ngIf="chatServer">
-      <h5>{{ chatServer!.name }}</h5>
+      <h5>{{ chatServer.name }}</h5>
+      <div 
+        class="settings-option"
+        [class.current-option]="currentView == View.Overview">
+        Overview
+      </div>
     </div>
   </div>
   <div class="main-container">
     <div *ngIf="chatServer">
-
+      <h3>{{ currentView }}</h3>
+      <!-- OVERVIEW -->
+      <div *ngIf="currentView == View.Overview">
+        <div class="server-details-container">
+          <div class="col-1">
+            <div class="server-avatar">
+              {{ chatServer.name[0] }}
+            </div>
+            <div class="remove-span">
+              Remove
+            </div>
+          </div>
+          <div class="col-2">
+            <p>
+              We recommend an image of at least 512x512 for the server.
+            </p>
+            <button
+              class="upload-btn">
+              Upload Image
+            </button>
+          </div>
+          <div class="col-3">
+            <h5>SERVER NAME</h5>
+            <mat-form-field 
+              *ngIf="serverNameValue"
+              style="width: 100%;">
+              <input
+                matInput 
+                matNativeControl
+                required
+                spellcheck="false"
+                [value]="serverNameValue"
+                (input)="onNameValueChange($event)"/>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="close-btn" (click)="onCloseClick()">
       <mat-icon>close</mat-icon>

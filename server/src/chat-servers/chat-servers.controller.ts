@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Response } from "express";
-import { CreateChatServerDto } from "./chat-servers.dto";
+import { CreateChatServerDto, UpdateChatServerDto } from "./chat-servers.dto";
 import { ChatServersService } from "./chat-servers.service";
 
 
@@ -95,6 +95,27 @@ export class ChatServersController {
             response
                 .status(HttpStatus.OK)
                 .json(await this.chatServersService.removeMemberFromChatServer(userId, chatServerId))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
+    @Patch(':chatServerId')
+    @UsePipes(new ValidationPipe())
+    async updateChatServer(
+        @Param('chatServerId') id: number,
+        @Body() serverDetails: UpdateChatServerDto,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(HttpStatus.OK)
+                .json(await this.chatServersService.updateChatServer(id, serverDetails))
         } catch (e) {
             response
                 .status(e.status)

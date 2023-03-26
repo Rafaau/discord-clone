@@ -49,3 +49,7 @@ export type CreateNotificationParams = {
     message: string
     source: string
 }
+
+export type UpdateChatServerParams = {
+    name: string
+}

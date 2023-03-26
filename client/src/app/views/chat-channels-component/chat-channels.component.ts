@@ -51,7 +51,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   isServerMenuExpanded: boolean = false
   isServerSettingsOn: boolean = false
   @Output()
-  onServerSettingsToggle = new EventEmitter()
+  onServerSettingsToggle = new EventEmitter<ChatServer>
   @Input()
   notifications: Notification[] = []
   @Input()
@@ -245,7 +245,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   toggleServerSettings() {
     this.isServerSettingsOn = !this.isServerSettingsOn
     this.isServerMenuExpanded = false
-    this.onServerSettingsToggle.emit()
+    this.onServerSettingsToggle.emit(this.chatServer)
   }
 
   openGenerateInvitationDialog() {

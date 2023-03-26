@@ -21,17 +21,19 @@
         [notifications]="notifications">
       </app-direct-messages-list>
       <div class="user-tab">
-          <i 
-            class="fa-brands fa-discord" 
-            [ngClass]="true ? 'av-' + currentUser!.username[0].toLowerCase() : ''">
-          </i>
-          {{ currentUser!.username }}
-          <i 
-            class="fa-solid fa-gear options-icon"
-            matTooltip="User Settings"
-            matTooltipPosition="above"
-            (click)="toggleUserSettingsView($event)">
-          </i>
+          <div *ngIf="currentUser">
+            <i 
+              class="fa-brands fa-discord" 
+              [ngClass]="true ? 'av-' + currentUser.username[0].toLowerCase() : ''">
+            </i>
+            {{ currentUser.username }}
+            <i 
+              class="fa-solid fa-gear options-icon"
+              matTooltip="User Settings"
+              matTooltipPosition="above"
+              (click)="toggleUserSettingsView($event)">
+            </i>
+          </div>
       </div>
     </div>
     <div class="main-container">
@@ -54,7 +56,9 @@
   </div>
   <chat-server-settings 
     *ngIf="serverSettingsState" 
-    (onClose)="toggleServerSettingsView($event)">
+    (onClose)="toggleServerSettingsView($event)"
+    [chatServer]="chatServerToPass"
+    (onSave)="updateChatServer($event)">
   </chat-server-settings>
   <user-settings
     *ngIf="userSettingsState"

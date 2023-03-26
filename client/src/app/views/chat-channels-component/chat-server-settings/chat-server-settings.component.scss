@@ -33,7 +33,7 @@
 
 .close-btn {
     position: absolute;
-    top: 20px;
+    top: 50px;
     right: 0;
     display:block;
     cursor: pointer;
@@ -67,6 +67,12 @@ hr {
     border: 1px solid #3F4147;
 }
 
+p {
+    font-size: 13px;
+    font-weight: 300;
+    margin: 0;
+}
+
 .settings-option {
     color: #B5BAC1;
     font-weight: 400;
@@ -83,4 +89,80 @@ hr {
 .current-option {
     background-color: #404249;
     color: #f3f4f5;
+}
+
+.server-details-container {
+    display: flex;
+}
+
+.col-1 {
+    text-align: center;
+    margin-right: 30px;
+}
+
+.server-avatar {
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    line-height: 100px;
+    background-color: #1e1f21;
+    border-radius: 50%;
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.remove-span {
+    font-size: 13px;
+    font-weight: 500;
+    color: #AAAEBA;
+    cursor: pointer;
+}
+
+    .remove-span:hover {
+        color: #f3f4f5;
+    }
+
+.col-2 {
+    margin: 5px 25px 0 0;
+}
+
+.col-3 {
+    width: 600px;
+    margin-top: 5px;
+}
+
+    .col-3 h5 {
+        margin: 0 0 10px 0;
+        font-weight: 500;
+        color: #ADB1BD;
+    }
+
+.upload-btn {
+    margin-top: 15px;
+    background-color: transparent;
+    color: #f3f4f5;
+    border: 1px solid #4E5058;
+    padding: 12px 15px 12px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .upload-btn:hover {
+        background-color: #4E5058;
+    }
+
+::ng-deep .col-3 {
+    .mdc-text-field {
+        background-color: #232428!important;
+    }
+    .mat-mdc-input-element {
+        color: #F3F4F6!important;
+    }
+    mat-label {
+        color: #F3F4F6!important;
+    }
+    .mat-mdc-form-field-required-marker {
+        display: none;
+    }
 }

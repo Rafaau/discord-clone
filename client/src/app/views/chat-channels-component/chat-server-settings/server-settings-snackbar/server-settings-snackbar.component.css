@@ -1,0 +1,43 @@
+.snackbar-container {
+    width: 640px;
+    display: flex;
+    justify-content: space-between;
+    line-height: 30px;
+}
+
+p {
+    margin: 0;
+    font-size: 16px;
+    color: #f3f4f5;
+}
+
+::ng-deep .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    background-color: #111214;
+}
+
+::ng-deep .mdc-snackbar__label {
+    padding: 10px 5px 10px 15px;
+}
+
+.reset-span {
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+    .reset-span:hover {
+        text-decoration: underline;
+    }
+
+.save-btn {
+    background-color: #248046;
+    color: #f3f4f5;
+    border-radius: 5px;
+    border: none;
+    transition: 0.2s;
+    cursor: pointer;
+    padding: 5px 10px 5px 10px;
+}
+
+    .save-btn:hover {
+        background-color: #1A6334;
+    }

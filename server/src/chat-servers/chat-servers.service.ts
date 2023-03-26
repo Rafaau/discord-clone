@@ -5,7 +5,7 @@ import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
 import { ChatServer } from "src/typeorm/chat-server";
 import { User } from "src/typeorm/user";
-import { CreateChatServerParams } from "src/utils/types";
+import { CreateChatServerParams, UpdateChatServerParams } from "src/utils/types";
 import { Repository } from "typeorm";
 
 
@@ -122,6 +122,25 @@ export class ChatServersService {
         if (!user)
             throw new NotFoundException()
         return user
+    }
+
+    async updateChatServer(
+        id: number, 
+        serverDetails: UpdateChatServerParams
+    ) {
+        const chatServer = await this.chatServerRepository.findOne({ 
+            where: { id },
+            relations: [
+                'chatCategories',
+                'chatCategories.chatChannels'
+            ] 
+        })
+        if (!chatServer)
+            throw new NotFoundException()
+        return this.chatServerRepository.save({
+            ...chatServer,
+            ...serverDetails
+        })
     }
 
     async deleteChatServer(id: number) {

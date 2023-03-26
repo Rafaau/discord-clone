@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ChatServer, CreateChatServerParams } from '../_models/chat-servers';
+import { ChatServer, CreateChatServerParams, UpdateChatServerParams } from '../_models/chat-servers';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,17 @@ export class ChatServerService {
       this.api+`/chatservers/${chatServerId}/adduser/${userId}`,
       {},
       { observe: 'response' }  
+    )
+  }
+
+  updateChatServer(
+    id: number,
+    serverDetails: UpdateChatServerParams
+  ): Observable<HttpResponse<any>> {
+    return this.httpClient.patch(
+      this.api+`/chatservers/${id}`,
+      serverDetails,
+      { observe: 'response' }
     )
   }
 

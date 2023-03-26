@@ -12,3 +12,7 @@ export interface ChatServer {
 export interface CreateChatServerParams {
     name: string
 }
+
+export interface UpdateChatServerParams {
+    name: string
+}

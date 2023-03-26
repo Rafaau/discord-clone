@@ -1,0 +1,15 @@
+<div class="snackbar-container">
+  <p>
+    Careful - you have unsaved changes!
+  </p>
+  <div style="display: flex;">
+    <p 
+      class="reset-span"
+      (click)="onReset()">
+      Reset
+    </p>
+    <button 
+      (click)="onSave()"
+      class="save-btn">Save Changes</button>
+  </div>
+</div>

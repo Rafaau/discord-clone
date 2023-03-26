@@ -5,10 +5,13 @@ import { Component, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
+import { ChatServer } from 'src/app/_models/chat-servers';
 import { Notification } from 'src/app/_models/notification';
 import { User } from 'src/app/_models/Users';
 import { AuthService } from 'src/app/_services/auth.service';
+import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { ChatChannelsComponent } from '../chat-channels-component/chat-channels.component';
+import { ChatServerSettingsComponent } from '../chat-channels-component/chat-server-settings/chat-server-settings.component';
 import { ChatServersComponent } from '../chat-servers-component/chat-servers.component';
 import { DirectMessagesListComponent } from '../direct-messages-list-component/direct-messages-list.component';
 import { FriendsComponent } from '../friends-component/friends.component';
@@ -48,11 +51,16 @@ export class MainLayoutComponent implements OnInit {
   @ViewChild(DirectMessagesListComponent) directMessagesChild?: DirectMessagesListComponent
   @ViewChild(ChatServersComponent) chatServersChild?: ChatServersComponent
   @ViewChild(ChatChannelsComponent) chatChannelsChild?: ChatChannelsComponent
-  serverSettingsState: boolean = false
-  userSettingsState: boolean = true
+  @ViewChild(ChatServerSettingsComponent) serverSettingsChild?: ChatServerSettingsComponent
+  serverSettingsState: boolean = true
+  userSettingsState: boolean = false
+  chatServerToPass?: ChatServer
 
   constructor(
-    private _authService: AuthService,
+    private readonly _authService: AuthService,
+    // TO REMOVE
+    private readonly _serverService: ChatServerService,
+    // TO REMOVE
     public router: Router,
     private location: Location
   ) { }
@@ -87,11 +95,16 @@ export class MainLayoutComponent implements OnInit {
 
   async authorizeUser() {
     await this._authService.getAuthStatus().subscribe(
-      (data: HttpResponse<User>) => {
+      async (data: HttpResponse<User>) => {
         console.log('authorized')
         console.log(data.body)
         this.currentUser = data.body!
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
+        // TO REMOVE
+        await this._serverService.getChatServerById(18)
+          .subscribe((data: HttpResponse<ChatServer>) => {console.log(data.body) 
+            this.chatServerToPass = data.body!})
+        // TO REMOVE
         //this.router.navigate(['/directmessages'])
       },
       (error) => {
@@ -105,8 +118,16 @@ export class MainLayoutComponent implements OnInit {
     this.directMessagesChild?.fetchUserConversations(this.currentUser!.id)
   }
 
-  toggleServerSettingsView(event: Event) {
+  toggleServerSettingsView(event: ChatServer) {
     this.serverSettingsState = !this.serverSettingsState
+    // if (event != undefined)
+    //   this.chatServerToPass = event
+    // else
+    //   this.chatServerToPass = undefined
+  }
+
+  updateChatServer(chatServer: ChatServer) {
+    this.chatChannelsChild!.chatServer = chatServer
   }
 
   toggleUserSettingsView(event: Event) {
