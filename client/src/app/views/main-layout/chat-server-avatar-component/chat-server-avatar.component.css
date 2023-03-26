@@ -1,0 +1,7 @@
+.resized {
+    width: inherit;
+    height: inherit;
+    object-fit: cover;
+    border-radius: inherit;
+    line-height: inherit;
+}

@@ -117,7 +117,7 @@ h6 {
         padding-right: 10px;
     }
 
-i {
+.user-avatar {
     color: #F3F4F5;
     border-radius: 50%;
     width: 34px;
@@ -131,6 +131,11 @@ i {
     background-color: #2B2D31;
     margin-left: auto;
     color: #B8B9BF;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
 }
 
     .message-icon:hover {

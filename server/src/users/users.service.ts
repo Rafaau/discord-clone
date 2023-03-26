@@ -4,6 +4,8 @@ import { User } from "../typeorm/user";
 import { comparePassword, encodePassword } from "../utils/bcrypt";
 import { CreateUserParams, UpdateUserParams } from "../utils/types";
 import { Repository } from "typeorm";
+import { File as MulterFile } from 'multer';
+import { FileService } from "src/utils/file-service/file.service";
 
 @Injectable() 
 export class UsersService {

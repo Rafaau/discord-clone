@@ -12,7 +12,7 @@ import { ChangePasswordDialog } from './change-password-dialog/change-password-d
   templateUrl: './user-settings.component.html',
   styleUrls: [
     './user-settings.component.css',
-    '../../chat-channels-component/chat-server-settings/chat-server-settings.component.css'
+    '../../chat-channels-component/chat-server-settings/chat-server-settings.component.scss'
   ],
   animations: [
     trigger('fadeIn', [
@@ -143,10 +143,20 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       sub.unsubscribe()
     })
   }
+
+  onFileChange(event: Event) {
+    const file: File = (event.target as any).files[0]
+    console.log(file)
+    this._usersService.uploadAvatar(this.user!.id, file)
+      .subscribe((response: HttpResponse<any>) => {
+        console.log(response)
+      })
+  }
 }
 
 export enum View {
-  MyAccount = 'My Account'
+  MyAccount = 'My Account',
+  Profiles = 'Profiles'
 }
 
 export enum Form {

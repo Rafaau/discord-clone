@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as session from 'express-session'
-import * as passport from 'passport'
+import session from 'express-session';
+import passport from 'passport'
 import { TypeormStore } from 'connect-typeorm';
 import { SessionEntity } from './typeorm/session';
 import { DataSource } from 'typeorm';

@@ -46,6 +46,12 @@ hr {
     margin-bottom: 8px;
 }
 
+.avatar {
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+}
+
 i {
     font-size: 22px;
     height: 45px;

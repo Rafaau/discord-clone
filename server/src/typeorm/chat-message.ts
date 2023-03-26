@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { PolymorphicChildren } from "typeorm-polymorphic";
 import { ChatChannel } from "./chat-channel";
 import { MessageReaction } from "./message-reaction";
 import { User } from "./user";

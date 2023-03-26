@@ -52,15 +52,12 @@ export class MainLayoutComponent implements OnInit {
   @ViewChild(ChatServersComponent) chatServersChild?: ChatServersComponent
   @ViewChild(ChatChannelsComponent) chatChannelsChild?: ChatChannelsComponent
   @ViewChild(ChatServerSettingsComponent) serverSettingsChild?: ChatServerSettingsComponent
-  serverSettingsState: boolean = true
+  serverSettingsState: boolean = false
   userSettingsState: boolean = false
   chatServerToPass?: ChatServer
 
   constructor(
     private readonly _authService: AuthService,
-    // TO REMOVE
-    private readonly _serverService: ChatServerService,
-    // TO REMOVE
     public router: Router,
     private location: Location
   ) { }
@@ -100,11 +97,6 @@ export class MainLayoutComponent implements OnInit {
         console.log(data.body)
         this.currentUser = data.body!
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
-        // TO REMOVE
-        await this._serverService.getChatServerById(18)
-          .subscribe((data: HttpResponse<ChatServer>) => {console.log(data.body) 
-            this.chatServerToPass = data.body!})
-        // TO REMOVE
         //this.router.navigate(['/directmessages'])
       },
       (error) => {
@@ -120,10 +112,10 @@ export class MainLayoutComponent implements OnInit {
 
   toggleServerSettingsView(event: ChatServer) {
     this.serverSettingsState = !this.serverSettingsState
-    // if (event != undefined)
-    //   this.chatServerToPass = event
-    // else
-    //   this.chatServerToPass = undefined
+    if (event != undefined)
+      this.chatServerToPass = event
+    else
+      this.chatServerToPass = undefined
   }
 
   updateChatServer(chatServer: ChatServer) {

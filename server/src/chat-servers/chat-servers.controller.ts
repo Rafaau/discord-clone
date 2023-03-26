@@ -1,12 +1,19 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
+import { FileService } from "src/utils/file-service/file.service";
+import { MulterDiskUploadedFile } from "src/utils/file-service/multer-disk-uploaded-files";
 import { CreateChatServerDto, UpdateChatServerDto } from "./chat-servers.dto";
 import { ChatServersService } from "./chat-servers.service";
+import * as fs from 'fs'
 
 
 @Controller('chatservers')
 export class ChatServersController {
-    constructor(private readonly chatServersService: ChatServersService) {}
+    constructor(
+        private readonly chatServersService: ChatServersService,
+        private readonly fileService: FileService
+    ) {}
 
     @Post(':userId')
     @UsePipes(new ValidationPipe())
@@ -116,6 +123,65 @@ export class ChatServersController {
             response
                 .status(HttpStatus.OK)
                 .json(await this.chatServersService.updateChatServer(id, serverDetails))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
+    @Post(':id/uploadAvatar')
+    @UseInterceptors(FileInterceptor('avatar'))
+    async uploadAvatar(
+        @Param('id') id: number,
+        @UploadedFile() file: MulterDiskUploadedFile,
+        @Res() response: Response
+    ) {
+        console.log(file)
+        try {
+            const filename = await this.fileService.saveFile(
+                file,
+                `uploads/chat-server-avatars`,
+                `chat-server-${id}`
+            )
+            response
+                .status(HttpStatus.CREATED)
+                .json({
+                    filename: filename
+                })
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
+    @Get('/getAvatar/:filename')
+    async getAvatar(
+        @Param('filename') filename: string,
+        @Res() response: Response
+    ) {
+        try {
+            const fileStream = fs.createReadStream(`./uploads/chat-server-avatars/${filename}`)
+            fileStream.on('error', () => {
+                response
+                    .status(HttpStatus.OK)
+                    .json({
+                        statusCode: 404,
+                        message: "Not found but it's okay."
+                    })
+            })
+            fileStream.pipe(response)
+            response
+                .set({
+                    'Content-Type': `image/${filename.split('.')[1]}`
+                })
         } catch (e) {
             response
                 .status(e.status)

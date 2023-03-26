@@ -14,7 +14,10 @@
     *ngIf="messageToReply"
     class="message-to-reply">
     <div class="reply-avatar">
-      <i class="fa-brands fa-discord i-avatar" [ngClass]="true ? 'av-' + messageToReply.user.username[0].toLowerCase() : ''"></i>
+      <user-avatar 
+        [userId]="messageToReply.user.id" 
+        class="i-avatar"
+        [username]="messageToReply.user.username"/>
     </div>
     <div class="reply-username">
       {{ messageToReply.user.username }}
@@ -70,11 +73,11 @@
   <h5 *ngIf="!isExpired">YOU'VE BEEN INVITED TO JOIN A SERVER</h5>
   <h5 *ngIf="isExpired">YOU RECEIVED AN INVITE, BUT...</h5>
   <div style="position:relative; display: flex;">
-    <div
-      *ngIf="!isExpired" 
-      class="server-icon">
-      {{ chatServer.name[0] }}
-    </div>
+    <chat-server-avatar
+      *ngIf="!isExpired"
+      [serverId]="chatServer.id"
+      [name]="chatServer.name" 
+      class="server-icon"/>
     <i 
       *ngIf="isExpired"
       class="fa-solid fa-calendar-xmark expired-icon">

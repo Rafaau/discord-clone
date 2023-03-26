@@ -4,21 +4,29 @@
       <h5>USER SETTINGS</h5>
       <div 
         class="settings-option"
-        [class.current-option]="currentView == View.MyAccount">
+        [class.current-option]="currentView == View.MyAccount"
+        (click)="currentView = View.MyAccount">
         My Account
+      </div>
+      <div 
+        class="settings-option"
+        [class.current-option]="currentView == View.Profiles"
+        (click)="currentView = View.Profiles">
+        Profiles
       </div>
     </div>
   </div>
   <div class="main-container">
     <div *ngIf="user">
       <h3>{{ currentView }}</h3>
+      <!-- MY ACCOUNT VIEW -->
       <div *ngIf="currentView == View.MyAccount">
         <div class="user-details-container">
           <div class="bottom-section">
-            <i 
-              class="fa-brands fa-discord user-avatar" 
-              [ngClass]="true ? 'av-' + user.username[0].toLowerCase() : ''">
-            </i>
+            <user-avatar 
+              [userId]="user.id" 
+              class="user-avatar"
+              [username]="user.username"/>
             <div class="username">
               {{ user.username }}
             </div>
@@ -112,6 +120,34 @@
           (click)="openPasswordDialog()">
           Change Password
         </button>
+      </div>
+      <!-- PROFILES VIEW -->
+      <div style="display: flex; justify-content: space-between;"  *ngIf="currentView == View.Profiles">
+        <div class="profiles-left">
+          <h5>AVATAR</h5>
+          <input 
+            type="file" 
+            #fileUpload
+            style="display: none;"
+            (change)="onFileChange($event)"/>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="fileUpload.click()">
+            Change Avatar
+          </button>
+        </div>
+        <div class="profiles-right">
+          <h5>PREVIEW</h5>
+          <div class="preview-container">
+            <div class="bottom-section" style="height: 85%;">
+              <user-avatar 
+                [userId]="user.id" 
+                class="user-avatar"
+                [username]="user.username"/>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="close-btn" (click)="onCloseClick()">

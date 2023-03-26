@@ -1,0 +1,9 @@
+<img 
+  *ngIf="doesExist" 
+  [src]="api+serverId+'.jpeg'" 
+  class="resized"/>
+<div
+  *ngIf="!doesExist && name"
+  class="resized">
+  {{ name[0] }}
+</div>

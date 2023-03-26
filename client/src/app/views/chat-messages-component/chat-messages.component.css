@@ -319,6 +319,7 @@ h6 {
 }
 
 .single-member {
+    position: relative;
     display: flex;
     color: #989AA2;
     font-size: 16px;
@@ -333,7 +334,7 @@ h6 {
         color: #F3F4F5;
     }
 
-i {
+.member-avatar {
     color: #F3F4F5;
     border-radius: 50%;
     width: 34px;
@@ -341,7 +342,15 @@ i {
     line-height: 34px;
     text-align: center;
     margin-right: 8px;
+    font-size: 16px;
 }
+
+    .message-avatar {
+        width: 42px;
+        height: 42px;
+        line-height: 42px;
+        font-size: 20px;
+    }
 
 .message-actions {
     position: absolute;
@@ -361,7 +370,7 @@ i {
 
 .action-btn {
     color: #B8B9BF;
-    padding: 0;
+    padding: 10px;
     margin: 0;
     cursor: pointer;
     border-radius: 5px;

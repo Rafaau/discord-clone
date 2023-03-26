@@ -16,9 +16,10 @@
       <div *ngIf="currentView == View.Overview">
         <div class="server-details-container">
           <div class="col-1">
-            <div class="server-avatar">
-              {{ chatServer.name[0] }}
-            </div>
+            <chat-server-avatar
+              [name]="chatServer.name"
+              [serverId]="chatServer.id"
+              class="server-avatar"/>
             <div class="remove-span">
               Remove
             </div>
@@ -27,8 +28,14 @@
             <p>
               We recommend an image of at least 512x512 for the server.
             </p>
+            <input
+              type="file"
+              #fileUpload
+              style="display: none;"
+              (change)="onFileChange($event)"/>
             <button
-              class="upload-btn">
+              class="upload-btn"
+              (click)="fileUpload.click()">
               Upload Image
             </button>
           </div>

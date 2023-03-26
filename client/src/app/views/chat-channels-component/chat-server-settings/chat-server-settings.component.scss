@@ -79,6 +79,7 @@ p {
     border-radius: 5px;
     padding: 8px 12px 8px 12px;
     cursor: pointer;
+    margin-bottom: 3px;
 }
 
     .settings-option:hover {
@@ -96,11 +97,13 @@ p {
 }
 
 .col-1 {
+    position: relative;
     text-align: center;
-    margin-right: 30px;
 }
 
 .server-avatar {
+    position: absolute;
+    left: 0;
     width: 100px;
     height: 100px;
     text-align: center;
@@ -108,7 +111,6 @@ p {
     background-color: #1e1f21;
     border-radius: 50%;
     font-size: 42px;
-    margin-bottom: 10px;
 }
 
 .remove-span {
@@ -116,6 +118,9 @@ p {
     font-weight: 500;
     color: #AAAEBA;
     cursor: pointer;
+    position: absolute;
+    top: 110px;
+    left: 26px;
 }
 
     .remove-span:hover {
@@ -123,7 +128,7 @@ p {
     }
 
 .col-2 {
-    margin: 5px 25px 0 0;
+    margin: 5px 25px 0 130px;
 }
 
 .col-3 {

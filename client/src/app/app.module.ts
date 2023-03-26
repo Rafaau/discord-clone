@@ -37,6 +37,8 @@ import { MessageReactionsComponent } from './views/chat-messages-component/messa
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UserSettingsComponent } from './views/main-layout/user-settings-component/user-settings.component';
 import { ChangePasswordDialog } from './views/main-layout/user-settings-component/change-password-dialog/change-password-dialog.component';
+import { UserAvatarComponent } from './views/main-layout/user-avatar-component/user-avatar.component';
+import { ChatServerAvatarComponent } from './views/main-layout/chat-server-avatar-component/chat-server-avatar.component';
 
 const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 
@@ -63,7 +65,9 @@ const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: 
     UserSettingsComponent,
     ChangePasswordDialog,
     MessageContentComponent,
-    MessageReactionsComponent
+    MessageReactionsComponent,
+    UserAvatarComponent,
+    ChatServerAvatarComponent
   ],
   imports: [
     BrowserModule,

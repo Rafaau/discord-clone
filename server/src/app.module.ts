@@ -26,6 +26,7 @@ import { MessageReaction } from './typeorm/message-reaction';
 import { MessageReactionsModule } from './message-reactions/message-reactions.module';
 import { Notification } from './typeorm/notification';
 import { NotificationsModule } from './notifications/notifications.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -40,6 +41,12 @@ import { NotificationsModule } from './notifications/notifications.module';
     MessageReactionsModule,
     NotificationsModule,
     AuthModule,
+    MulterModule.register({
+      dest: '../uploads/chat-server-avatars'
+    }),
+    MulterModule.register({
+      dest: '../uploads/user-avatars'
+    }), 
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',

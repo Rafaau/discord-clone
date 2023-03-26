@@ -52,4 +52,17 @@ export class UsersService {
       { observe: 'response' }
     )
   }
+
+  uploadAvatar(
+    userId: number,
+    fileToUpload: File
+  ): Observable<HttpResponse<any>> {
+    const formData: FormData = new FormData()
+    formData.append('avatar', fileToUpload, `avatar-${userId}`)
+    return this.httpClient.post(
+      this.api+`/users/${userId}/uploadAvatar`,
+      formData,
+      { observe: 'response' }
+    )
+  }
 }

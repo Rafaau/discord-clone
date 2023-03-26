@@ -108,6 +108,14 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
         )
     }
   }
+
+  onFileChange(event: Event) {
+    const file: File = (event.target as any).files[0]
+    this._chatServerService.uploadAvatar(this.chatServer!.id, file)
+      .subscribe((response: HttpResponse<any>) => {
+        console.log(response)
+      })
+  }
 }
 
 export enum View {

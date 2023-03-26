@@ -6,7 +6,10 @@
     'left': (user.username.length*8)+365+'px'
   } : {}">
   <div class="details-upper" [ngClass]="true ? 'av-' + user!.username[0].toLowerCase() : ''"></div>
-  <i class="fa-brands fa-discord member-avatar" [ngClass]="true ? 'av-' + user!.username[0].toLowerCase() : ''"></i>
+  <user-avatar 
+    [userId]="user.id" 
+    class="member-avatar"
+    [username]="user.username"/>
   <div class="details">
     <div class="username">
       {{ user.username }}

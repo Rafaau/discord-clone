@@ -52,9 +52,10 @@ h6 {
     }
 
 .single-conversation {
+    position: relative;
     color: #989AA2;
     margin-inline: 9px;
-    padding-left: 9px;
+    padding-left: 55px;
     cursor: pointer;
     height: 45px;
     line-height: 45px;
@@ -68,7 +69,10 @@ h6 {
         color: #F3F4F5;
     }
 
-i {
+.user-avatar {
+    position: absolute;
+    left: 9px;
+    top: 7px;
     color: #F3F4F5;
     border-radius: 50%;
     width: 34px;

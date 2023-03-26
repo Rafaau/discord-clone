@@ -4,6 +4,7 @@ import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
 import { ChatServer } from "src/typeorm/chat-server";
 import { User } from "src/typeorm/user";
+import { FileService } from "src/utils/file-service/file.service";
 import { ChatServersController } from "./chat-servers.controller";
 import { ChatServersService } from "./chat-servers.service";
 
@@ -16,6 +17,6 @@ import { ChatServersService } from "./chat-servers.service";
         User, 
     ])],
     controllers: [ChatServersController],
-    providers: [ChatServersService]
+    providers: [ChatServersService, FileService]
 })
 export class ChatServerModule {}

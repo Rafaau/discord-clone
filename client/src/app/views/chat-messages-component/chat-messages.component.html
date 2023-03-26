@@ -57,7 +57,10 @@
                 *ngIf="firstOfMessages" 
                 class="user-avatar"
                 (click)="openMemberDetails(message.user.id, 1)">
-                <i class="fa-brands fa-discord i-avatar" [ngClass]="true ? 'av-' + message.user.username[0].toLowerCase() : ''"></i>
+                <user-avatar 
+                  [userId]="message.user.id" 
+                  class="message-avatar"
+                  [username]="message.user.username"/>
               </div>
 
               <div [ngClass]="firstOfMessages ? 'margin-fix' : ''">
@@ -301,7 +304,10 @@
       <div 
         class="single-member"
         (click)="openMemberDetails(members![0].id, 0)">
-        <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + members![0].username[0].toLowerCase() : ''"></i>
+        <user-avatar 
+          [userId]="members![0].id" 
+          class="member-avatar"
+          [username]="members![0].username"/>
         {{ members![0].username }}
       </div>
       <h6 *ngIf="members!.length > 1">MEMBERS  - {{ members!.length - 1 }}</h6>
@@ -327,7 +333,10 @@
             class="single-member"
             (click)="openMemberDetails(member.id, 0)"
             (contextmenu)="onMemberRightClick(member.id)">
-            <i class="fa-brands fa-discord" [ngClass]="true ? 'av-' + member.username[0].toLowerCase() : ''"></i>
+            <user-avatar 
+              [userId]="member.id" 
+              class="member-avatar"
+              [username]="member.username"/>
             {{ member.username }}
           </div>
         </div>

@@ -55,6 +55,19 @@ export class ChatServerService {
     )
   }
 
+  uploadAvatar(
+    id: number,
+    fileToUpload: File
+  ): Observable<HttpResponse<any>> {
+    const formData: FormData = new FormData()
+    formData.append('avatar', fileToUpload, `avatar-${id}`)
+    return this.httpClient.post(
+      this.api+`/chatservers/${id}/uploadAvatar`,
+      formData,
+      { observe: 'response' }
+    )
+  }
+
   removeMemberFromChatServer(
     chatServerId: number,
     userId: number

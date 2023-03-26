@@ -23,7 +23,10 @@
       [matBadge]="groupedNotifications[i + 1].length"
       matBadgeColor="warn"
       (click)="redirectTo(chatServer.id.toString())">
-      {{ chatServer.name[0] }}
+      <chat-server-avatar
+        [serverId]="chatServer.id"
+        [name]="chatServer.name"
+        class="avatar"/>
       <div class="indicator"></div>
       <div [@routeChange] *ngIf="router.url.includes('/chatserver?id='+chatServer.id)" class="current"></div>
     </div>

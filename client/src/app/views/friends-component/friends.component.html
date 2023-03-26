@@ -27,7 +27,10 @@
     class="single-friend" 
     *ngFor="let friend of filterFriendsBySearch(friendsOfUser)"
     (click)="redirectToConversation(friend)">
-    <i class="fa-brands fa-discord" [ngClass]="true ? 'av-'+friend.username[0].toLowerCase() : ''"></i>
+    <user-avatar 
+      [userId]="friend.id" 
+      class="user-avatar"
+      [username]="friend.username"/>
     {{ friend.username }}
     <i class="fa-solid fa-message message-icon" matTooltip="Message" matTooltipPosition="above"></i>
   </div>

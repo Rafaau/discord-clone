@@ -1,0 +1,9 @@
+<img 
+  *ngIf="doesExist" 
+  [src]="api+userId+'.jpeg'" 
+  class="resized"/>
+<i 
+  *ngIf="!doesExist && username"
+  class="fa-brands fa-discord resized" 
+  [ngClass]="true ? 'av-' + username[0].toLowerCase() : ''">
+</i>

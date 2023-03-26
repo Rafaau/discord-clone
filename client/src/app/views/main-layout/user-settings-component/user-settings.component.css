@@ -109,3 +109,18 @@ label {
     font-size: 15px;
     padding: 0;
 }
+
+.profiles-left h5 {
+    margin: 0 0 10px 0;
+}
+.profiles-right h5 {
+    margin: 0 0 10px 0;
+}
+
+.preview-container {
+    position: relative;
+    border-radius: 8px;
+    background-color: #36393F;
+    width: 320px;
+    height: 400px;
+}

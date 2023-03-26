@@ -37,18 +37,21 @@
     position: absolute;
     background-color: #232428;
     height: 45px;
-    line-height: 35px;
     width: 220px;
     bottom: 20px;
     padding-left: 10px;
-    display: flex;
     padding-top: 10px;
     font-size: 14px;
     font-weight: 500;
     z-index: 10;
 }
 
-i {
+.flex {
+    display: flex;
+    line-height: 35px;
+}
+
+user-avatar {
     color: #F3F4F5;
     border-radius: 50%;
     width: 34px;
@@ -63,6 +66,8 @@ i {
     margin-left: auto;
     cursor: pointer;
     font-size: 16px;
+    margin-right: 15px;
+    margin-top: 8px;
 }
 
     .options-icon:hover {

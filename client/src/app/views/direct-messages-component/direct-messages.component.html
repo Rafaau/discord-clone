@@ -50,7 +50,10 @@
               <div 
                 *ngIf="firstOfMessages" 
                 class="user-avatar">
-                <i class="fa-brands fa-discord i-avatar" [ngClass]="true ? 'av-' + message.user.username[0].toLowerCase() : ''"></i>
+                <user-avatar 
+                  [userId]="message.user.id" 
+                  class="avatar"
+                  [username]="message.user.username"/>
               </div>
 
               <div [ngClass]="firstOfMessages ? 'margin-fix' : ''">
