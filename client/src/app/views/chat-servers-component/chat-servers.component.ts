@@ -24,17 +24,17 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
     trigger('routeChange', [
       transition(':enter', [
         style({
-          transform: 'translateX(2px) scale(0.5)'
+          transform: 'scaleY(0.5)'
         }),
-        animate('0.3s ease',
+        animate('0.3s cubic-bezier(0.35, 0, 0.25, 1.75)',
           style({
-            transform: 'translateX(*) scale(1)'
+            transform: 'scaleY(1)'
         }))
       ]),
       transition(':leave', [
         animate('0.2s',
           style({
-            transform: 'scale(0)'
+            transform: 'scaleY(0)'
           }))
       ])
     ])

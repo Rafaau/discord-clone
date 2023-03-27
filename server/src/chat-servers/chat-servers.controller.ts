@@ -26,7 +26,7 @@ export class ChatServersController {
             response
                 .status(HttpStatus.CREATED)
                 .json(await this.chatServersService.createChatServer(userId, createChatServerDto))
-        } catch(e) {
+        } catch (e) {
             response
                 .status(e.status)
                 .json({

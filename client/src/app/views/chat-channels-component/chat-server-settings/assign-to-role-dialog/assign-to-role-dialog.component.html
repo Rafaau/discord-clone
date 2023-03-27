@@ -1,0 +1,41 @@
+<div style="padding: 15px">
+  <h2 style="text-align: center;">Add members</h2>
+  <h4>{{ data.role }}</h4>
+
+  <h5>MEMBERS</h5>
+  <div class="members-container">
+    <div *ngFor="let user of data.members">
+      <div 
+        class="single-user"
+        (click)="addOrRemoveFromList(user)">
+        <div 
+          class="checkbox-container"
+          [class.checked]="membersToAdd.includes(user.id)">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <user-avatar
+          [username]="user.username"
+          [userId]="user.id"
+          class="user-avatar"/>
+        <div class="user-name">
+          {{ user.username }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bottom-actions">
+  <div 
+    class="cancel"
+    mat-dialog-close>
+    Cancel
+  </div>
+  <button
+    mat-raised-button
+    color="primary"
+    class="submit-btn"
+    (click)="onAdd()">
+    Add
+  </button>
+</div>
+

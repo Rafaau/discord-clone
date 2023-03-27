@@ -39,6 +39,7 @@ import { UserSettingsComponent } from './views/main-layout/user-settings-compone
 import { ChangePasswordDialog } from './views/main-layout/user-settings-component/change-password-dialog/change-password-dialog.component';
 import { UserAvatarComponent } from './views/main-layout/user-avatar-component/user-avatar.component';
 import { ChatServerAvatarComponent } from './views/main-layout/chat-server-avatar-component/chat-server-avatar.component';
+import { AssignToRoleDialog } from './views/chat-channels-component/chat-server-settings/assign-to-role-dialog/assign-to-role-dialog.component';
 
 const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 
@@ -67,7 +68,8 @@ const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: 
     MessageContentComponent,
     MessageReactionsComponent,
     UserAvatarComponent,
-    ChatServerAvatarComponent
+    ChatServerAvatarComponent,
+    AssignToRoleDialog,
   ],
   imports: [
     BrowserModule,

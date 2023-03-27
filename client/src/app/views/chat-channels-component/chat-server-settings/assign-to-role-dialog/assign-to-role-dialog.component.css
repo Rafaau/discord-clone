@@ -1,0 +1,84 @@
+h2 {
+    font-weight: 500;
+}
+
+h5 {
+    font-weight: 500;
+    margin: 30px 0 5px 0;
+}
+
+.single-user {
+    display: flex;
+    line-height: 28px;
+    padding: 7px 10px 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .single-user:hover {
+        background-color: #43444B;
+    }
+
+.user-avatar {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    line-height: 25px;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+.user-name {
+    font-size: 14px;
+}
+
+.members-container {
+    height: 280px;
+    overflow-y: scroll;
+}
+
+    .members-container::-webkit-scrollbar {
+        display: none;
+    }
+
+.checkbox-container {
+    border: 1px solid #80848E;
+    border-radius: 8px;
+    margin: 2px 20px 0 0;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    line-height: 22px;
+    font-size: 14px;
+    color: transparent;
+}
+
+    .checked {
+        color: #f3f4f5;
+        background-color: #3F51B5;
+    }
+
+.bottom-actions {
+    display: flex;
+    justify-content: right;
+    background-color: #2B2D31;
+    overflow: hidden;
+    height: 65px;
+    line-height: 65px;
+}
+
+.submit-btn {
+    margin: 15px;
+}
+
+.cancel {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    margin-right: 5px;
+    cursor: pointer;
+}

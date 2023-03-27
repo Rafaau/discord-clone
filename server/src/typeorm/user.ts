@@ -5,6 +5,7 @@ import { DirectConversation } from "./direct-conversation";
 import { DirectMessage } from "./direct-message";
 import { MessageReaction } from "./message-reaction";
 import { Notification } from "./notification";
+import { Role } from "./role";
 
 @Entity({ name: 'users' })
 export class User {
@@ -67,4 +68,9 @@ export class User {
         nullable: true
     })
     notifications?: Notification[]
+
+    @ManyToMany(() => Role, role => role.users, {
+        nullable: true
+    })
+    roles: Role[]
 }

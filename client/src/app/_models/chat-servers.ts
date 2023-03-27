@@ -1,4 +1,5 @@
 import { ChatCategory } from "./chat-category"
+import { Role } from "./role"
 import { User } from "./Users"
 
 export interface ChatServer {
@@ -6,7 +7,8 @@ export interface ChatServer {
     name: string,
     owner: User,
     members?: User[],
-    chatCategories?: ChatCategory[]
+    chatCategories?: ChatCategory[],
+    roles?: Role[]
 }
 
 export interface CreateChatServerParams {

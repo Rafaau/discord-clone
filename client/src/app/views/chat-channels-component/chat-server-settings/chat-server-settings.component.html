@@ -4,8 +4,15 @@
       <h5>{{ chatServer.name }}</h5>
       <div 
         class="settings-option"
-        [class.current-option]="currentView == View.Overview">
+        [class.current-option]="currentView == View.Overview"
+        (click)="currentView = View.Overview">
         Overview
+      </div>
+      <div 
+        class="settings-option"
+        [class.current-option]="currentView == View.Roles || currentView == View.RolesExtended"
+        (click)="currentView = View.Roles">
+        Roles
       </div>
     </div>
   </div>
@@ -55,10 +62,167 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="close-btn" (click)="onCloseClick()">
-      <mat-icon>close</mat-icon>
-      ESC
+      <!-- ROLES -->
+      <div *ngIf="currentView == View.Roles">
+        <p>Use roles to group your server members and assign permissions.</p>
+        <table 
+          mat-table 
+          *ngIf="chatServer.roles" 
+          [dataSource]="chatServer.roles"
+          class="roles-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>ROLES - {{ chatServer.roles.length }}</th>
+            <td 
+              mat-cell 
+              *matCellDef="let role" 
+              class="role-name" 
+              (click)="currentRole = role">
+              <div style="display: flex; line-height: 30px;">
+                <mat-icon class="role-icon">verified_user</mat-icon>
+                {{ role.name }}
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="users">
+            <th mat-header-cell *matHeaderCellDef>MEMBERS</th>
+            <td 
+              mat-cell 
+              *matCellDef="let role" 
+              (click)="currentRole = role">
+              <div class="members-td">               
+                {{ role.users.length }}
+                <mat-icon class="members-icon">supervisor_account</mat-icon>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let role">
+              <div class="actions-container">
+                <mat-icon>edit</mat-icon>
+                <mat-icon>delete</mat-icon>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr 
+            mat-row 
+            *matRowDef="let row; columns: displayedColumns;"
+            (click)="currentView = View.RolesExtended">
+          </tr>
+        </table>
+      </div>
+      <!-- ROLES EXTENDED -->
+      <div *ngIf="currentView == View.RolesExtended && currentRole">
+        <div style="display: flex;">
+          <div class="col-left">
+            <div class="roles-upper">
+              <div 
+                class="back-to-roles-btn"
+                (click)="currentView = View.Roles">
+                <mat-icon>arrow_back</mat-icon>
+                <h4>BACK</h4>
+              </div>
+              <mat-icon
+                matTooltip="Create Role"
+                (click)="onCreateRole()">
+                add
+              </mat-icon>
+            </div>
+            <div 
+              *ngFor="let role of chatServer.roles"
+              class="single-role"
+              [class.current]="role.id == currentRole.id"
+              (click)="currentRole = role"
+              (contextmenu)="onRoleRightClick(role)"
+              (clickOutside)="!doNotInterrupt ? currentRoleOptions = 0 : null">
+              <i class="fa-solid fa-circle"></i>
+              {{ role.name }}
+              <div
+                *ngIf="currentRoleOptions == role.id" 
+                class="role-options">
+                <div
+                  (click)="onDeleteRole()" 
+                  class="role-option warn">
+                  Delete
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-right">
+            <h4>EDIT ROLE - {{ currentRole.name.toUpperCase() }}</h4>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+              <div 
+                class="edit-role-item"
+                [class.current-edit]="currentEditRoleView == EditRoleView.Display"
+                (click)="currentEditRoleView = EditRoleView.Display">
+                Display
+              </div>
+              <div 
+                class="edit-role-item"
+                [class.current-edit]="currentEditRoleView == EditRoleView.Permissions"
+                (click)="currentEditRoleView = EditRoleView.Permissions">
+                Permissions
+              </div>
+              <div 
+                class="edit-role-item"
+                [class.current-edit]="currentEditRoleView == EditRoleView.ManageMembers"
+                (click)="currentEditRoleView = EditRoleView.ManageMembers">
+                Manage Members ({{ currentRole.users.length }})
+              </div>
+          </div>
+          <mat-divider></mat-divider>
+          <!-- DISPLAY -->
+          <div *ngIf="currentEditRoleView == EditRoleView.Display">
+            <h5>ROLE NAME <i>*</i></h5>
+            <div class="input-container" style="height: 40px; width: 100%;">
+              <input
+                [value]="currentRole.name"
+                (input)="onRoleNameChange($event)"
+                spellcheck="false"/>
+            </div>
+          </div>
+          <!-- PERMISSIONS -->
+          <div *ngIf="currentEditRoleView == EditRoleView.Permissions">
+
+          </div>
+          <!-- MANAGE MEMBERS -->
+          <div *ngIf="currentEditRoleView == EditRoleView.ManageMembers">
+            <div style="display: flex; margin-bottom: 20px;">
+              <div class="input-container">
+                <input
+                  placeholder="Search Members"/>
+              </div>
+              <button
+                mat-raised-button
+                color="primary"
+                class="add-to-role-btn"
+                (click)="openAddMembersToRoleDialog()">
+                Add Members
+              </button>
+            </div>
+            <div *ngFor="let user of currentRole.users">
+              <div class="single-user">
+                <user-avatar
+                  [username]="user.username"
+                  [userId]="user.id"
+                  class="user-avatar"/>
+                <div class="user-name">
+                  {{ user.username }}
+                </div>
+                <i 
+                  matTooltip="Remove member"
+                  matTooltipPosition="above"
+                  class="fa-solid fa-circle-xmark remove-btn"
+                  (click)="onRemoveMemberFromRole(user.id)">
+                </i>
+              </div>
+          </div>
+      </div>
     </div>
   </div>
+</div>
+<div class="close-btn" (click)="onCloseClick()">
+  <mat-icon>close</mat-icon>
+  ESC
 </div>

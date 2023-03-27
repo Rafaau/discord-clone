@@ -171,3 +171,248 @@ p {
         display: none;
     }
 }
+
+.roles-table {
+    margin-top: 20px;
+    background-color: transparent;
+    color: #f3f4f5;
+}
+
+th {
+    color: #ADB1BD;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0;
+}
+
+td {
+    padding: 0;
+}
+
+    .role-row:hover {
+        background-color: #3A3C42;
+    }
+
+.role-name {
+    color: #f3f4f5;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.role-icon {
+    border: none;
+    color: #99AAB5;
+    margin-right: 5px;
+}
+
+.members-icon {
+    border: none;
+    color: #B5BAC1;
+    margin-left: 5px;
+}
+
+.members-td {
+    display: flex; 
+    line-height: 35px; 
+    color: #B5BAC1;
+    font-size: 15px;
+}
+
+.mat-mdc-table .mdc-data-table__header-row .mat-mdc-header-cell {
+    border-color: #3F4147;
+}
+
+.mat-mdc-row .mat-mdc-cell {
+    position: relative;
+    border-color: #3F4147;
+    cursor: pointer;
+}
+
+.mat-mdc-row {
+    position: relative;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+    background-color: #3A3C42;
+  }
+
+.back-to-roles-btn {
+    display: flex;
+    color: #B5BAC1;
+    cursor: pointer;
+    line-height: 35px;
+}
+
+.back-to-roles-btn:hover {
+    color: #f3f4f5;
+}
+
+    .back-to-roles-btn mat-icon {
+        border: none;
+        margin-right: 5px;
+    }
+
+    .back-to-roles-btn h4 {
+        margin: 0;
+        font-weight: 500;
+    }
+
+.col-left {
+    padding-right: 15px;
+}
+
+.col-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 250px;
+    width: 420px;
+    padding: 56px 0 0 20px;
+    border-left: 1px solid #3F4147;
+}
+
+.col-right h4 {
+    margin: 0;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+
+.roles-upper {
+    display: flex;
+    width: 190px;
+    margin-bottom: 20px;
+}
+
+    .roles-upper mat-icon {
+        border: none;
+        margin-left: auto;
+        cursor: pointer;
+    }
+
+.single-role {
+    position: relative;
+    display: flex;
+    padding: 10px 15px 10px 40px;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+    .single-role:hover {
+        background-color: #3A3C42;
+    }
+
+    .current {
+        background-color: #43444B;
+    }
+
+    .single-role i {
+        position: absolute;
+        color: #99AAB5;
+        margin-right: 10px;
+        top: 11px;
+        left: 15px;
+    }
+
+.edit-role-item {
+    color: #B5BAC1;
+    cursor: pointer;
+}
+
+.current-edit {
+    color: #f3f4f5;
+}
+
+.single-user {
+    display: flex;
+    line-height: 35px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+}
+
+    .single-user:hover {
+        background-color: #3A3C42;
+    }
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 35px;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.user-name {
+    font-size: 14px;
+}
+
+.input-container {
+    background-color: #1E1F22;
+    border-radius: 5px;
+    display: flex;
+    width: 255px;
+    margin-right: 10px;
+    padding-inline: 10px;
+}
+
+    .input-container input {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        color: #f3f4f5;
+    }
+
+.remove-btn {
+    color: #B5BAC1;
+    margin-left: auto;
+    margin-top: 10px;
+}
+
+    .remove-btn:hover {
+        color: #f3f4f5;
+    }
+
+.role-options {
+    position: absolute;
+    right: -30px;
+    bottom: -20px;
+    background-color: #111214;
+    border-radius: 5px;
+    height: auto;
+    width: 100px;
+    padding: 5px;
+    z-index: 5;
+}
+
+.role-option {
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    color: #B5BAC1;
+}
+
+.warn {
+   color: #F23F42; 
+}
+
+    .warn:hover {
+        background-color: #F23F42; 
+        color: #f3f4f5;
+    }
+
+.col-right h5 {
+    margin: 0;
+    color: #B5BAC1;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+h5 i {
+    color: #F23F42;
+    font-size: 10px;
+}

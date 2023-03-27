@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ChatCategory } from "./chat-category";
 import { ChatServerInvitation } from "./chat-server-invitation";
+import { Role } from "./role";
 import { User } from "./user";
 
 @Entity({ name: 'chat-servers' })
@@ -29,4 +30,10 @@ export class ChatServer {
         nullable: true
     })
     invitations?: ChatServerInvitation[]
+
+    @OneToMany(() => Role, role => role.chatServer, {
+        nullable: true,
+        onDelete: 'CASCADE',
+    })
+    roles?: Role[]
 }

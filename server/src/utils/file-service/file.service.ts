@@ -17,7 +17,7 @@ export class FileService {
         const newFilename = `${filename}.${file.mimetype.split('/')[1]}`
         const newPath = path.join(directory, newFilename)
 
-        const resizedImage = await sharp(file.buffer).resize(256).toBuffer()
+        const resizedImage = await sharp(file.buffer).resize(128).toBuffer()
 
         await writeFile(newPath, resizedImage)
         return newPath

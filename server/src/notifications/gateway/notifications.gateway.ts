@@ -1,12 +1,20 @@
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { NotificationsService } from "../notifications.service";
 import { Server, Socket } from "socket.io";
+import eventBus from "src/utils/file-service/event-bus";
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
 export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly notificationsService: NotificationsService
-    ) {}
+    ) {
+        eventBus.on('newNotification', (notification) => {
+            this.server.emit('newNotification', notification)
+        })
+        eventBus.on('readedNotification', (notification) => {
+            this.server.emit('readedNotification', notification)
+        })
+    }
 
     @WebSocketServer()
     server: Server
@@ -27,7 +35,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
         const notification = await this.notificationsService
             .createNotification(params[0], params[1])
         if (params[1] == notification.recipient.id)
-            this.server.emit('newNotification', notification)
+            eventBus.emit('newNotification', notification)
     }
 
     @SubscribeMessage('markAsRead')
@@ -38,6 +46,6 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
         const readed = await this.notificationsService
             .markAsRead(params[0])
         if (params[1] == readed.recipient.id)
-            this.server.emit('readedNotification', readed)
+            eventBus.emit('readedNotification', readed)
     }
 }

@@ -53,3 +53,7 @@ export type CreateNotificationParams = {
 export type UpdateChatServerParams = {
     name: string
 }
+
+export type UpdateRoleParams = {
+    name: string
+}

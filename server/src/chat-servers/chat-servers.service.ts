@@ -4,6 +4,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
 import { ChatServer } from "src/typeorm/chat-server";
+import { Permission } from "src/typeorm/permission";
+import { Role } from "src/typeorm/role";
 import { User } from "src/typeorm/user";
 import { CreateChatServerParams, UpdateChatServerParams } from "src/utils/types";
 import { Repository } from "typeorm";
@@ -15,33 +17,53 @@ export class ChatServersService {
         @InjectRepository(ChatServer) private readonly chatServerRepository: Repository<ChatServer>,
         @InjectRepository(ChatCategory) private readonly chatCategoryRepository: Repository<ChatCategory>,
         @InjectRepository(ChatChannel) private readonly chatChannelRepository: Repository<ChatChannel>,
-        @InjectRepository(User) private readonly userRepository: Repository<User>
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+        @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>
     ) {}
 
     async createChatServer(userId: number, chatServerDetails: CreateChatServerParams) {
-        const owner = await this.userRepository.findOneBy({ id: userId })
+        const owner = await this.findOwner(userId)
         const members = [{...owner}]
-        if (!owner) 
-            throw new HttpException(
-                'User not found. Cannot create chat server.',
-                HttpStatus.BAD_REQUEST
-            )
+    
         const newChatServer = this.chatServerRepository.create({
             ...chatServerDetails,
-            owner, 
+            owner,
             members
         })
-        const newChatCategory = this.chatCategoryRepository.create({
-            name: 'Text channels'
-        })
-        const newChatChannel = this.chatChannelRepository.create({
-            name: 'general'
-        })
+    
+        const newChatCategory = this.createChatCategory()
+        const newChatChannel = this.createChatChannel()
+    
+        const [
+            administratorPermission, 
+            viewChannelPermission, 
+            sendMessagesPermission
+        ] = await this.createPermissions()
+    
+        const [ownerRole, memberRole] = await this.createRoles(
+            owner, 
+            administratorPermission, 
+            viewChannelPermission, 
+            sendMessagesPermission
+        )
+    
         newChatCategory.chatChannels = [{...newChatChannel}]
         newChatServer.chatCategories = [{...newChatCategory}]
-        return this.chatServerRepository.save(newChatServer)
-    }
-
+        newChatServer.roles = [ownerRole, memberRole]
+    
+        try {
+            await this.chatServerRepository.save(newChatServer)
+            return newChatServer
+        } catch (e) {
+            console.log(e)
+            throw new HttpException(
+                'Error while creating chat server',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+    } 
+    
     getAllChatServers() {
         return this.chatServerRepository.find({ relations: ['owner', 'members'] })
     }
@@ -110,7 +132,10 @@ export class ChatServersService {
                 'chatCategories', 
                 'chatCategories.chatChannels',
                 'chatCategories.chatChannels.chatCategory',
-                'members'
+                'members',
+                'roles',
+                'roles.permissions',
+                'roles.users'
             ],
             order: {
                 chatCategories: {
@@ -135,6 +160,7 @@ export class ChatServersService {
                 'chatCategories.chatChannels'
             ] 
         })
+
         if (!chatServer)
             throw new NotFoundException()
         return this.chatServerRepository.save({
@@ -147,10 +173,82 @@ export class ChatServersService {
         const chatServerToDelete = await this.chatServerRepository.findOneBy({ id })
         if (!chatServerToDelete)
             throw new NotFoundException()
-        await this.chatServerRepository.delete({ id })
-        return {
-            statusCode: 200,
-            message: `Chat Server(id: ${id}) has been deleted successfully`
+
+        try {
+            await this.chatServerRepository.delete({ id })
+            return {
+                statusCode: 200,
+                message: `Chat Server(id: ${id}) has been deleted successfully`
+            }
+        } catch (e) {
+            console.log(e)
+            throw new HttpException(
+                'Error while deleting chat server', 
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
+    }
+
+    async findOwner(userId: number) {
+        const owner = await this.userRepository.findOneBy({ id: userId })
+        if (!owner) {
+            throw new HttpException(
+                'User not found. Cannot create chat server.',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        return owner
+    }
+    
+    createChatCategory() {
+        return this.chatCategoryRepository.create({
+            name: 'Text channels'
+        })
+    }
+    
+    createChatChannel() {
+        return this.chatChannelRepository.create({
+            name: 'general',
+            index: 0
+        })
+    }
+    
+    async createPermissions() {
+        const administratorPermission = this.permissionRepository.create({ name: 'Administrator' })
+        const viewChannelPermission = this.permissionRepository.create({ name: 'View Channels' })
+        const sendMessagesPermission = this.permissionRepository.create({ name: 'Send Messages' })
+    
+        try {
+            await this.permissionRepository.save([
+                administratorPermission,
+                viewChannelPermission,
+                sendMessagesPermission
+            ])
+        } catch (e) {
+            console.log(e)
+            throw new HttpException(
+                'Error while creating chat server',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+    
+        return [administratorPermission, viewChannelPermission, sendMessagesPermission]
+    }
+    
+    async createRoles(owner, administratorPermission, viewChannelPermission, sendMessagesPermission) {
+        const ownerRole = this.roleRepository.create({
+            name: 'Owner',
+            users: [{...owner}],
+            permissions: [administratorPermission]
+        })
+
+        const memberRole = this.roleRepository.create({
+            name: 'Member',
+            permissions: [viewChannelPermission, sendMessagesPermission]
+        })
+    
+        await this.roleRepository.save([ownerRole, memberRole])
+    
+        return [ownerRole, memberRole]
     }
 }

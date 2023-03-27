@@ -16,8 +16,8 @@
 
 .user-avatar {
     position: absolute;
-    height: 80px;
-    width: 80px;
+    height: 80px!important;
+    width: 80px!important;
     text-align: center;
     line-height: 80px;
     border-radius: 50%;
