@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
 import { ChatServer } from "src/typeorm/chat-server";
-import { Permission } from "src/typeorm/permission";
+import { Permission } from "src/typeorm/enums/Permission";
 import { Role } from "src/typeorm/role";
 import { User } from "src/typeorm/user";
 import { CreateChatServerParams, UpdateChatServerParams } from "src/utils/types";
@@ -19,7 +19,6 @@ export class ChatServersService {
         @InjectRepository(ChatChannel) private readonly chatChannelRepository: Repository<ChatChannel>,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
-        @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>
     ) {}
 
     async createChatServer(userId: number, chatServerDetails: CreateChatServerParams) {
@@ -35,18 +34,7 @@ export class ChatServersService {
         const newChatCategory = this.createChatCategory()
         const newChatChannel = this.createChatChannel()
     
-        const [
-            administratorPermission, 
-            viewChannelPermission, 
-            sendMessagesPermission
-        ] = await this.createPermissions()
-    
-        const [ownerRole, memberRole] = await this.createRoles(
-            owner, 
-            administratorPermission, 
-            viewChannelPermission, 
-            sendMessagesPermission
-        )
+        const [ownerRole, memberRole] = await this.createRoles(owner)
     
         newChatCategory.chatChannels = [{...newChatChannel}]
         newChatServer.chatCategories = [{...newChatCategory}]
@@ -71,7 +59,10 @@ export class ChatServersService {
     getChatServersByUserId(userId: number) {
         return this.chatServerRepository.find({
             where: { members: { id: userId }},
-            relations: ['owner', 'members']
+            relations: [
+                'owner', 
+                'members',
+            ]
         })
     }
 
@@ -126,16 +117,16 @@ export class ChatServersService {
     }
 
     async getChatServerById(id: number) {
-        const user = await this.chatServerRepository.findOne({
+        const chatServer = await this.chatServerRepository.findOne({
             where: { id },
             relations: [
                 'chatCategories', 
                 'chatCategories.chatChannels',
                 'chatCategories.chatChannels.chatCategory',
                 'members',
+                'members.roles',
                 'roles',
-                'roles.permissions',
-                'roles.users'
+                'roles.users',
             ],
             order: {
                 chatCategories: {
@@ -144,9 +135,9 @@ export class ChatServersService {
                 }
             }
         })
-        if (!user)
+        if (!chatServer)
             throw new NotFoundException()
-        return user
+        return chatServer
     }
 
     async updateChatServer(
@@ -213,38 +204,24 @@ export class ChatServersService {
         })
     }
     
-    async createPermissions() {
-        const administratorPermission = this.permissionRepository.create({ name: 'Administrator' })
-        const viewChannelPermission = this.permissionRepository.create({ name: 'View Channels' })
-        const sendMessagesPermission = this.permissionRepository.create({ name: 'Send Messages' })
-    
-        try {
-            await this.permissionRepository.save([
-                administratorPermission,
-                viewChannelPermission,
-                sendMessagesPermission
-            ])
-        } catch (e) {
-            console.log(e)
-            throw new HttpException(
-                'Error while creating chat server',
-                HttpStatus.INTERNAL_SERVER_ERROR
-            )
-        }
-    
-        return [administratorPermission, viewChannelPermission, sendMessagesPermission]
-    }
-    
-    async createRoles(owner, administratorPermission, viewChannelPermission, sendMessagesPermission) {
+    async createRoles(owner: User) {
         const ownerRole = this.roleRepository.create({
             name: 'Owner',
             users: [{...owner}],
-            permissions: [administratorPermission]
+            permissions: [       
+                { [Permission.Administrator]: true },
+                { [Permission.ViewChannels]: true },
+                { [Permission.SendMessages]: true },
+            ]
         })
 
         const memberRole = this.roleRepository.create({
             name: 'Member',
-            permissions: [viewChannelPermission, sendMessagesPermission]
+            permissions: [       
+                { [Permission.Administrator]: false },
+                { [Permission.ViewChannels]: true },
+                { [Permission.SendMessages]: true },
+            ]
         })
     
         await this.roleRepository.save([ownerRole, memberRole])

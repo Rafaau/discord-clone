@@ -503,6 +503,24 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     }
   }
 
+  isPermittedToSendMessages() {
+    const currentChatServerId = this.chatChannel!.chatCategory.chatServer.id
+    const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id === currentChatServerId)
+  
+    return userRolesForCurrentServer.some(role => {
+      return role.permissions.some(permission => permission['send-messages'] === true)
+    })
+  }
+
+  isPermittedToKickMembers() {
+    const currentChatServerId = this.chatChannel!.chatCategory.chatServer.id
+    const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id === currentChatServerId)
+  
+    return userRolesForCurrentServer.some(role => {
+      return role.permissions.some(permission => permission['administrator'] === true)
+    });
+  }
+
   isToday(date: Date) {
     return new Date(date).getDate() == new Date().getDate()
   }

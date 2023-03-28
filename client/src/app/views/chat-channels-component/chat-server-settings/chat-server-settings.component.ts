@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatServer, UpdateChatServerParams } from 'src/app/_models/chat-servers';
 import { Role, UpdateRoleParams } from 'src/app/_models/role';
+import { User } from 'src/app/_models/Users';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { RolesService } from 'src/app/_services/roles.service';
 import { AssignToRoleDialog } from './assign-to-role-dialog/assign-to-role-dialog.component';
@@ -66,7 +67,7 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    this._rolesService.getRoleUpdated().subscribe((role) => {
+    this._rolesService.getRoleUpdated().subscribe((role: Role) => {
       this.currentRole = role
       this.chatServer!.roles!.filter(x => x.id == role.id)[0].name = role.name
     })
@@ -143,7 +144,8 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
 
   saveRole() {
     const reqBody: UpdateRoleParams = {
-      name: this.roleNameValue
+      name: this.roleNameValue,
+      permissions: this.currentRole!.permissions
     }
     this._rolesService.updateRole(this.currentRole!.id, reqBody)
   }
@@ -197,6 +199,21 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
   onRoleNameChange(event: Event) {
     this.roleNameValue = (event.target as any).value
     this.openSnackbar()
+  }
+
+  onChangePermission(roleName: string) {
+    const permission = this.currentRole!.permissions
+      .find(p => p[roleName] == false || p[roleName] == true)
+    if (permission) {
+        (permission as any)[roleName] = !permission[roleName];
+        this.openSnackbar();
+    }
+  }
+
+
+  isPermissed(roleName: string) {
+    const permission = this.currentRole!.permissions.find(p => p[roleName])
+    return permission && permission[roleName]
   }
 }
 

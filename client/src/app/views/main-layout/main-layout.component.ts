@@ -7,9 +7,11 @@ import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatServer } from 'src/app/_models/chat-servers';
 import { Notification } from 'src/app/_models/notification';
+import { Role } from 'src/app/_models/role';
 import { User } from 'src/app/_models/Users';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
+import { RolesService } from 'src/app/_services/roles.service';
 import { ChatChannelsComponent } from '../chat-channels-component/chat-channels.component';
 import { ChatServerSettingsComponent } from '../chat-channels-component/chat-server-settings/chat-server-settings.component';
 import { ChatServersComponent } from '../chat-servers-component/chat-servers.component';
@@ -58,12 +60,18 @@ export class MainLayoutComponent implements OnInit {
 
   constructor(
     private readonly _authService: AuthService,
+    private readonly _rolesService: RolesService,
     public router: Router,
     private location: Location
   ) { }
 
   async ngOnInit() {
     await this.authorizeUser()
+    this._rolesService.getRoleUpdated().subscribe((role: Role) => {
+      if (role.users.some(x => x.id == this.currentUser!.id)) {
+        this.currentUser!.roles!.find(x => x.id == role.id)!.permissions = role.permissions
+      }
+    })
   }
 
   fetchUsersFromServer(users: User[]) {

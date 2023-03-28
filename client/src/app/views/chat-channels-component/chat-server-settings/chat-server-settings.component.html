@@ -184,7 +184,47 @@
           </div>
           <!-- PERMISSIONS -->
           <div *ngIf="currentEditRoleView == EditRoleView.Permissions">
-
+            <h5>GENERAL SERVER PERMISSIONS</h5>
+            <div class="permission-name">
+              View Channels
+              <mat-slide-toggle
+                color="primary" 
+                (change)="onChangePermission('view-channels')" 
+                [checked]="isPermissed('view-channels')">
+              </mat-slide-toggle>
+            </div>
+            <div class="permission-desc">
+              Allows members to view channels by default (excluding private channels).
+            </div>
+            <mat-divider></mat-divider>
+            <div class="permission-name">
+              Send messages
+              <mat-slide-toggle
+                color="primary" 
+                (change)="onChangePermission('send-messages')" 
+                [checked]="isPermissed('send-messages')">
+              </mat-slide-toggle>
+            </div>
+            <div class="permission-desc">
+              Allows members to send messages in text channels.
+            </div>
+            <mat-divider></mat-divider>
+            <h5>ADVANCED PERMISSIONS</h5>
+            <div class="permission-name">
+              Administrator
+              <mat-slide-toggle
+                color="primary" 
+                (change)="onChangePermission('administrator')" 
+                [checked]="isPermissed('administrator')">
+              </mat-slide-toggle>
+            </div>
+            <div class="permission-desc">
+              Members with this permission will have every permission and will also
+              bypass all channel specific permissions or restrictions (for example, these
+              members would get access to all private channels). <strong>This is a dangerous
+              permission to grant.</strong>
+            </div>
+            <mat-divider></mat-divider>
           </div>
           <!-- MANAGE MEMBERS -->
           <div *ngIf="currentEditRoleView == EditRoleView.ManageMembers">

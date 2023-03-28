@@ -282,4 +282,13 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
     console.log(destinationCategory)
     this._chatChannelService.moveChannel(channelId, destinationIndex, destinationCategory)
   }
+
+  isPermittedToManageServer() {
+    const currentChatServerId = this.chatServer!.id
+    const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id === currentChatServerId)
+  
+    return userRolesForCurrentServer.some(role => {
+      return role.permissions.some(permission => permission['administrator'] === true)
+    })
+  }
 }

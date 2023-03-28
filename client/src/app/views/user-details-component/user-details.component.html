@@ -14,6 +14,13 @@
     <div class="username">
       {{ user.username }}
     </div>
+    <h5>ROLE</h5>
+    <div
+      *ngFor="let role of user.roles" 
+      class="role">
+      <i class="fa-solid fa-circle"></i>
+      {{ role.name }}
+    </div>
     <div *ngIf="currentUser.id != user.id" class="input-container">
       <input
         [placeholder]="'Message @'+user!.username"

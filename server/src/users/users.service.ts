@@ -24,7 +24,13 @@ export class UsersService {
     }
 
     async findUserById(id: number) {
-        const user = await this.userRepository.findOneBy({ id })
+        const user = await this.userRepository.findOne({ 
+            where: { id },
+            relations: [
+                'roles',
+                'roles.chatServer'
+            ] 
+        })
         if (!user)
             throw new NotFoundException()
         return user
@@ -75,19 +81,26 @@ export class UsersService {
     }
 
     findUserByEmail(email: string) {
-        return this.userRepository.findOneBy({ email })
-    }
-
-    findUsersByServer(serverId: number) {
-        return this.userRepository.find({ 
-            where: { chatServers: { id: serverId } } ,
-            relations: [
-                'managedChatServers',
-                'directConversations',
-                'directConversations.users'
+        return this.userRepository.findOne({ 
+           where: { email },
+           relations: [
+                'roles',
+                'roles.chatServer'
             ]
         })
     }
+
+    async findUsersByServer(serverId: number) {
+        return await this.userRepository.createQueryBuilder("user")
+            .innerJoin("user.chatServers", "chatServer", "chatServer.id = :serverId", { serverId })
+            .leftJoinAndSelect("user.managedChatServers", "managedChatServers")
+            .leftJoinAndSelect("user.directConversations", "directConversations")
+            .leftJoinAndSelect("directConversations.users", "directConversationUsers")
+            .leftJoinAndSelect("user.roles", "roles", "roles.chatServer = :serverId", { serverId })
+            .getMany()
+    }
+    
+    
 
     async findFriendsOfUser(id: number) {
         const user = await this.userRepository.findOne({ 

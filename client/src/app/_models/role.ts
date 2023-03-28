@@ -6,11 +6,12 @@ export interface Role {
     id: number
     name: string
     description: string
-    permissions: Permission[]
+    permissions: []
     chatServer: ChatServer
     users: User[]
 }
 
 export interface UpdateRoleParams {
     name?: string
+    permissions?: []
 }

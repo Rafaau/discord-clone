@@ -143,6 +143,7 @@
                     (click)="toggleReactionsMart(message.id)"
                     [ngStyle]="{ 'background-color': message.id == messageToReact ? '#3C3E43' : ''  }"></i>
                   <i
+                    *ngIf="isPermittedToSendMessages()"
                     matTooltip="Reply"
                     matTooltipPosition="above"
                     class="fa-solid fa-reply action-btn"
@@ -208,10 +209,12 @@
           </div>
 
           <textarea 
+            *ngIf="currentUser && chatChannel"
             class="chat-input" 
             cdkTextareaAutosize 
-            placeholder="Message #{{ chatChannel.name }}"
+            [placeholder]="isPermittedToSendMessages() ? 'Message #' + chatChannel.name : 'You do not have permission to send messages in this channel.'"
             [value]="messageValue"
+            [disabled]="!isPermittedToSendMessages()"
             (input)="onValueChange($event)"
             (keydown.enter)="onSubmit($event)">
           </textarea>
@@ -221,6 +224,7 @@
           </div>
 
           <div 
+            *ngIf="isPermittedToSendMessages()"
             class="gif-picker"
             (click)="toggleGifPicker()">GIF</div>
           <div
@@ -274,6 +278,7 @@
           </div>
 
           <div 
+            *ngIf="isPermittedToSendMessages()"
             class="picker-container"
             (click)="toggleEmojiPicker()">
             <div class="picker">
@@ -319,7 +324,7 @@
           [user]="member">
         </user-details>
         <div 
-          *ngIf="currentMemberOptions == member.id" 
+          *ngIf="currentMemberOptions == member.id && isPermittedToKickMembers()" 
           class="member-options"
           (clickOutside)="closeMemberOptions($event)">
           <div 

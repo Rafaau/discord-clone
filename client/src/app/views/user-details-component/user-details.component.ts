@@ -5,6 +5,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CreateDirectConversationParams } from 'src/app/_models/direct-conversation';
 import { CreateDirectMessageParams } from 'src/app/_models/direct-message';
+import { Role } from 'src/app/_models/role';
 import { User, UserComplex } from 'src/app/_models/Users';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
@@ -98,6 +99,7 @@ export class UserDetailsComponent implements OnInit {
   }
 
   onValueChange(event: Event) {
+    console.log(this.user)
     const value = (event.target as any).value
     this.messageValue = value
   }

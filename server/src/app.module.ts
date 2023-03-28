@@ -28,9 +28,7 @@ import { Notification } from './typeorm/notification';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { Role } from './typeorm/role';
-import { Permission } from './typeorm/permission';
 import { RolesModule } from './roles/roles.module';
-import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [
@@ -45,7 +43,6 @@ import { PermissionsModule } from './permissions/permissions.module';
     MessageReactionsModule,
     NotificationsModule,
     RolesModule,
-    PermissionsModule,
     AuthModule,
     MulterModule.register({
       dest: '../uploads/chat-server-avatars'
@@ -72,7 +69,6 @@ import { PermissionsModule } from './permissions/permissions.module';
         MessageReaction,
         Notification,
         Role,
-        Permission,
         SessionEntity
       ],
       synchronize: true,

@@ -1,4 +1,5 @@
 import { DirectConversation } from "./direct-conversation"
+import { Role } from "./role"
 
 export interface User {
     id: number,
@@ -8,6 +9,7 @@ export interface User {
     rawPassword?: string,
     phoneNumber?: string,
     isOwner?: boolean
+    roles?: Role[]
 }
 
 export interface UserComplex {
@@ -15,6 +17,7 @@ export interface UserComplex {
     username: string,
     email: string,
     directConversations: DirectConversation[]
+    roles?: Role[]
 }
 
 

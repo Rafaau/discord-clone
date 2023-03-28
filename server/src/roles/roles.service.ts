@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChatServer } from "src/typeorm/chat-server";
+import { Permission } from "src/typeorm/enums/Permission";
 import { Role } from "src/typeorm/role";
 import { User } from "src/typeorm/user";
 import { UpdateRoleParams } from "src/utils/types";
@@ -25,8 +26,12 @@ export class RolesService {
         
         const newRole = this.roleRepository.create({
             name: 'new role',
-            permissions: [],
-            users: []
+            users: [],
+            permissions: [       
+                { [Permission.Administrator]: false },
+                { [Permission.ViewChannels]: true },
+                { [Permission.SendMessages]: true },
+            ]
         })
 
         await this.roleRepository.save(newRole)
@@ -83,10 +88,7 @@ export class RolesService {
     ) {
         const role = await this.roleRepository.findOne({
             where: { id: roleId },
-            relations: [
-                'permissions',
-                'users'
-            ]
+            relations: ['users']
         })
 
         if (!role) 

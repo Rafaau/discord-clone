@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ChatServer } from "./chat-server";
-import { Permission } from "./permission";
+import { Permission } from "./enums/Permission";
 import { User } from "./user";
 
 @Entity({ name: 'roles' })
@@ -14,11 +14,18 @@ export class Role {
     @Column({ default: '' })
     description: string
 
-    @ManyToMany(() => Permission, permission => permission.roles, {
-        onDelete: 'CASCADE'
+    // @ManyToMany(() => Permission, permission => permission.roles, {
+    //     onDelete: 'CASCADE'
+    // })
+    // @JoinTable()
+    // permissions?: Permission[]
+    @Column({ 
+        type: 'simple-json',
+        nullable: true
     })
-    @JoinTable()
-    permissions?: Role[]
+    permissions?: [{
+        [key in Permission]: boolean
+    }]
 
     @ManyToOne(() => ChatServer, chatServer => chatServer.roles, {
         onDelete: 'CASCADE'

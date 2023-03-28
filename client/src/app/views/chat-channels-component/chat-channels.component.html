@@ -13,15 +13,23 @@
   </div>
   <mat-menu [hasBackdrop]="false" #menu="matMenu">
     <div class="menu">
-      <div class="menu-option" (click)="openGenerateInvitationDialog()">
+      <div 
+        class="menu-option" 
+        (click)="openGenerateInvitationDialog()">
         Invite People
         <mat-icon>person_add</mat-icon>
       </div>
-      <div class="menu-option" (click)="toggleServerSettings()">
+      <div
+        *ngIf="isPermittedToManageServer()" 
+        class="menu-option" 
+        (click)="toggleServerSettings()">
         Server Settings
         <mat-icon>settings</mat-icon>
       </div>
-      <div class="menu-option" (click)="openCreateCategoryDialog()">
+      <div
+        *ngIf="isPermittedToManageServer()"  
+        class="menu-option" 
+        (click)="openCreateCategoryDialog()">
         Create Category
         <mat-icon>add_to_photos</mat-icon>
       </div>
@@ -41,6 +49,7 @@
           {{ category.name.toUpperCase() }}
         </div>
         <mat-icon
+          *ngIf="isPermittedToManageServer()" 
           class="add"
           matTooltip="Create Channel"
           matTooltipPosition="above"
@@ -67,7 +76,8 @@
               [ngStyle]="{ 'color': channel.hasNotification ? '#f3f4f5' : '' }">
               {{ channel.name }}
             </div>
-            <i 
+            <i
+              *ngIf="isPermittedToManageServer()"  
               [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id
               || currentChannelSettings == channel.id ?
               'settings' : 'settings hide-settings'"
