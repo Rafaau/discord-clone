@@ -45,5 +45,6 @@ a {
 
 .mat-divider {
     border-top-color: #3F4147!important;
-    padding: 20px 0 0 20px!important;
+    margin-top: 20px!important;
+    padding-bottom: 20px!important;
 }

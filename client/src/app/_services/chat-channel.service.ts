@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 import { ChatCategory, CreateChatCategoryParams } from '../_models/chat-category';
-import { ChatChannel, CreateChatChannelParams } from '../_models/chat-channels';
+import { ChatChannel, CreateChatChannelParams, UpdateChatChannelParams } from '../_models/chat-channels';
 
 @Injectable({
   providedIn: 'root'
@@ -65,5 +65,20 @@ export class ChatChannelService {
 
   getMovedChannel(): Observable<any> {
     return this.socket.fromEvent<any>('movedChannelCategory')
+  }
+
+  updateChatChannel(
+    id: number,
+    chatChannelParams: UpdateChatChannelParams
+  ) {
+    this.socket.emit(
+      'updateChannel', 
+      id, 
+      chatChannelParams
+    )
+  }
+
+  getUpdatedChannel(): Observable<any> {
+    return this.socket.fromEvent<ChatChannel>('updatedChatChannel')
   }
 }

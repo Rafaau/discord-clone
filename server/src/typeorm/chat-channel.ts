@@ -1,6 +1,8 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ChatCategory } from "./chat-category";
 import { ChatMessage } from "./chat-message";
+import { Role } from "./role";
+import { User } from "./user";
 
 @Entity({ name: 'chat-channels' })
 export class ChatChannel {
@@ -13,6 +15,9 @@ export class ChatChannel {
     @Column()
     index: number
 
+    @Column()
+    isPrivate: boolean
+
     @ManyToOne(() => ChatCategory, (chatCategory) => chatCategory.chatChannels, {
         onDelete: 'CASCADE'
     })
@@ -22,4 +27,14 @@ export class ChatChannel {
         onDelete: 'CASCADE'
     })
     chatMessages: ChatMessage[]
+
+    @ManyToMany(() => User, user => user.chatChannels, {
+        nullable: true
+    })
+    users: User[]
+
+    @ManyToMany(() => Role, role => role.chatChannels, {
+        nullable: true
+    })
+    roles: Role[]
 }

@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
 import { ChatServer } from "src/typeorm/chat-server";
-import { CreateChatCategoryParams, CreateChatChannelParams } from "src/utils/types";
+import { CreateChatCategoryParams, CreateChatChannelParams, UpdateChatChannelParams } from "src/utils/types";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -144,6 +144,19 @@ export class ChatChannelsService {
                 ...category
             })
         }
+    }
+
+    async updateChatChannel(
+        id: number,
+        chatChannelDetails: UpdateChatChannelParams
+    ) {
+        const chatChannelToUpdate = await this.chatChannelRepository.findOneBy({ id })
+        if (!chatChannelToUpdate)
+            throw new NotFoundException()
+        return this.chatChannelRepository.save({
+            ...chatChannelToUpdate,
+            ...chatChannelDetails
+        })
     }
 
     async deleteChatCategory(id: number) {

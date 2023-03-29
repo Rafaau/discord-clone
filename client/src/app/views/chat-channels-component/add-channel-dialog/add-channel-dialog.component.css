@@ -102,3 +102,17 @@ h2 {
     background-color: #454C94!important;
     color: #82858F!important;
 }
+
+h2 i {
+    margin-right: 7px;
+}
+
+mat-slide-toggle {
+    margin-left: auto;
+    margin-top: 18px;
+    margin-right: 5px;
+}
+
+mat-dialog-content {
+    overflow-x: hidden;
+}

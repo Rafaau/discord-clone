@@ -15,9 +15,10 @@ import { AddCategoryDialog } from './add-category-dialog/add-category-dialog.com
 import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-invitation.component';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ChatChannel } from 'src/app/_models/chat-channels';
+import { ChatChannel, UpdateChatChannelParams } from 'src/app/_models/chat-channels';
 import { Notification } from 'src/app/_models/notification';
 import { NotificationsService } from 'src/app/_services/notifications.service';
+import { ChannelPermissionsDialog } from './channel-permissions-dialog/channel-permissions.component';
 
 @Component({
   selector: 'app-chat-channels',
@@ -44,6 +45,7 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
 })
 export class ChatChannelsComponent implements OnInit, OnChanges {
   chatServer?: ChatServer
+  chatChannels?: ChatChannel[]
   @Output()
   members = new EventEmitter<User[]>()
   toExpand: boolean[] = []
@@ -57,7 +59,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   @Input()
   currentUser?: User
   currentRoute = new LocationHrefProvider(this.location)
-  currentChannelSettings: number = 0
+  currentChannelSettings?: ChatChannel
   doNotInterrupt: boolean = false // to avoid instant close (clickOutside)
   movedChannel?: ChatChannel
   categorySrc?: ChatCategory
@@ -104,6 +106,15 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
         previousCategory.chatChannels = previousCategory.chatChannels.filter(x => x.id != data[1])
         }
       )
+    this._chatChannelService.getUpdatedChannel()
+      .subscribe(
+        (channel: ChatChannel) => {
+          const actualChannel = this.chatChannels!.find(x => x.id == channel.id)!
+          actualChannel.name = channel.name
+          actualChannel.users = channel.users
+          actualChannel.roles = channel.roles
+          actualChannel.isPrivate = channel.isPrivate
+        })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -120,6 +131,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
           this.toExpand.push(true)
         }
 
+        this.chatChannels = data.body!.chatCategories!.map(x => x.chatChannels).flat()
         this.redirectToChatChannel(
           data.body!.chatCategories![0].chatChannels![0].id
         )
@@ -177,7 +189,11 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
     this.isOpen[doNotCollapse] = !this.isOpen[doNotCollapse]
 
     let dialogRef = this.dialog.open(AddChannelDialog, {
-      data: { categoryId: category.id, categoryName: category.name },
+      data: { 
+        categoryId: category.id, 
+        categoryName: category.name,
+        currentUser: this.currentUser, 
+      },
       width: '420px',
       panelClass: 'dialog-container',
     })
@@ -217,7 +233,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
 
   deleteChannel() {
     this.doNotInterrupt = true
-    this._chatChannelService.deleteChatChannel(this.currentChannelSettings)
+    this._chatChannelService.deleteChatChannel(this.currentChannelSettings!.id)
     setTimeout(() => {
       this.doNotInterrupt = false
     }, 500)
@@ -242,6 +258,32 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
     })
   }
 
+  openChannelPermissionsDialog() {
+    let dialogRef = this.dialog.open(ChannelPermissionsDialog, {
+      data: { 
+        channel: this.currentChannelSettings, 
+        members: this.chatServer!.members,
+        roles: this.chatServer!.roles,
+        currentUser: this.currentUser! 
+      },
+      width: '420px',
+      panelClass: 'dialog-container',
+    })
+    this.currentChannelSettings = undefined
+    const sub = dialogRef.componentInstance.onSaveEvent.subscribe(data => {
+      const reqBody: UpdateChatChannelParams = {
+        isPrivate: data.isPrivate,
+        users: data.permittedUsers,
+        roles: data.permittedRoles,
+      }
+      this._chatChannelService.updateChatChannel(data.channelId, reqBody)
+      this.dialog.closeAll()
+    })
+    dialogRef.afterClosed().subscribe(() => {
+      sub.unsubscribe()
+    })
+  }
+
   toggleServerSettings() {
     this.isServerSettingsOn = !this.isServerSettingsOn
     this.isServerMenuExpanded = false
@@ -257,9 +299,9 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
     })
   }
 
-  openChannelSettings(channelId: number) {
+  openChannelSettings(channel: ChatChannel) {
     this.doNotInterrupt = true
-    this.currentChannelSettings = channelId
+    this.currentChannelSettings = channel
     setTimeout(() => {
       this.doNotInterrupt = false
     }, 500)
@@ -267,7 +309,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
 
   closeChannelSettings() {
     if (!this.doNotInterrupt)
-      this.currentChannelSettings = 0
+      this.currentChannelSettings = undefined
   }
 
   onChannelDrop(event: CdkDragDrop<ChatChannel[]>) {
@@ -290,5 +332,18 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
     return userRolesForCurrentServer.some(role => {
       return role.permissions.some(permission => permission['administrator'] === true)
     })
+  }
+
+  isPermittedToViewChannel(channel: ChatChannel) {
+    const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id == this.chatServer!.id)
+  
+    return userRolesForCurrentServer.some(role => {
+      return channel.roles!.some(x => x.id == role.id)
+    }) || channel.users!.some(x => x.id == this.currentUser!.id)
+    || !channel.isPrivate
+  }
+
+  availableChannels(channels: ChatChannel[]) {
+    return channels.filter(x => this.isPermittedToViewChannel(x))
   }
 }

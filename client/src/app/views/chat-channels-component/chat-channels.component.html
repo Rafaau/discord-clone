@@ -67,7 +67,7 @@
             [cdkDragData]="channel"
             [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id ? 
             'chat-channel chat-channel-current' : 'chat-channel'" 
-            *ngFor="let channel of category.chatChannels"
+            *ngFor="let channel of availableChannels(category.chatChannels)"
             (click)="redirectToChatChannel(channel.id)">
             <div [ngClass]="channel.hasNotification ? 'notification-indicator' : ''"></div>
             <div class="hashtag"> # </div>
@@ -79,19 +79,24 @@
             <i
               *ngIf="isPermittedToManageServer()"  
               [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id
-              || currentChannelSettings == channel.id ?
+              || (currentChannelSettings && currentChannelSettings!.id == channel.id) ?
               'settings' : 'settings hide-settings'"
               matTooltip="Edit Channel"
               matTooltipPosition="above"
-              (click)="openChannelSettings(channel.id)"
+              (click)="openChannelSettings(channel)"
               class="fa-solid fa-gear"></i>
             <div 
-              *ngIf="currentChannelSettings == channel.id"
+              *ngIf="currentChannelSettings && currentChannelSettings!.id == channel.id"
               class="channel-settings"
               (clickOutside)="closeChannelSettings()">
+              <div 
+                class="settings-option"
+                (click)="openChannelPermissionsDialog()">
+                Permissions
+              </div>
               <div
                 (click)="deleteChannel()" 
-                class="settings-option-warn">
+                class="settings-option warn">
                 Delete Channel
               </div>
             </div>

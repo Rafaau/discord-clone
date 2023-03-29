@@ -1,4 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ChatChannel } from "./chat-channel";
 import { ChatMessage } from "./chat-message";
 import { ChatServer } from "./chat-server";
 import { DirectConversation } from "./direct-conversation";
@@ -73,4 +74,10 @@ export class User {
         nullable: true
     })
     roles: Role[]
+
+    @ManyToMany(() => ChatChannel, chatChannel => chatChannel.users, {
+        nullable: true
+    })
+    @JoinTable({ name: 'users-chat-channels' })
+    chatChannels: ChatChannel[]
 }

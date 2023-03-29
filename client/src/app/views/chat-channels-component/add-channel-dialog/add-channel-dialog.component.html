@@ -30,6 +30,17 @@
         Channel Name is <strong>required</strong>
       </mat-error>
     </mat-form-field>
+    <div style="display: flex;">
+      <h2>
+        <i class="fa-solid fa-lock"></i>
+        Private Channel
+      </h2>
+      <mat-slide-toggle
+        color="primary"
+        formControlName="isPrivate">
+      </mat-slide-toggle>
+    </div>
+    <p>Only selected members and roles will be able to view this channel.</p>
   </mat-dialog-content>
 </div>
 <div class="bottom-actions">

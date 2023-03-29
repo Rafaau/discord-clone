@@ -205,14 +205,26 @@
     z-index: 5;
 }
 
-.settings-option-warn {
+.settings-option {
+    color: #B2B3B9;
+    padding: 0 8px 0 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .settings-option:hover {
+        background-color: #3f51b5;
+        color: #f3f4f5;
+    }
+
+.warn {
     color: #F23F42;
     padding: 0 8px 0 8px;
     border-radius: 5px;
     cursor: pointer;
 }
 
-    .settings-option-warn:hover {
+    .warn:hover {
         background-color: #F23F42;
         color: #f3f4f5;
     }

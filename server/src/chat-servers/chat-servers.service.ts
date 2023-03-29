@@ -123,6 +123,8 @@ export class ChatServersService {
                 'chatCategories', 
                 'chatCategories.chatChannels',
                 'chatCategories.chatChannels.chatCategory',
+                'chatCategories.chatChannels.users',
+                'chatCategories.chatChannels.roles',
                 'members',
                 'members.roles',
                 'roles',

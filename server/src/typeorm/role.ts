@@ -1,4 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ChatChannel } from "./chat-channel";
 import { ChatServer } from "./chat-server";
 import { Permission } from "./enums/Permission";
 import { User } from "./user";
@@ -37,4 +38,10 @@ export class Role {
     })
     @JoinTable()
     users?: User[]
+
+    @ManyToMany(() => ChatChannel, chatChannel => chatChannel.roles, {
+        nullable: true  
+    })
+    @JoinTable({ name: 'chat-channels-roles' })
+    chatChannels?: ChatChannel[]
 }

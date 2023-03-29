@@ -1,3 +1,4 @@
+import { Role } from "src/typeorm/role"
 import { User } from "src/typeorm/user"
 
 export type CreateUserParams = {
@@ -22,7 +23,16 @@ export type CreateChatCategoryParams = {
 }
 
 export type CreateChatChannelParams = {
-    name: string
+    name: string,
+    isPrivate: boolean,
+    users?: User[]
+}
+
+export type UpdateChatChannelParams = {
+    name?: string,
+    isPrivate?: boolean,
+    users?: User[],
+    roles?: Role[]
 }
 
 export type CreateChatMessageParams = {
