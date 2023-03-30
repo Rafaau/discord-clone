@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { CreateChatServerDto } from "src/chat-servers/chat-servers.dto";
+import { CreateChatServerDto, UpdateChatServerDto } from "src/chat-servers/chat-servers.dto";
 import { ChatServer } from "src/typeorm/chat-server";
 import { generateUser } from "../users/fakes-factory";
 
@@ -8,7 +8,8 @@ export function generateChatServer(): ChatServer {
         id: faker.datatype.number(),
         name: faker.company.name(),
         owner: generateUser(),
-        members: []
+        members: [],
+        roles: []
     }
 }
 
@@ -34,5 +35,9 @@ export class FakeChatServerCreate {
 
     static invalidChatServerReq: CreateChatServerDto = {
         name: ''
+    }
+
+    static chatServerToUpdate: UpdateChatServerDto = {
+        name: faker.company.name()
     }
 }

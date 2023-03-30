@@ -14,7 +14,10 @@ export function generateChatChannel(): ChatChannel {
             chatServer: generateChatServer(),
             chatChannels: []
         },
-        chatMessages: []
+        chatMessages: [],
+        index: faker.datatype.number(),
+        isPrivate: faker.datatype.boolean(),
+        users: [],
     }
 }
 
@@ -28,7 +31,8 @@ export function generateFewChatChannels(): ChatChannel[] {
 
 export class FakeChatChannelCreate {
     static chatChannelToCreate: CreateChatChannelDto = {
-        name: faker.commerce.department()
+        name: faker.commerce.department(),
+        isPrivate: false
     }
 
     static createdChatChannel: ChatChannel = {
@@ -40,11 +44,15 @@ export class FakeChatChannelCreate {
             chatServer: generateChatServer(),
             chatChannels: []
         },
-        chatMessages: []
+        chatMessages: [],
+        index: 0,
+        isPrivate: false,
+        users: [],
     }
 
     static invalidChatChannelReq: CreateChatChannelDto = {
-        name: ''
+        name: '',
+        isPrivate: faker.datatype.boolean()
     }
 }
 

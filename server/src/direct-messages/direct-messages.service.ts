@@ -23,13 +23,14 @@ export class DirectMessagesService {
         const conversation = await this.directConversationRepository.findOneBy({ id: conversationId })
         if (!user || !conversation)
             throw new NotFoundException()
-        const newDirectMessage = await this.directMessageRepository.create({
+        const newDirectMessage = this.directMessageRepository.create({
             ...createDirectMessageDetails,
             directConversation: conversation as any,
             user: user as any,
             reactions: []
         })
-        return this.directMessageRepository.save(newDirectMessage)
+        await this.directMessageRepository.save(newDirectMessage)
+        return newDirectMessage
     }
 
     async findDirectMessagesByConversation(conversationId: number, page: number) {
@@ -73,7 +74,7 @@ export class DirectMessagesService {
         const messageToUpdate = await this.directMessageRepository.findOneBy({ id })
         if (!messageToUpdate)
             throw new NotFoundException()
-        return this.directMessageRepository.save({
+        return await this.directMessageRepository.save({
             ...messageToUpdate,
             ...messageDetails
         })

@@ -9,7 +9,8 @@ export function generateUser(): User {
         username: faker.internet.userName(),
         email: faker.internet.email(),
         password: faker.internet.password(),
-        managedChatServers: []
+        managedChatServers: [],
+        friends: [],
     }
 }
 

@@ -146,7 +146,6 @@ export class UserSettingsComponent implements OnInit, OnChanges {
 
   onFileChange(event: Event) {
     const file: File = (event.target as any).files[0]
-    console.log(file)
     this._usersService.uploadAvatar(this.user!.id, file)
       .subscribe((response: HttpResponse<any>) => {
         console.log(response)

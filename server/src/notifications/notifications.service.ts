@@ -26,7 +26,8 @@ export class NotificationsService {
             ...notificationDetails,
             recipient: user
         })
-        return await this.notificationRepository.save(newNotification)
+        await this.notificationRepository.save(newNotification)
+        return newNotification
     }
 
     async markAsRead(id: number) {
@@ -37,7 +38,8 @@ export class NotificationsService {
         if (!notification)
             throw new NotFoundException()
         notification.read = true
-        return await this.notificationRepository.save(notification)
+        await this.notificationRepository.save(notification)
+        return notification
     }
 
     async getUnreadNotificationsForUser(userId: number) {

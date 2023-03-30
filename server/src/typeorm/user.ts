@@ -63,7 +63,7 @@ export class User {
         onDelete: 'CASCADE'
     })
     @JoinTable({ name: 'users-message-reactions' })
-    messageReactions: MessageReaction[]
+    messageReactions?: MessageReaction[]
 
     @OneToMany(() => Notification, notification => notification.recipient, {
         nullable: true
@@ -73,11 +73,11 @@ export class User {
     @ManyToMany(() => Role, role => role.users, {
         nullable: true
     })
-    roles: Role[]
+    roles?: Role[]
 
     @ManyToMany(() => ChatChannel, chatChannel => chatChannel.users, {
         nullable: true
     })
     @JoinTable({ name: 'users-chat-channels' })
-    chatChannels: ChatChannel[]
+    chatChannels?: ChatChannel[]
 }

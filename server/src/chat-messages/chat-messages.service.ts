@@ -33,13 +33,14 @@ export class ChatMessagesService {
                 'User not found. Cannot create chat message.',
                 HttpStatus.BAD_REQUEST
             )
-        const newChatMessage = await this.chatMessageRepository.create({
+        const newChatMessage = this.chatMessageRepository.create({
             ...chatMessageDetails,
             chatChannel,
             user,
             reactions: []
         })
-        return this.chatMessageRepository.save(newChatMessage)
+        await this.chatMessageRepository.save(newChatMessage)
+        return newChatMessage
     }
 
     async findChatMessagesByChannelId(channelId: number, page: number) {
@@ -84,7 +85,7 @@ export class ChatMessagesService {
         const chatMessageToUpdate = await this.chatMessageRepository.findOneBy({ id })
         if (!chatMessageToUpdate)
             throw new NotFoundException()
-        return this.chatMessageRepository.save({
+        return await this.chatMessageRepository.save({
             ...chatMessageToUpdate,
             ...messageDetails
         })
@@ -94,7 +95,7 @@ export class ChatMessagesService {
         const chatMessageToDelete = await this.chatMessageRepository.findOneBy({ id })
         if (!chatMessageToDelete)
             throw new NotFoundException()
-        await this.chatMessageRepository.delete(chatMessageToDelete)
+        await this.chatMessageRepository.delete(chatMessageToDelete.id)
         return {
             statusCode: 200,
             message: `Chat Message(id: ${id}) has been deleted successfully`

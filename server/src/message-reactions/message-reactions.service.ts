@@ -34,7 +34,8 @@ export class MessageReactionsService {
                 chatMessage,
                 user: user
             })
-            return this.messageReactionRepository.save(newMessageReaction)
+            await this.messageReactionRepository.save(newMessageReaction)
+            return newMessageReaction
         } else if (directMessageId) {
             const directMessage = await this.directMessageRepository.findOneBy({ id: directMessageId })
             if (!directMessage)
@@ -44,7 +45,8 @@ export class MessageReactionsService {
                 directMessage,
                 user: user
             })
-            return this.messageReactionRepository.save(newMessageReaction)
+            await this.messageReactionRepository.save(newMessageReaction)
+            return newMessageReaction
         } else
             throw new NotFoundException()
     }

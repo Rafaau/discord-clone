@@ -66,5 +66,5 @@ export type UpdateChatServerParams = {
 
 export type UpdateRoleParams = {
     name: string,
-    permissions: []
+    permissions: any[]
 }

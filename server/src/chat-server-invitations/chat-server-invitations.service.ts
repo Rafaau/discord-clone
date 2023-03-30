@@ -20,8 +20,9 @@ export class ChatServerInvitationsService {
         const invitationDetails = {
             url: `http://localhost:4200/invitation?v=${generateUID()}`
         } 
-        const newInvitation = await this.invitationRepository.create({ ...invitationDetails, chatServer })
-        return this.invitationRepository.save(newInvitation)
+        const newInvitation = this.invitationRepository.create({ ...invitationDetails, chatServer })
+        await this.invitationRepository.save(newInvitation)
+        return newInvitation
     }
 
     async findInvitationByUuid(uuid: string) {

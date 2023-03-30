@@ -56,8 +56,11 @@ export class ChatServersService {
         return this.chatServerRepository.find({ relations: ['owner', 'members'] })
     }
 
-    getChatServersByUserId(userId: number) {
-        return this.chatServerRepository.find({
+    async getChatServersByUserId(userId: number) {
+        const user = await this.userRepository.findOneBy({ id: userId })
+        if (!user)
+            throw new NotFoundException()
+        return await this.chatServerRepository.find({
             where: { members: { id: userId }},
             relations: [
                 'owner', 
@@ -83,7 +86,8 @@ export class ChatServersService {
                     HttpStatus.BAD_REQUEST
                 );
         chatServer.members = [...chatServer.members, {...member}]
-        return this.chatServerRepository.save(chatServer)
+        await this.chatServerRepository.save(chatServer)
+        return chatServer
     }
 
     async removeMemberFromChatServer(userId: number, chatServerId: number) {

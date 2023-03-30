@@ -46,6 +46,7 @@ export class ChangePasswordDialog implements OnInit {
         return
       }
       this.onChangePassword.emit(this.passwordForm.controls['newPassword'].value!)
+      this.dialog.closeAll()
     } else {
       this.passwordForm.markAllAsTouched()
     }

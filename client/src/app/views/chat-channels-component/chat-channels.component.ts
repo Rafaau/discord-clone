@@ -87,7 +87,6 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
     this._chatChannelService.getDeletedChannel()
       .subscribe(
         (channelId: number) => {
-          this.chatServer!.chatCategories
           const actualCategory = this.chatServer!.chatCategories!
             .filter(x => x.chatChannels
               .filter(x => x.id == channelId))[0]

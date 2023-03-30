@@ -13,10 +13,10 @@ export class UsersService {
         @InjectRepository(User) private userRepository: Repository<User>
     ) {}
 
-    createUser(userDetails: CreateUserParams) {
+    async createUser(userDetails: CreateUserParams) {
         const password = encodePassword(userDetails.password)
         const newUser = this.userRepository.create({ ...userDetails, password })
-        return this.userRepository.save(newUser)
+        return await this.userRepository.save(newUser)
     }
 
     findUsers() {
@@ -61,8 +61,8 @@ export class UsersService {
             throw new NotFoundException()
         firstUser.friends = [...firstUser.friends, {...secondUser}] 
         secondUser.friends = [...secondUser.friends, {...firstUser}] 
-        this.userRepository.save(secondUser) 
-        this.userRepository.save(firstUser)
+        await this.userRepository.save(secondUser) 
+        await this.userRepository.save(firstUser)
         return {
             statusCode: 200,
             message: `User(id: ${firstUserId}) has been successfully marked as friend of User(id: ${secondUserId})`
@@ -80,14 +80,17 @@ export class UsersService {
         }
     }
 
-    findUserByEmail(email: string) {
-        return this.userRepository.findOne({ 
-           where: { email },
-           relations: [
-                'roles',
-                'roles.chatServer'
+    async findUserByEmail(email: string) {
+        const user = await this.userRepository.findOne({ 
+            where: { email },
+            relations: [
+                 'roles',
+                 'roles.chatServer'
             ]
         })
+        if (!user)
+            throw new NotFoundException()
+        return user
     }
 
     async findUsersByServer(serverId: number) {

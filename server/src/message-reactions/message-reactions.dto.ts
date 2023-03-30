@@ -1,3 +1,3 @@
 export class CreateMessageReactionDto {
-    reaction: string & { length: 1 }
+    reaction: string
 }

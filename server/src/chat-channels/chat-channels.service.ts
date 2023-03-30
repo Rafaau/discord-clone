@@ -43,12 +43,13 @@ export class ChatChannelsService {
                 index = lastIndex + 1
                 break
         }
-        const newChatChannel = await this.chatChannelRepository.create({
+        const newChatChannel = this.chatChannelRepository.create({
             ...chatChannelDetails,
             index,
             chatCategory
         })
-        return this.chatChannelRepository.save(newChatChannel)
+        await this.chatChannelRepository.save(newChatChannel)
+        return newChatChannel
     }
 
     async createChatCategory(
@@ -61,11 +62,12 @@ export class ChatChannelsService {
                 'Chat server not found. Cannot create chat category',
                 HttpStatus.BAD_REQUEST
             )
-        const newChatCategory = await this.chatCategoryRepository.create({
+        const newChatCategory = this.chatCategoryRepository.create({
             ...chatCategoryDetails,
             chatServer
         })
-        return this.chatCategoryRepository.save(newChatCategory)
+        await this.chatCategoryRepository.save(newChatCategory)
+        return newChatCategory
     }
 
     async findChatChannelById(id: number) {
@@ -153,7 +155,7 @@ export class ChatChannelsService {
         const chatChannelToUpdate = await this.chatChannelRepository.findOneBy({ id })
         if (!chatChannelToUpdate)
             throw new NotFoundException()
-        return this.chatChannelRepository.save({
+        return await this.chatChannelRepository.save({
             ...chatChannelToUpdate,
             ...chatChannelDetails
         })

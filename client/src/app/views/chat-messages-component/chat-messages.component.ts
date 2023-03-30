@@ -518,7 +518,7 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
   
     return userRolesForCurrentServer.some(role => {
       return role.permissions.some(permission => permission['administrator'] === true)
-    });
+    })
   }
 
   isToday(date: Date) {

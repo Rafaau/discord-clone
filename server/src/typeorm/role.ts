@@ -15,11 +15,6 @@ export class Role {
     @Column({ default: '' })
     description: string
 
-    // @ManyToMany(() => Permission, permission => permission.roles, {
-    //     onDelete: 'CASCADE'
-    // })
-    // @JoinTable()
-    // permissions?: Permission[]
     @Column({ 
         type: 'simple-json',
         nullable: true

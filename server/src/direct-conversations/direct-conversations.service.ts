@@ -31,7 +31,8 @@ export class DirectConversationsService {
         const newDirectConversation = this.directConversationRepository.create({
             ...createDirectConversationDetails
         })
-        return this.directConversationRepository.save(newDirectConversation)
+        await this.directConversationRepository.save(newDirectConversation)
+        return newDirectConversation
     }
 
     async findConversationsOfUser(userId: number) {

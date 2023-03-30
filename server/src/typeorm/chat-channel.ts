@@ -36,5 +36,5 @@ export class ChatChannel {
     @ManyToMany(() => Role, role => role.chatChannels, {
         nullable: true
     })
-    roles: Role[]
+    roles?: Role[]
 }
