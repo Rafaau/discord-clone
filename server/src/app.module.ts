@@ -29,9 +29,15 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { Role } from './typeorm/role';
 import { RolesModule } from './roles/roles.module';
+import { ConfigModule } from '@nestjs/config';
+import { configuration } from 'config/configuration';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({  
+      envFilePath: `config/${process.env.NODE_ENV.trim()}.env`,
+      load: [configuration]
+    }),
     UsersModule,
     ChatServerModule,
     ChatCategoriesModule,
@@ -56,7 +62,7 @@ import { RolesModule } from './roles/roles.module';
       port: 3306,
       username: 'root',
       password: 'mysqlpw',
-      database: 'chatapp_db',
+      database: process.env.DATABASE,
       entities: [
         User, 
         ChatServer,

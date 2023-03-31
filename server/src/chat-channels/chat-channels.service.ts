@@ -165,7 +165,7 @@ export class ChatChannelsService {
         const chatCategoryToDelete = await this.chatCategoryRepository.findOneBy({ id })
         if (!chatCategoryToDelete)
             throw new NotFoundException()
-        await this.chatCategoryRepository.delete(chatCategoryToDelete)
+        const dupa = await this.chatCategoryRepository.delete(chatCategoryToDelete)
         return {
             statusCode: 200,
             message: `Chat Category(id : ${id}) has been deleted successfully`

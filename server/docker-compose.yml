@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlpw
+      MYSQL_DATABASE: chatapp_test_db
+      MYSQL_PASSWORD: mysqlpw
+    ports:
+      - '3306:3306'

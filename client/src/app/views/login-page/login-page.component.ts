@@ -61,7 +61,7 @@ export class LoginPageComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    this.instantLogin()
+    //this.instantLogin()
   }
 
   async redirectToRegister() {
