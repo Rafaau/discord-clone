@@ -42,7 +42,11 @@ declare namespace Cypress {
         email: string,
         username: string,
         password: string
-      ) => Cypress.Chainable;
+      ) => Cypress.Chainable
+      login: (
+        email: string,
+        password: string
+      ) => Cypress.Chainable
     }
   }
 
@@ -56,5 +60,15 @@ Cypress.Commands.add('register', (
     cy.xpath('//input[@formcontrolname="username"]').type(username)
     cy.xpath('//input[@formcontrolname="password"]').type(password)
     cy.xpath('//input[@type="checkbox"]').click()
+    cy.xpath('//button[@type="submit"]').click()
+})
+
+Cypress.Commands.add('login', (
+    email: string,
+    password: string
+) => {
+    cy.visit('/login')
+    cy.xpath('//input[@formcontrolname="email"]').type(email)
+    cy.xpath('//input[@formcontrolname="password"]').type(password)
     cy.xpath('//button[@type="submit"]').click()
 })

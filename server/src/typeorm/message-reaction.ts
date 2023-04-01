@@ -17,14 +17,14 @@ export class MessageReaction {
     user: User
 
     @ManyToOne(() => ChatMessage, (chatMessage) => chatMessage.reactions, {
+        onDelete: 'CASCADE',
         nullable: true,
-        onDelete: 'CASCADE'
     })
     chatMessage?: ChatMessage 
 
     @ManyToOne(() => DirectMessage, (directMessage) => directMessage.reactions, {
+        onDelete: 'CASCADE',
         nullable: true,
-        onDelete: 'CASCADE'
     })
     directMessage?: ChatMessage
 }

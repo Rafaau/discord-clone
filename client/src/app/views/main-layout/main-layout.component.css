@@ -20,7 +20,7 @@
 }
 
 .secondary-side-bar {
-    width: 230px;
+    min-width: 230px;
     height: 100%;
     background-color: #2B2D31;
     border-top-left-radius: 10px;

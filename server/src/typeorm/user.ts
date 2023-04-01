@@ -41,6 +41,7 @@ export class User {
     chatMessages?: ChatMessage[]
 
     @ManyToMany(() => User, (user) => user.friends, {
+        onDelete: 'CASCADE',
         nullable: true
     })
     @JoinTable()
@@ -59,13 +60,14 @@ export class User {
     })
     directMessages?: DirectMessage[]
 
-    @ManyToMany(() => MessageReaction, (messageReaction) => messageReaction.user, {
-        onDelete: 'CASCADE'
+    @OneToMany(() => MessageReaction, (messageReaction) => messageReaction.user, {
+        onDelete: 'CASCADE',
+        nullable: true
     })
-    @JoinTable({ name: 'users-message-reactions' })
     messageReactions?: MessageReaction[]
 
     @OneToMany(() => Notification, notification => notification.recipient, {
+        onDelete: 'CASCADE',
         nullable: true
     })
     notifications?: Notification[]

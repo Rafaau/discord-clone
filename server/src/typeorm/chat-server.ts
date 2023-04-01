@@ -27,7 +27,8 @@ export class ChatServer {
     chatCategories?: ChatCategory[]
 
     @OneToMany(() => ChatServerInvitation, (chatServerInvitation) => chatServerInvitation.chatServer, {
-        nullable: true
+        nullable: true,
+        onDelete: 'CASCADE',
     })
     invitations?: ChatServerInvitation[]
 

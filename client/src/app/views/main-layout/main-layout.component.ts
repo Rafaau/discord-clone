@@ -105,7 +105,6 @@ export class MainLayoutComponent implements OnInit {
         console.log(data.body)
         this.currentUser = data.body!
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
-        //this.router.navigate(['/directmessages'])
       },
       (error) => {
         console.log('unauthorized')

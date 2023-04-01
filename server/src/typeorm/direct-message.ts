@@ -23,10 +23,8 @@ export class DirectMessage {
     directConversation: DirectConversation
 
     @OneToMany(() => MessageReaction, (messageReaction) => messageReaction.directMessage, {
+        onDelete: 'CASCADE',
         nullable: true
     })
-    // @PolymorphicChildren(() => MessageReaction, {
-    //     eager: false
-    // })
     reactions?: MessageReaction[]
 }

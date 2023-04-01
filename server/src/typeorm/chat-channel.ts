@@ -24,7 +24,8 @@ export class ChatChannel {
     chatCategory: ChatCategory
 
     @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.chatChannel, {
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        cascade: true
     })
     chatMessages: ChatMessage[]
 

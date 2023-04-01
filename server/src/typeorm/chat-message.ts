@@ -23,6 +23,7 @@ export class ChatMessage {
     chatChannel: ChatChannel
 
     @OneToMany(() => MessageReaction, (messageReaction) => messageReaction.chatMessage, {
+        onDelete: 'CASCADE',
         nullable: true
     })
     reactions?: MessageReaction[]

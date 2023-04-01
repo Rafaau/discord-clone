@@ -11,6 +11,9 @@ export class ChatServerInvitation {
 
     @Column({ type: 'timestamp' })
     expirationTime: Date = new Date(((new Date()).setDate((new Date()).getDate() + 7)))
-    @ManyToOne(() => ChatServer, (chatServer) => chatServer.invitations)
+
+    @ManyToOne(() => ChatServer, (chatServer) => chatServer.invitations, {
+        cascade: true,
+    })
     chatServer: ChatServer
 }

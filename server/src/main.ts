@@ -4,7 +4,9 @@ import session from 'express-session';
 import passport from 'passport'
 import { TypeormStore } from 'connect-typeorm';
 import { SessionEntity } from './typeorm/session';
-import { DataSource } from 'typeorm';
+import { Connection, DataSource, getConnection, getConnectionManager } from 'typeorm';
+import { seedData } from './seeds/seed';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,6 +30,7 @@ async function bootstrap() {
   })
   app.use(passport.initialize())
   app.use(passport.session())
+  await seedData(app.get(DataSource))
   await app.listen(3000);
 }
 bootstrap();

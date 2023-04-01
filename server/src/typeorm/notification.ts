@@ -9,7 +9,9 @@ export class Notification {
     @Column()
     message: string
 
-    @ManyToOne(() => User, user => user.notifications)
+    @ManyToOne(() => User, user => user.notifications, {
+        onDelete: 'CASCADE'
+    })
     recipient: User
 
     @Column({ default: false })

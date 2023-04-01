@@ -68,6 +68,7 @@
             [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id ? 
             'chat-channel chat-channel-current' : 'chat-channel'" 
             *ngFor="let channel of availableChannels(category.chatChannels)"
+            id="channel-{{ channel.id }}"
             (click)="redirectToChatChannel(channel.id)">
             <div [ngClass]="channel.hasNotification ? 'notification-indicator' : ''"></div>
             <div class="hashtag"> # </div>
