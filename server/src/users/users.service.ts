@@ -37,7 +37,13 @@ export class UsersService {
     }
 
     async updateUser(id: number, userDetails: UpdateUserParams) {
-        const user = await this.userRepository.findOneBy({ id })
+        const user = await this.userRepository.findOne({ 
+            where: { id },
+            relations: [
+                'roles', 
+                'roles.chatServer'
+            ] 
+        })
         if (!user)
             throw new NotFoundException()
         if (userDetails.password) 

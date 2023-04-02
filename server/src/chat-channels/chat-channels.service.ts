@@ -90,7 +90,9 @@ export class ChatChannelsService {
     ) {
         const channel = await this.chatChannelRepository.findOne({
             where: { id: channelId },
-            relations: ['chatCategory']
+            relations: [
+                'chatCategory',
+            ]
         })
         if (!channel)
             throw new NotFoundException()
@@ -98,7 +100,9 @@ export class ChatChannelsService {
             where: { id: destinationCategory },
             relations: [
                 'chatChannels',
-                'chatChannels.chatCategory'
+                'chatChannels.chatCategory',
+                'chatChannels.roles',
+                'chatChannels.users'
             ],
             order: {
                 chatChannels: {

@@ -102,7 +102,8 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
           const previousCategory = this.chatServer!.chatCategories!
           .filter(x => x.chatChannels
             .filter(x => x.id == data[1]) && x.id != actualCategory.id)[0]
-        previousCategory.chatChannels = previousCategory.chatChannels.filter(x => x.id != data[1])
+          if (previousCategory)
+            previousCategory.chatChannels = previousCategory.chatChannels.filter(x => x.id != data[1])
         }
       )
     this._chatChannelService.getUpdatedChannel()
@@ -335,7 +336,6 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
 
   isPermittedToViewChannel(channel: ChatChannel) {
     const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id == this.chatServer!.id)
-  
     return userRolesForCurrentServer.some(role => {
       return channel.roles!.some(x => x.id == role.id)
     }) || channel.users!.some(x => x.id == this.currentUser!.id)

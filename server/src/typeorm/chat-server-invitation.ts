@@ -13,6 +13,7 @@ export class ChatServerInvitation {
     expirationTime: Date = new Date(((new Date()).setDate((new Date()).getDate() + 7)))
 
     @ManyToOne(() => ChatServer, (chatServer) => chatServer.invitations, {
+        onDelete: 'CASCADE',
         cascade: true,
     })
     chatServer: ChatServer

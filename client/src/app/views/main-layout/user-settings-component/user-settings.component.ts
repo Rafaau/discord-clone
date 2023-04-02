@@ -52,6 +52,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   public Form = Form
   currentForm: Form = Form.None
   userDetailsForm?: FormGroup
+  userPassword?: string
   inputElement = () => document.querySelector('.details-input') as HTMLTextAreaElement
 
   constructor(
@@ -79,7 +80,6 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     this.userDetailsForm = new FormGroup({
       email: new FormControl(this.user?.email, Validators.email),
       username: new FormControl(this.user?.username, Validators.required),
-      password: new FormControl(this.user?.password, Validators.required),
       phoneNumber: new FormControl(
         this.user?.phoneNumber ? this.user?.phoneNumber : '', 
         Validators.pattern(/[0-9\+\-\ ]/)
@@ -92,7 +92,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       username: this.userDetailsForm!.controls['username'].value,
       email: this.userDetailsForm!.controls['email'].value,
       phoneNumber: this.userDetailsForm!.controls['phoneNumber'].value,
-      password: this.userDetailsForm!.controls['password'].value
+      password: this.userPassword
     }
     this._usersService.updateUser(this.user!.id, reqBody)
       .subscribe(
@@ -135,7 +135,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       panelClass: 'dialog-container'
     })
     const sub = dialogRef.componentInstance.onChangePassword.subscribe((newPassword: string) => {
-      this.userDetailsForm!.controls['password'].setValue(newPassword)
+      this.userPassword = newPassword
       this.saveUserDetails()
       this.dialog.closeAll()
     })

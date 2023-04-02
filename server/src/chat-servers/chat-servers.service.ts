@@ -154,7 +154,13 @@ export class ChatServersService {
             where: { id },
             relations: [
                 'chatCategories',
-                'chatCategories.chatChannels'
+                'chatCategories.chatChannels',
+                'roles',
+                'roles.users',
+                'members',
+                'members.roles',
+                'chatCategories.chatChannels.roles',
+                'chatCategories.chatChannels.users',
             ] 
         })
 
@@ -206,7 +212,8 @@ export class ChatServersService {
     createChatChannel() {
         return this.chatChannelRepository.create({
             name: 'general',
-            index: 0
+            index: 0,
+            isPrivate: false,
         })
     }
     

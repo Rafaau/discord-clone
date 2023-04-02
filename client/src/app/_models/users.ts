@@ -32,7 +32,7 @@ export interface UpdateUserParams {
     username: string,
     email: string,
     phoneNumber: string,
-    password: string
+    password?: string
 }
 
 export interface LoginUserParams {

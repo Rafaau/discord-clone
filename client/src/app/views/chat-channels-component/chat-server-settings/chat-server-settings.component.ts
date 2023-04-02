@@ -136,6 +136,7 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
         .subscribe(
           (data: HttpResponse<ChatServer>) => {
             this.chatServer = data.body!
+            console.log(data.body!)
             this.onSave.emit(data.body!)
           }
         )

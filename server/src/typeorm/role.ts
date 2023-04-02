@@ -29,6 +29,7 @@ export class Role {
     chatServer?: ChatServer
 
     @ManyToMany(() => User, user => user.roles, {
+        onDelete: 'CASCADE',
         nullable: true
     })
     @JoinTable()

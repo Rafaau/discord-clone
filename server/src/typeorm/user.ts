@@ -73,6 +73,7 @@ export class User {
     notifications?: Notification[]
 
     @ManyToMany(() => Role, role => role.users, {
+        onDelete: 'CASCADE',
         nullable: true
     })
     roles?: Role[]
