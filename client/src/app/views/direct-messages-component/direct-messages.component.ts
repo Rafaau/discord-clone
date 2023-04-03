@@ -16,6 +16,8 @@ import { GiphyService } from 'src/app/_services/giphy.service';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
 import { NotificationsService } from 'src/app/_services/notifications.service';
 import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-dialog/confirm-delete-dialog.component';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-direct-messages',
@@ -47,7 +49,6 @@ import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-d
   ]
 })
 export class DirectMessagesComponent implements OnInit {
-  @Input()
   currentUser?: User
   @Output()
   onJoinCallback = new EventEmitter()
@@ -77,11 +78,13 @@ export class DirectMessagesComponent implements OnInit {
 
   constructor(
     private location: Location,
+    private route: ActivatedRoute,
     private readonly _directConversationService: DirectConversationService,
     private readonly _directMessageService: DirectMessageService,
     private readonly _messageReactionsService: MessageReactionsService,
     public readonly _giphyService: GiphyService,
     private readonly _notificationsService: NotificationsService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     public dialog: MatDialog,
     private socket: Socket
   ) { }
@@ -120,12 +123,13 @@ export class DirectMessagesComponent implements OnInit {
 
   init() {
     this.doNotScroll = false
-    const urlObj = new URL(window.location.href)
-    const params = new URLSearchParams(urlObj.search)
-    if (this.page == 1 && Number(params.get('conversation')) != 0) {
-      this.fetchDirectConversation(Number(params.get('conversation')))
-      this.fetchDirectMessages(Number(params.get('conversation')))
-    }
+    this._sharedDataProvider.getCurrentUser().subscribe(
+      (user: User) => {
+        this.currentUser = user
+        const conversationId = this.route.snapshot.paramMap.get('conversationId')
+        this.fetchDirectConversation(Number(conversationId))
+        this.fetchDirectMessages(Number(conversationId))
+      })
     setTimeout(() => {
       this.doNotScroll = true // to avoid scrolling on tooltip display
     }, 500)

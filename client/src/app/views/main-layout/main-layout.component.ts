@@ -17,6 +17,7 @@ import { ChatServerSettingsComponent } from '../chat-channels-component/chat-ser
 import { ChatServersComponent } from '../chat-servers-component/chat-servers.component';
 import { DirectMessagesListComponent } from '../direct-messages-list-component/direct-messages-list.component';
 import { FriendsComponent } from '../friends-component/friends.component';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -61,6 +62,7 @@ export class MainLayoutComponent implements OnInit {
   constructor(
     private readonly _authService: AuthService,
     private readonly _rolesService: RolesService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     public router: Router,
     private location: Location
   ) { }
@@ -71,6 +73,13 @@ export class MainLayoutComponent implements OnInit {
       if (role.users.some(x => x.id == this.currentUser!.id)) {
         this.currentUser!.roles!.find(x => x.id == role.id)!.permissions = role.permissions
       }
+    })
+    this._sharedDataProvider.serverSettings.subscribe((event: ChatServer) => {
+      this.serverSettingsState = !this.serverSettingsState
+      if (event != undefined)
+        this.chatServerToPass = event
+      else
+        this.chatServerToPass = undefined
     })
   }
 
@@ -102,13 +111,14 @@ export class MainLayoutComponent implements OnInit {
     await this._authService.getAuthStatus().subscribe(
       async (data: HttpResponse<User>) => {
         console.log('authorized')
-        console.log(data.body)
         this.currentUser = data.body!
+        this._sharedDataProvider.setCurrentUser(this.currentUser)
         this.friendsChild?.fetchFriendsOfUser(data.body!.id)
       },
       (error) => {
         console.log('unauthorized')
-        this.router.navigate(['/login'])
+        this.router.navigate(['login'])
+        //this.router.navigate([{ outlets: { login: 'login' } }])
       }
     )
   }

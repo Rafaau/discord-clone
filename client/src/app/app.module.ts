@@ -41,6 +41,9 @@ import { UserAvatarComponent } from './views/main-layout/user-avatar-component/u
 import { ChatServerAvatarComponent } from './views/main-layout/chat-server-avatar-component/chat-server-avatar.component';
 import { AssignToRoleDialog } from './views/chat-channels-component/chat-server-settings/assign-to-role-dialog/assign-to-role-dialog.component';
 import { ChannelPermissionsDialog } from './views/chat-channels-component/channel-permissions-dialog/channel-permissions.component';
+import { RouteReuseStrategy, UrlSerializer } from '@angular/router';
+import { StandardUrlSerializer } from './utils/StandardUrlSerializer';
+import { CustomRouteReuseStrategy } from './utils/CustomRouteReuseStrategy';
 
 const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 

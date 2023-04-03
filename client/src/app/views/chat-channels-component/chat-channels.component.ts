@@ -1,8 +1,8 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ChatCategory } from 'src/app/_models/chat-category';
 import { ChatServer } from 'src/app/_models/chat-servers';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
@@ -19,6 +19,9 @@ import { ChatChannel, UpdateChatChannelParams } from 'src/app/_models/chat-chann
 import { Notification } from 'src/app/_models/notification';
 import { NotificationsService } from 'src/app/_services/notifications.service';
 import { ChannelPermissionsDialog } from './channel-permissions-dialog/channel-permissions.component';
+import { RouteParamsProvider } from 'src/app/utils/RouteParamsProvider.service';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-chat-channels',
@@ -43,11 +46,9 @@ import { ChannelPermissionsDialog } from './channel-permissions-dialog/channel-p
     ])
   ]
 })
-export class ChatChannelsComponent implements OnInit, OnChanges {
+export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
   chatServer?: ChatServer
   chatChannels?: ChatChannel[]
-  @Output()
-  members = new EventEmitter<User[]>()
   toExpand: boolean[] = []
   isOpen: boolean[] = []
   isServerMenuExpanded: boolean = false
@@ -56,7 +57,6 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   onServerSettingsToggle = new EventEmitter<ChatServer>
   @Input()
   notifications: Notification[] = []
-  @Input()
   currentUser?: User
   currentRoute = new LocationHrefProvider(this.location)
   currentChannelSettings?: ChatChannel
@@ -68,22 +68,29 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     public router: Router,
     public dialog: MatDialog,
+    private readonly routeParams: RouteParamsProvider,
     private readonly _chatServerService: ChatServerService,
     private readonly _usersService: UsersService,
     private readonly _chatChannelService: ChatChannelService,
     private readonly _notificationsService: NotificationsService,
-    private location: Location
+    private readonly _sharedDataProvider: SharedDataProvider,
+    private location: Location,
   ) { }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(
-      params => {
-        if (this.router.url.includes('chatserver')) {
-          this.getChatServerDetails(params['id'])
-          this.fetchUsers(params['id'])
-        }
-      }
-    )
+    this.init()
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        if (event.url.includes('chatserver')
+        && !event.url.includes(`chatserver/${this.chatServer?.id}`))
+          this.init()
+        else if (this.chatServer 
+              && event.url.includes('chatserver')
+              && !event.url.includes(`channel`)) 
+          this.redirectToChatChannel(this.chatServer!.chatCategories![0].chatChannels![0].id)
+      })
+    this.getCurrentUser()
     this._chatChannelService.getDeletedChannel()
       .subscribe(
         (channelId: number) => {
@@ -117,16 +124,35 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
         })
   }
 
+  ngOnDestroy() {
+
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['notifications'] && this.chatServer) {
       this.checkNotifications()
     }
   }
 
+  init() {
+    const serverId = this.route.snapshot.paramMap.get('serverId')
+    this.getChatServerDetails(Number(serverId))
+    this.fetchUsers(Number(serverId))
+  }
+
+  getCurrentUser() {
+    this._sharedDataProvider.getCurrentUser().subscribe(
+      (user: User) => {
+        this.currentUser = user
+      }
+    )
+  }
+
   getChatServerDetails(id: number) {
     this._chatServerService.getChatServerById(id).subscribe(
       (data: HttpResponse<ChatServer>) => {
         this.chatServer = data.body!
+        console.log(data.body!)
         for (let i = 0; i < data.body!.chatCategories!.length; i++) {
           this.toExpand.push(true)
         }
@@ -145,8 +171,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   fetchUsers(chatServerId: number) {
     this._usersService.getUsersByChatServer(chatServerId).subscribe(
       (data: HttpResponse<User[]>) => {
-        this.members?.emit(data.body!)
-        console.log('users fetched')
+        this._sharedDataProvider.setMembers(data.body!)
       },
       (error) => {
         console.log('err')
@@ -161,18 +186,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
 
   redirectToChatChannel(channelId: number) {
     if (!this.doNotInterrupt) {
-      const url = this.router.createUrlTree(
-        [], 
-        { 
-          relativeTo: this.route,
-          queryParamsHandling: 'merge',
-          queryParams: { 
-            id: this.chatServer!.id,
-            channel: channelId
-          } 
-        }
-      ).toString()
-      this.location.replaceState(url);
+      this.router.navigate([{ outlets: { main: ['channel', channelId] } }])
       
       const notificationsFromChannel = this.notifications.filter(
         x => x.source.includes(`Channel=${channelId}`)
@@ -206,27 +220,29 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   }
 
   checkNotifications() {
-    const { chatChannels } = this.chatServer!.chatCategories![0];
-    for (const channel of chatChannels) {
-      const channelNotification = this.notifications.find(
-        notification => notification.source.includes(`Channel=${channel.id}`)
-      );
-  
-      if (!channelNotification) {
-        channel.hasNotification = false;
-        continue;
-      }
-  
-      if (
-        channelNotification.source
-          .slice(channelNotification.source.indexOf("Channel="))
-          .slice(8) ===
-        this.currentRoute.route.slice(this.currentRoute.route.indexOf("channel=")).slice(8)
-      ) {
-        channel.hasNotification = false;
-        this._notificationsService.markAsRead(channelNotification.id, this.currentUser!.id);
-      } else {
-        channel.hasNotification = true;
+    if (this.chatServer) {
+      const { chatChannels } = this.chatServer.chatCategories![0];
+      for (const channel of chatChannels) {
+        const channelNotification = this.notifications.find(
+          notification => notification.source.includes(`Channel=${channel.id}`)
+        );
+    
+        if (!channelNotification) {
+          channel.hasNotification = false;
+          continue;
+        }
+    
+        if (
+          channelNotification.source
+            .slice(channelNotification.source.indexOf("Channel="))
+            .slice(8) ===
+          this.currentRoute.route.slice(this.currentRoute.route.indexOf("channel=")).slice(8)
+        ) {
+          channel.hasNotification = false;
+          this._notificationsService.markAsRead(channelNotification.id, this.currentUser!.id);
+        } else {
+          channel.hasNotification = true;
+        }
       }
     }
   }
@@ -287,7 +303,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   toggleServerSettings() {
     this.isServerSettingsOn = !this.isServerSettingsOn
     this.isServerMenuExpanded = false
-    this.onServerSettingsToggle.emit(this.chatServer)
+    this._sharedDataProvider.emitServerSettings(this.chatServer!)
   }
 
   openGenerateInvitationDialog() {
@@ -326,20 +342,26 @@ export class ChatChannelsComponent implements OnInit, OnChanges {
   }
 
   isPermittedToManageServer() {
-    const currentChatServerId = this.chatServer!.id
-    const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id === currentChatServerId)
-  
-    return userRolesForCurrentServer.some(role => {
-      return role.permissions.some(permission => permission['administrator'] === true)
-    })
+    if (this.currentUser && this.chatServer) {
+      const currentChatServerId = this.chatServer.id
+      const userRolesForCurrentServer = this.currentUser.roles!.filter(role => role.chatServer.id === currentChatServerId)
+    
+      return userRolesForCurrentServer.some(role => {
+        return role.permissions.some(permission => permission['administrator'] === true)
+      })
+    } else
+      return false
   }
 
   isPermittedToViewChannel(channel: ChatChannel) {
-    const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id == this.chatServer!.id)
-    return userRolesForCurrentServer.some(role => {
-      return channel.roles!.some(x => x.id == role.id)
-    }) || channel.users!.some(x => x.id == this.currentUser!.id)
-    || !channel.isPrivate
+    if (this.currentUser) {
+      const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id == this.chatServer!.id)
+      return userRolesForCurrentServer.some(role => {
+        return channel.roles!.some(x => x.id == role.id)
+      }) || channel.users!.some(x => x.id == this.currentUser!.id)
+      || !channel.isPrivate 
+    } else
+      return false
   }
 
   availableChannels(channels: ChatChannel[]) {

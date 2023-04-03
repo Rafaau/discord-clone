@@ -7,19 +7,7 @@
       </app-chat-servers>
     </div>
     <div class="secondary-side-bar">
-      <app-chat-channels 
-        *ngIf="router.url.includes('/chatserver')" 
-        (members)="fetchUsersFromServer($event)"
-        (onServerSettingsToggle)="toggleServerSettingsView($event)"
-        [notifications]="notifications"
-        [currentUser]="currentUser">
-      </app-chat-channels>
-      <app-direct-messages-list 
-        *ngIf="router.url.includes('/directmessages') && currentUser" 
-        [currentUser]="currentUser" 
-        (rendered)="passUserToChild()"
-        [notifications]="notifications">
-      </app-direct-messages-list>
+      <router-outlet name="secondary"></router-outlet>
       <div class="user-tab">
         <div 
           *ngIf="currentUser"
@@ -39,21 +27,7 @@
       </div>
     </div>
     <div class="main-container">
-      <app-chat-messages 
-        *ngIf="currentRoute.route.includes('channel=')" 
-        [currentUser]="currentUser" 
-        [members]="members"
-        (onJoinCallback)="refreshChatServers($event)">
-      </app-chat-messages>
-      <app-friends 
-        *ngIf="currentRoute.route === '/directmessages'" 
-        [currentUser]="currentUser">
-      </app-friends>
-      <app-direct-messages 
-        *ngIf="currentRoute.route.includes('conversation=')" 
-        [currentUser]="currentUser"
-        (onJoinCallback)="refreshChatServers($event)">
-      </app-direct-messages>
+      <router-outlet name="main"></router-outlet>
     </div>
   </div>
   <chat-server-settings 
@@ -69,3 +43,4 @@
     (onUserUpdate)="refreshUser($event)">
   </user-settings>
 </div>
+

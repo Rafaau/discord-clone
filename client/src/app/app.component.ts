@@ -12,7 +12,8 @@ export class AppComponent {
     window.location.pathname === '/register'
   )
 
-  constructor (public router: Router) {}
+  constructor (public router: Router) {
+  }
 
   ngOnInit() { }
 

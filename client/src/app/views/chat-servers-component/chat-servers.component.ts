@@ -140,15 +140,12 @@ export class ChatServersComponent implements OnInit, OnChanges {
     }, 100)
   }
 
-  redirectTo(route: string) {
-    this.router.navigate(
-      ['/chatserver'], 
-      { queryParams: { id: route } }
-    )
+  redirectTo(serverId: string) {
+    this.router.navigate([{ outlets: { main: null, secondary: ['chatserver', serverId] } }])
   }
-
+  
   redirectToHome() {
-    this.router.navigate(['/directmessages'])
+    this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
   }
 
   openAddServerDialog() {

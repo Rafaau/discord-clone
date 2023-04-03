@@ -79,7 +79,10 @@ export class LoginPageComponent implements OnInit {
     }
     this._authService.authorizeUser(credentials).subscribe(
       (data: HttpResponse<{}>) => {
-        this.router.navigate(['/directmessages'])
+        this.router.navigate([''])
+          .then(() => {
+            this.router.navigate([{ outlets: { main: 'friends', secondary: 'directmessages' } }])
+          })
       },
       (error) => {
         console.log("invalid credentials")

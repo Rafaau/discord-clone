@@ -1,5 +1,5 @@
 <div 
-  [ngClass]="router.url === '/directmessages' ? 'chat-server-icon-current' : 'chat-server-icon'"
+  [ngClass]="router.url.includes('directmessages') ? 'chat-server-icon-current' : 'chat-server-icon'"
   matTooltip="Direct Messages"
   matTooltipPosition="right"
   [matBadgeHidden]="groupedNotifications[0].length == 0"
@@ -8,7 +8,7 @@
   (click)="redirectToHome()">
   <i class="fa-brands fa-discord"></i>
   <div class="indicator"></div>
-  <div [@routeChange] *ngIf="router.url === '/directmessages'" class="current"></div>
+  <div [@routeChange] *ngIf="router.url.includes('directmessages')" class="current"></div>
 </div>
 
 <hr/>
@@ -16,7 +16,7 @@
 <div class="chat-servers-container">
   <div *ngFor="let chatServer of chatServers; let i = index;">
     <div 
-      [ngClass]="router.url.includes('/chatserver?id='+chatServer.id) ? 'chat-server-icon-current' : 'chat-server-icon'"
+      [ngClass]="router.url.includes('chatserver/'+chatServer.id) ? 'chat-server-icon-current' : 'chat-server-icon'"
       matTooltip="{{chatServer.name}}"
       matTooltipPosition="right"
       [matBadgeHidden]="groupedNotifications[i + 1].length == 0"
@@ -28,7 +28,7 @@
         [name]="chatServer.name"
         class="avatar"/>
       <div class="indicator"></div>
-      <div [@routeChange] *ngIf="router.url.includes('/chatserver?id='+chatServer.id)" class="current"></div>
+      <div [@routeChange] *ngIf="router.url.includes('chatserver/'+chatServer.id)" class="current"></div>
     </div>
   </div>
 </div>

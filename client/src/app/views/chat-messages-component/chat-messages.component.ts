@@ -18,6 +18,8 @@ import { ConfirmDeleteDialog } from './confirm-delete-dialog/confirm-delete-dial
 import { GiphyService } from 'src/app/_services/giphy.service';
 import { CreateNotificationParams, Notification } from 'src/app/_models/notification';
 import { NotificationsService } from 'src/app/_services/notifications.service';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
+import { UsersService } from 'src/app/_services/users.service';
 
 @Component({
   selector: 'app-chat-messages',
@@ -49,9 +51,7 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
   ]
 })
 export class ChatMessagesComponent implements OnInit, OnChanges {
-  @Input()
-  public members?: User[] = []
-  @Input()
+  members?: User[] = []
   currentUser?: User
   @Output()
   onJoinCallback = new EventEmitter()
@@ -95,18 +95,18 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     private readonly _chatServerService: ChatServerService,
     private readonly _messageReactionsService: MessageReactionsService,
     private readonly _notificationsService: NotificationsService,
+    private readonly _sharedDatatProvider: SharedDataProvider,
+    private readonly _usersService: UsersService,
     public dialog: MatDialog,
     private socket: Socket
   ) { }
 
   ngOnInit() {
     this.init()
-    this.location.onUrlChange((url) => {
-      if (url.includes('/chatserver')) {
-        this.chatMessages = []
-        this.page = 1
-        this.init()
-      }
+    this.route.params.subscribe(params => {
+      this.chatMessages = []
+      this.page = 1
+      this.init()
     })
     this._chatMessagesService.getNewMessage()
       .subscribe(
@@ -140,14 +140,30 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
 
   init() {
     this.doNotScroll = false
-    const params = new URLSearchParams(this.currentRoute.route)
-    if (this.page == 1 && Number(params.get('channel')) != 0) {
-      this.fetchChatMessages(Number(params.get('channel')))
-      this.getChatChannel(Number(params.get('channel')))
+    this.getCurrentUser()
+    this.getMembers()
+    const channelId = this.route.snapshot.paramMap.get('channelId')
+    if (this.page == 1 && Number(channelId)) {
+      this.fetchChatMessages(Number(channelId))
+      this.getChatChannel(Number(channelId))
     }
     setTimeout(() => {
       this.doNotScroll = true // to avoid scrolling on tooltip display
     }, 500)
+  }
+
+  getCurrentUser() {
+    this._sharedDatatProvider.getCurrentUser().subscribe(
+      (user: User) => {
+        this.currentUser = user
+      })
+  }
+
+  getMembers() {
+    this._sharedDatatProvider.getMembers().subscribe(
+      (members: User[]) => {
+        this.members = members
+      })
   }
 
   fetchChatMessages(channelId: number) {

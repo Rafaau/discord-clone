@@ -8,6 +8,7 @@ import { Notification } from 'src/app/_models/notification';
 import { User } from 'src/app/_models/Users';
 import { NotificationsService } from 'src/app/_services/notifications.service';
 import { UsersService } from 'src/app/_services/users.service';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 
 @Component({
   selector: 'app-direct-messages-list',
@@ -27,20 +28,28 @@ export class DirectMessagesListComponent implements OnInit, OnChanges {
   constructor(
     private readonly _usersService: UsersService,
     private readonly _notificationsService: NotificationsService,
-    private router: Router,
+    private readonly _sharedDataProvider: SharedDataProvider,
+    public router: Router,
     private location: Location
   ) { }
 
   ngOnInit() {
     this.rendered.emit(true)
-    if (this.currentUser)
-      this.fetchUserConversations()
+    this.getCurrentUser()
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['notifications'] && this.directConversations?.length) {
       this.checkNotifications()
     }
+  }
+
+  getCurrentUser() {
+    this._sharedDataProvider.getCurrentUser().subscribe(
+      (user: User) => {
+        this.currentUser = user
+        this.fetchUserConversations()
+      })
   }
 
   fetchUserConversations(userId?: number) {
@@ -74,16 +83,7 @@ export class DirectMessagesListComponent implements OnInit, OnChanges {
   }
 
   redirectToConversation(conversationId: number) {
-    const url = this.router.createUrlTree(
-      [],
-      {
-        queryParamsHandling: 'merge',
-        queryParams: {
-          conversation: conversationId
-        }
-      }
-    ).toString()
-    this.location.replaceState(url)
+    this.router.navigate([{ outlets: { main: ['conversation', conversationId] } }])
 
     const notificationsFromConversation = this.notifications.filter(
       x => x.source.includes(`DirectConversation=${conversationId}`)
@@ -94,6 +94,6 @@ export class DirectMessagesListComponent implements OnInit, OnChanges {
   }
 
   redirectToFriends() {
-    this.location.go('/directmessages')
+    this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
   }
 }

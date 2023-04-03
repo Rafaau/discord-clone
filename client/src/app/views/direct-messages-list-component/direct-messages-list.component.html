@@ -3,7 +3,7 @@
 </div>
 <div 
   class="friends-tab" 
-  [ngClass]="currentRoute.route === '/directmessages' ? 'current' : ''"
+  [ngClass]="router.url.includes('friends') ? 'current' : ''"
   (click)="redirectToFriends()">
   <mat-icon>people</mat-icon>
   Friends
@@ -12,7 +12,7 @@
 <div *ngFor="let conversation of directConversations;">
   <div
     class="single-conversation" 
-    [ngClass]="currentRoute.route.includes('conversation='+conversation.id) ? 'current' : ''"
+    [ngClass]="router.url.includes('conversation/'+conversation.id) ? 'current' : ''"
     (click)="redirectToConversation(conversation.id)"
     [matBadgeHidden]="!conversation.hasNotification"
     [matBadge]="conversation.notificationsCount"

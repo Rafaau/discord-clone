@@ -4,7 +4,7 @@
 @import '~@ctrl/ngx-emoji-mart/picker';
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; color: #DEDFE1; user-select: none; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; color: #DEDFE1; user-select: none; overflow: hidden; }
 
 h1 {
     font-weight: 500!important;

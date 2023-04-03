@@ -65,7 +65,7 @@
           <div
             cdkDrag
             [cdkDragData]="channel"
-            [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id ? 
+            [ngClass]="router.url.includes('channel/'+channel.id) ? 
             'chat-channel chat-channel-current' : 'chat-channel'" 
             *ngFor="let channel of availableChannels(category.chatChannels)"
             id="channel-{{ channel.id }}"
