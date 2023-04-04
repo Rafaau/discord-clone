@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChatServer } from 'src/app/_models/chat-servers';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
@@ -15,6 +15,8 @@ import { User } from 'src/app/_models/Users';
 import { Notification } from 'src/app/_models/notification';
 import { Socket } from 'ngx-socket-io';
 import { NotificationsService } from 'src/app/_services/notifications.service';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-chat-servers',
@@ -40,7 +42,7 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
     ])
   ]
 })
-export class ChatServersComponent implements OnInit, OnChanges {
+export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   chatServers: ChatServer[] = []
   @Input()
   currentUser?: User
@@ -50,17 +52,18 @@ export class ChatServersComponent implements OnInit, OnChanges {
   groupedNotifications: Array<Array<Notification>> = [
     [],
   ]
+  onDestroy$ = new Subject<void>()
 
   constructor(
     private readonly _chatServerService: ChatServerService,
     private readonly _notificationsService: NotificationsService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     private readonly socket: Socket,
     public router: Router,
     public dialog: MatDialog
   ) { }
 
   ngOnInit() {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -69,25 +72,32 @@ export class ChatServersComponent implements OnInit, OnChanges {
       this.getNotifications(this.currentUser.id)
 
       this._notificationsService.getNewNotification()
+        .pipe(takeUntil(this.onDestroy$))
         .subscribe(
           (notification: Notification) => {
             if (notification.recipient.id == this.currentUser!.id) {
               this.notifications!.push(notification)
               this.groupNotifications()
-              this.notificationsToPass.emit(this.notifications)
+              this._sharedDataProvider.setServerNotifications(this.notifications)
             }
           }
         )
       this._notificationsService.getReadedNotification()
+          .pipe(takeUntil(this.onDestroy$))
           .subscribe(
             (notification: Notification) => {
               const notifications = this.notifications.filter(x => x.id != notification.id)
               this.notifications = notifications
               this.groupNotifications(notifications)
-              this.notificationsToPass.emit(notifications)
+              this._sharedDataProvider.setServerNotifications(notifications)
             }
           )
     }
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next()
+    this.onDestroy$.complete()
   }
 
   getChatServers(userId: number) {
@@ -112,7 +122,7 @@ export class ChatServersComponent implements OnInit, OnChanges {
           this.notifications = data.body!
           console.log('notifications fetched')
           this.groupNotifications(data.body!)
-          this.notificationsToPass.emit(data.body!)
+          this._sharedDataProvider.setServerNotifications(data.body!)
         },
         (error) => {
           console.log(error)

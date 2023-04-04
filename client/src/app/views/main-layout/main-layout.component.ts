@@ -1,7 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
@@ -18,6 +18,7 @@ import { ChatServersComponent } from '../chat-servers-component/chat-servers.com
 import { DirectMessagesListComponent } from '../direct-messages-list-component/direct-messages-list.component';
 import { FriendsComponent } from '../friends-component/friends.component';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-main-layout',
@@ -45,19 +46,17 @@ import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
     ])
   ]
 })
-export class MainLayoutComponent implements OnInit {
+export class MainLayoutComponent implements OnInit, OnDestroy {
   members: User[] = []
   notifications: Notification[] = []
   currentUser?: User
   currentRoute = new LocationHrefProvider(this.location)
-  @ViewChild(FriendsComponent) friendsChild?: FriendsComponent
-  @ViewChild(DirectMessagesListComponent) directMessagesChild?: DirectMessagesListComponent
   @ViewChild(ChatServersComponent) chatServersChild?: ChatServersComponent
-  @ViewChild(ChatChannelsComponent) chatChannelsChild?: ChatChannelsComponent
   @ViewChild(ChatServerSettingsComponent) serverSettingsChild?: ChatServerSettingsComponent
   serverSettingsState: boolean = false
   userSettingsState: boolean = false
   chatServerToPass?: ChatServer
+  onDestroy$ = new Subject<void>()
 
   constructor(
     private readonly _authService: AuthService,
@@ -69,11 +68,13 @@ export class MainLayoutComponent implements OnInit {
 
   async ngOnInit() {
     await this.authorizeUser()
-    this._rolesService.getRoleUpdated().subscribe((role: Role) => {
-      if (role.users.some(x => x.id == this.currentUser!.id)) {
-        this.currentUser!.roles!.find(x => x.id == role.id)!.permissions = role.permissions
-      }
-    })
+    this._rolesService.getRoleUpdated()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((role: Role) => {
+        if (role.users.some(x => x.id == this.currentUser!.id)) {
+          this.currentUser!.roles!.find(x => x.id == role.id)!.permissions = role.permissions
+        }
+      })
     this._sharedDataProvider.serverSettings.subscribe((event: ChatServer) => {
       this.serverSettingsState = !this.serverSettingsState
       if (event != undefined)
@@ -83,19 +84,18 @@ export class MainLayoutComponent implements OnInit {
     })
   }
 
+  ngOnDestroy() {
+    this.onDestroy$.next()
+    this.onDestroy$.complete()
+  }
+
+
   fetchUsersFromServer(users: User[]) {
     this.members = users
   }
 
   fetchNotificationsFromServers(notifications: Notification[]) {
     this.notifications = notifications
-    if (this.chatChannelsChild) {
-      this.chatChannelsChild.notifications = notifications
-      this.chatChannelsChild.checkNotifications()
-    } else if (this.directMessagesChild) {
-        this.directMessagesChild.notifications = notifications
-        this.directMessagesChild.checkNotifications()
-      }
   }
 
   refreshUser(user: User) {
@@ -113,18 +113,15 @@ export class MainLayoutComponent implements OnInit {
         console.log('authorized')
         this.currentUser = data.body!
         this._sharedDataProvider.setCurrentUser(this.currentUser)
-        this.friendsChild?.fetchFriendsOfUser(data.body!.id)
       },
       (error) => {
         console.log('unauthorized')
-        this.router.navigate(['login'])
-        //this.router.navigate([{ outlets: { login: 'login' } }])
+        this.router.navigate([''])
+          .then(() => {
+            this.router.navigate(['login'])
+          })
       }
     )
-  }
-
-  passUserToChild() {
-    this.directMessagesChild?.fetchUserConversations(this.currentUser!.id)
   }
 
   toggleServerSettingsView(event: ChatServer) {
@@ -136,7 +133,7 @@ export class MainLayoutComponent implements OnInit {
   }
 
   updateChatServer(chatServer: ChatServer) {
-    this.chatChannelsChild!.chatServer = chatServer
+    
   }
 
   toggleUserSettingsView(event: Event) {

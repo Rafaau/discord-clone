@@ -68,10 +68,7 @@ export class UserDetailsComponent implements OnInit {
         messageReqBody
       ).subscribe(
         (data: HttpResponse<{}>) => {
-          this.router.navigate(
-            ['directmessages'],
-            { queryParams: { conversation: conversationId }}
-          )
+          this.router.navigate([{ outlets: { main: ['conversation', conversationId], secondary: ['directmessages'] } }])
         }
       )
     } else {

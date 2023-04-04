@@ -6,6 +6,7 @@ import { CreateDirectConversationParams, DirectConversation } from 'src/app/_mod
 import { User, UserComplex } from 'src/app/_models/Users';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { UsersService } from 'src/app/_services/users.service';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 
 @Component({
   selector: 'app-friends',
@@ -13,7 +14,6 @@ import { UsersService } from 'src/app/_services/users.service';
   styleUrls: ['./friends.component.css']
 })
 export class FriendsComponent implements OnInit {
-  @Input()
   currentUser?: User
   friendsOfUser: UserComplex[] = []
   public searchValue: string = ''
@@ -24,13 +24,21 @@ export class FriendsComponent implements OnInit {
   constructor(
     private readonly _usersService: UsersService,
     private readonly _directConversationService: DirectConversationService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
-    if (this.currentUser)
-      this.fetchFriendsOfUser()
+    this.getCurrentUser()
+  }
+
+  getCurrentUser() {
+    this._sharedDataProvider.getCurrentUser().subscribe(
+      (user: User) => {
+        this.currentUser = user
+        this.fetchFriendsOfUser()
+      })
   }
 
   fetchFriendsOfUser(userId?: number) {

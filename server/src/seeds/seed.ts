@@ -39,7 +39,7 @@ export async function seedData(connection: any) {
     const user2 = userRepository.create({
         id: 6,
         username: 'TestUser2',
-        email: 'test@gmail.com',
+        email: 'test2@gmail.com',
         password: '$2b$10$uxKeZfzFOJj9NU85dx4xYeE1VBKKc33J2R1GxIpQdlkPSED.sZvru', // BCRYPTED 'password'
         friends: [user1],
     })
@@ -47,7 +47,7 @@ export async function seedData(connection: any) {
     const user3 = userRepository.create({
         id: 7,
         username: 'TestUser3',
-        email: 'test@gmail.com',
+        email: 'test3@gmail.com',
         password: '$2b$10$uxKeZfzFOJj9NU85dx4xYeE1VBKKc33J2R1GxIpQdlkPSED.sZvru', // BCRYPTED 'password'
         friends: [user1],
     })

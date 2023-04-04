@@ -187,12 +187,12 @@
               <div 
                 *ngFor="let user of usersToMentionFiltered"
                 class="single-user-to-mention"
-                (click)="mentionUser(user)">
-                <i 
-                  class="fa-brands fa-discord mention-avatar" 
-                  [ngClass]="true ? 'av-' + user[0].toLowerCase() : ''">
-                </i>
-                {{ user }}
+                (click)="mentionUser(user.username)">
+                <user-avatar 
+                  [userId]="user.id" 
+                  class="mention-avatar"
+                  [username]="user.username"/>
+                {{ user.username }}
               </div>
           </div>
           

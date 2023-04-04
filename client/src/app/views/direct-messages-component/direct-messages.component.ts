@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
@@ -18,6 +18,7 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
 import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-dialog/confirm-delete-dialog.component';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-direct-messages',
@@ -48,7 +49,7 @@ import { ActivatedRoute } from '@angular/router';
     ])
   ]
 })
-export class DirectMessagesComponent implements OnInit {
+export class DirectMessagesComponent implements OnInit, OnDestroy {
   currentUser?: User
   @Output()
   onJoinCallback = new EventEmitter()
@@ -75,6 +76,7 @@ export class DirectMessagesComponent implements OnInit {
   showUsersToMention: boolean = false
   usersToMentionFiltered: string[] = []
   inputElement = () => document.querySelector('.chat-input') as HTMLTextAreaElement
+  onDestroy$ = new Subject<void>()
 
   constructor(
     private location: Location,
@@ -99,6 +101,7 @@ export class DirectMessagesComponent implements OnInit {
       }
     })
     this._directMessageService.getNewMessage()
+      .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: DirectMessage) => {
           if (message.directConversation.id == this.directConversation!.id) {
@@ -108,12 +111,14 @@ export class DirectMessagesComponent implements OnInit {
         }
       )
     this._directMessageService.getEditedMessage()
+      .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: DirectMessage) => {
           this.directMessages.filter(x => x.id == message.id)[0].content = message.content
         }
       )
     this._directMessageService.getDeletedMessage()
+        .pipe(takeUntil(this.onDestroy$))
         .subscribe(
           (messageId: number) => {
             this.directMessages = this.directMessages.filter(x => x.id != messageId)
@@ -121,14 +126,21 @@ export class DirectMessagesComponent implements OnInit {
         )  
   }
 
+  ngOnDestroy() {
+    this.onDestroy$.next()
+    this.onDestroy$.complete()
+  }
+
   init() {
     this.doNotScroll = false
     this._sharedDataProvider.getCurrentUser().subscribe(
       (user: User) => {
-        this.currentUser = user
-        const conversationId = this.route.snapshot.paramMap.get('conversationId')
-        this.fetchDirectConversation(Number(conversationId))
-        this.fetchDirectMessages(Number(conversationId))
+        if (user) {
+          this.currentUser = user
+          const conversationId = this.route.snapshot.paramMap.get('conversationId')
+          this.fetchDirectConversation(Number(conversationId))
+          this.fetchDirectMessages(Number(conversationId))
+        }
       })
     setTimeout(() => {
       this.doNotScroll = true // to avoid scrolling on tooltip display

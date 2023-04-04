@@ -17,31 +17,12 @@ const routes: Routes = [
       {
         path: 'chatserver/:serverId',
         component: ChatChannelsComponent,
-        outlet: 'secondary',
-        children: [
-          {
-            path: 'channel/:channelId',
-            component: ChatMessagesComponent,
-            outlet: 'main'
-          },
-        ],
+        outlet: 'secondary'
       },
       {
         path: 'directmessages',
         component: DirectMessagesListComponent,
-        outlet: 'secondary',
-        children: [
-          {
-            path: '',
-            component: FriendsComponent,
-            outlet: 'main'
-          },
-          {
-            path: 'conversation/:conversationId',
-            component: DirectMessagesComponent,
-            outlet: 'main'
-          },
-        ],
+        outlet: 'secondary'
       },
       {
         path: 'channel/:channelId',

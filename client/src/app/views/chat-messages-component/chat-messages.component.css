@@ -749,10 +749,12 @@ mat-progress-spinner {
 
 .single-user-to-mention {
     position: relative;
-    padding: 5px;
     border-radius: 5px;
     cursor: pointer;
     font-weight: 400;
+    display: flex;
+    padding: 5px;
+    line-height: 26px;
 }
 
     .single-user-to-mention:hover {
@@ -764,4 +766,6 @@ mat-progress-spinner {
     width: 25px;
     height: 25px;
     line-height: 25px;
+    text-align: center;
+    margin-right: 10px;
 }

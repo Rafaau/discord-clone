@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
@@ -20,6 +20,7 @@ import { CreateNotificationParams, Notification } from 'src/app/_models/notifica
 import { NotificationsService } from 'src/app/_services/notifications.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { UsersService } from 'src/app/_services/users.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-chat-messages',
@@ -50,7 +51,7 @@ import { UsersService } from 'src/app/_services/users.service';
     ])
   ]
 })
-export class ChatMessagesComponent implements OnInit, OnChanges {
+export class ChatMessagesComponent implements OnInit, OnDestroy {
   members?: User[] = []
   currentUser?: User
   @Output()
@@ -81,9 +82,10 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
   fakeInputValue: string = ''
   usernames: string[] = []
   showUsersToMention: boolean = false
-  usersToMentionFiltered: string[] = []
+  usersToMentionFiltered: User[] = []
   usersToNotify: number[] = []
   inputElement = () => document.querySelector('.chat-input') as HTMLTextAreaElement
+  onDestroy$ = new Subject<void>()
 
   constructor(
     private location: Location,
@@ -109,6 +111,7 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
       this.init()
     })
     this._chatMessagesService.getNewMessage()
+      .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: ChatMessage) => {
           if (message.chatChannel.id == this.chatChannel!.id) {
@@ -118,12 +121,14 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
         }
       )
     this._chatMessagesService.getEditedMessage()
+      .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: ChatMessage) => {
           this.chatMessages.filter(x => x.id == message.id)[0].content = message.content
         }
       )
     this._chatMessagesService.getDeletedMessage()
+        .pipe(takeUntil(this.onDestroy$))
         .subscribe(
           (messageId: number) => {
             this.chatMessages = this.chatMessages.filter(x => x.id != messageId)
@@ -131,11 +136,9 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
         )
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['members'] && !this.usernames.length)
-      this.members?.forEach(x => {
-        this.usernames.push(x.username)
-      })
+  ngOnDestroy() {
+    this.onDestroy$.next()
+    this.onDestroy$.complete()
   }
 
   init() {
@@ -162,7 +165,13 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
   getMembers() {
     this._sharedDatatProvider.getMembers().subscribe(
       (members: User[]) => {
+        console.log('members fetched')
         this.members = members
+
+        if (!this.usernames.length)
+          members.forEach(x => {
+            this.usernames.push(x.username)
+          })
       })
   }
 
@@ -220,9 +229,9 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
     if (lastword.includes('@')) {
       this.showUsersToMention = true
       if (lastword.length > 1)
-        this.usersToMentionFiltered = this.usernames.filter(x => x.includes(lastword.slice(1)))
+        this.usersToMentionFiltered = this.members!.filter(x => x.username.includes(lastword.slice(1)))
       else
-        this.usersToMentionFiltered = this.usernames
+        this.usersToMentionFiltered = this.members!
     } else {
       this.showUsersToMention = false
     }
@@ -520,12 +529,14 @@ export class ChatMessagesComponent implements OnInit, OnChanges {
   }
 
   isPermittedToSendMessages() {
-    const currentChatServerId = this.chatChannel!.chatCategory.chatServer.id
-    const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id === currentChatServerId)
-  
-    return userRolesForCurrentServer.some(role => {
-      return role.permissions.some(permission => permission['send-messages'] === true)
-    })
+    if (this.currentUser) {
+      const currentChatServerId = this.chatChannel!.chatCategory.chatServer.id
+      const userRolesForCurrentServer = this.currentUser!.roles!.filter(role => role.chatServer.id === currentChatServerId)
+    
+      return userRolesForCurrentServer.some(role => {
+        return role.permissions.some(permission => permission['send-messages'] === true)
+      })
+    } else return false
   }
 
   isPermittedToKickMembers() {

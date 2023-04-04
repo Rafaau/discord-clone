@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ChatCategory } from 'src/app/_models/chat-category';
@@ -21,7 +21,7 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
 import { ChannelPermissionsDialog } from './channel-permissions-dialog/channel-permissions.component';
 import { RouteParamsProvider } from 'src/app/utils/RouteParamsProvider.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
-import { filter } from 'rxjs';
+import { Subject, Subscription, filter, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-chat-channels',
@@ -46,16 +46,13 @@ import { filter } from 'rxjs';
     ])
   ]
 })
-export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
+export class ChatChannelsComponent implements OnInit, OnDestroy {
   chatServer?: ChatServer
   chatChannels?: ChatChannel[]
   toExpand: boolean[] = []
   isOpen: boolean[] = []
   isServerMenuExpanded: boolean = false
   isServerSettingsOn: boolean = false
-  @Output()
-  onServerSettingsToggle = new EventEmitter<ChatServer>
-  @Input()
   notifications: Notification[] = []
   currentUser?: User
   currentRoute = new LocationHrefProvider(this.location)
@@ -63,6 +60,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
   doNotInterrupt: boolean = false // to avoid instant close (clickOutside)
   movedChannel?: ChatChannel
   categorySrc?: ChatCategory
+  onDestroy$ = new Subject<void>()
 
   constructor(
     private route: ActivatedRoute,
@@ -92,6 +90,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
       })
     this.getCurrentUser()
     this._chatChannelService.getDeletedChannel()
+      .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (channelId: number) => {
           const actualCategory = this.chatServer!.chatCategories!
@@ -101,6 +100,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
         }
       )
     this._chatChannelService.getMovedChannel()
+      .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (data: any) => {
           const actualCategory = this.chatServer!.chatCategories!
@@ -114,6 +114,7 @@ export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
         }
       )
     this._chatChannelService.getUpdatedChannel()
+      .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (channel: ChatChannel) => {
           const actualChannel = this.chatChannels!.find(x => x.id == channel.id)!
@@ -122,22 +123,24 @@ export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
           actualChannel.roles = channel.roles
           actualChannel.isPrivate = channel.isPrivate
         })
+    this._sharedDataProvider.updatedServer
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+      (event: ChatServer) => {
+        this.chatServer = event
+      })
   }
 
   ngOnDestroy() {
-
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['notifications'] && this.chatServer) {
-      this.checkNotifications()
-    }
+    this.onDestroy$.next()
+    this.onDestroy$.complete()
   }
 
   init() {
     const serverId = this.route.snapshot.paramMap.get('serverId')
     this.getChatServerDetails(Number(serverId))
     this.fetchUsers(Number(serverId))
+    this.getNotifications()
   }
 
   getCurrentUser() {
@@ -166,6 +169,15 @@ export class ChatChannelsComponent implements OnInit, OnChanges, OnDestroy {
         console.log('err')
       }
     )
+  }
+
+  getNotifications() {
+    this._sharedDataProvider.getServerNotifications().subscribe(
+      (notifications: Notification[]) => {
+        console.log(notifications)
+        this.notifications = notifications
+        this.checkNotifications()
+      })
   }
 
   fetchUsers(chatServerId: number) {

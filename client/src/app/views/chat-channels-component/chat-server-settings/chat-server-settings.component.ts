@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatServer, UpdateChatServerParams } from 'src/app/_models/chat-servers';
@@ -10,6 +10,8 @@ import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { RolesService } from 'src/app/_services/roles.service';
 import { AssignToRoleDialog } from './assign-to-role-dialog/assign-to-role-dialog.component';
 import { ServerSettingsSnackbar } from './server-settings-snackbar/server-settings-snackbar.component';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'chat-server-settings',
@@ -40,7 +42,7 @@ import { ServerSettingsSnackbar } from './server-settings-snackbar/server-settin
     ])
   ]
 })
-export class ChatServerSettingsComponent implements OnInit, OnChanges {
+export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   chatServer?: ChatServer
   @Output()
@@ -58,33 +60,46 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
   currentRoleOptions: number = 0
   doNotInterrupt: boolean = false
   roleNameValue?: string
+  onDestroy$ = new Subject<void>()
 
   constructor(
     private readonly _chatServerService: ChatServerService,
     private readonly _rolesService: RolesService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     private snackbar: MatSnackBar,
     private dialog: MatDialog
   ) { }
 
   ngOnInit() {
-    this._rolesService.getRoleUpdated().subscribe((role: Role) => {
-      this.currentRole = role
-      this.chatServer!.roles!.filter(x => x.id == role.id)[0].name = role.name
-    })
-    this._rolesService.getRoleCreated().subscribe((role) => {
-      this.chatServer!.roles!.push(role)
-      this.currentRole = role
-    })
-    this._rolesService.getRoleDeleted().subscribe((roleId) => {
-      this.chatServer!.roles = this.chatServer!.roles!.filter(x => x.id != roleId)
-      this.currentRole = this.chatServer!.roles![0]
-    })
+    this._rolesService.getRoleUpdated()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((role: Role) => {
+        this.currentRole = role
+        this.chatServer!.roles!.filter(x => x.id == role.id)[0].name = role.name
+      })
+    this._rolesService.getRoleCreated()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((role) => {
+        this.chatServer!.roles!.push(role)
+        this.currentRole = role
+      })
+    this._rolesService.getRoleDeleted()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((roleId) => {
+        this.chatServer!.roles = this.chatServer!.roles!.filter(x => x.id != roleId)
+        this.currentRole = this.chatServer!.roles![0]
+      })
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['chatServer'] && !this.serverNameValue) {
       this.serverNameValue = this.chatServer!.name
     }
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next()
+    this.onDestroy$.complete()
   }
 
   onCloseClick() {
@@ -137,7 +152,7 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
           (data: HttpResponse<ChatServer>) => {
             this.chatServer = data.body!
             console.log(data.body!)
-            this.onSave.emit(data.body!)
+            this._sharedDataProvider.emitUpdatedServer(data.body!)
           }
         )
     }
@@ -178,6 +193,7 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges {
   }
 
   onCreateRole() {
+    console.log(this.chatServer)
     this._rolesService.createRole(this.chatServer!.id)
   }
 

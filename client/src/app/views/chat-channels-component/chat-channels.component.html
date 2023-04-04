@@ -42,7 +42,7 @@
         (click)="collapseCategory(i)">
         <mat-icon 
           class="arrow"
-          [@expandCollapse]="isOpen[i] ? 'open' : 'closed'">
+          [@expandCollapse]="!isOpen[i] ? 'open' : 'closed'">
           keyboard_arrow_down
         </mat-icon>
         <div class="category-name">
