@@ -60,6 +60,7 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   doNotInterrupt: boolean = false // to avoid instant close (clickOutside)
   movedChannel?: ChatChannel
   categorySrc?: ChatCategory
+  currentChannel: number = 0
   onDestroy$ = new Subject<void>()
 
   constructor(
@@ -129,6 +130,12 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       (event: ChatServer) => {
         this.chatServer = event
       })
+
+    const regex = /main:channel\/(\d+)/
+    const match = this.router.url.match(regex)
+    if (match) {
+      this.currentChannel = parseInt(match[1])
+    }
   }
 
   ngOnDestroy() {
@@ -172,12 +179,21 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   }
 
   getNotifications() {
-    this._sharedDataProvider.getServerNotifications().subscribe(
-      (notifications: Notification[]) => {
-        console.log(notifications)
-        this.notifications = notifications
-        this.checkNotifications()
-      })
+    this._sharedDataProvider.getServerNotifications()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (notifications: Notification[]) => {
+          this.notifications = notifications
+          if (notifications && notifications.length) {
+            notifications.forEach(x => {
+              if (x.source.includes(`Channel=${this.currentChannel}`)) {
+                this._notificationsService.markAsRead(x.id, this.currentUser!.id)
+              }
+            })
+          }
+          // TO MAKE TIME FOR MARK AS READ FUNCTION WHILE RECIPIENT IS VIEWING CONVERSATION
+          setTimeout(() => this.checkNotifications(), 1000)
+        })
   }
 
   fetchUsers(chatServerId: number) {
@@ -200,12 +216,14 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     if (!this.doNotInterrupt) {
       this.router.navigate([{ outlets: { main: ['channel', channelId] } }])
       
-      const notificationsFromChannel = this.notifications.filter(
+      const notificationsFromChannel = this.notifications?.filter(
         x => x.source.includes(`Channel=${channelId}`)
       ) 
-      notificationsFromChannel.forEach(x => {
+      notificationsFromChannel?.forEach(x => {
         this._notificationsService.markAsRead(x.id, this.currentUser!.id)
       })
+
+      this.currentChannel = channelId
     }
   }
 

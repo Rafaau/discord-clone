@@ -49,8 +49,9 @@ export async function seedData(connection: any) {
         username: 'TestUser3',
         email: 'test3@gmail.com',
         password: '$2b$10$uxKeZfzFOJj9NU85dx4xYeE1VBKKc33J2R1GxIpQdlkPSED.sZvru', // BCRYPTED 'password'
-        friends: [user1],
     })
+
+    user1.friends = [user2]
 
     const conversation = directConversationRepository.create({
         id: 1,

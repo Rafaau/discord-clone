@@ -28,15 +28,18 @@
     padding-inline: 10px;
     border-radius: 5px;
     cursor: pointer;
+    color: #989AA2;
 }
 
     .all:hover {
         background-color: #3A3C42;
+        color: #f3f4f5;
     }
 
     .all-current {
         background-color: #43444B;
         cursor: default;
+        color: #f3f4f5;
     }
 
 .add {
@@ -131,16 +134,26 @@ h6 {
 .message-icon {
     background-color: #2B2D31;
     margin-left: auto;
+    margin-right: 10px;
     color: #B8B9BF;
     border-radius: 50%;
-    width: 34px;
-    height: 34px;
-    line-height: 34px;
+    width: 38px;
+    height: 38px;
+    line-height: 38px;
     text-align: center;
+    cursor: pointer;
 }
 
     .message-icon:hover {
         color: #F3F4F5;
+    }
+
+.warn {
+    color: #F23F42;
+}
+
+    .warn:hover {
+        color: #b73a3c;
     }
 
 .friend-view {
@@ -167,4 +180,88 @@ button {
     background-color: #454C94!important;
     color: #82858F!important;
 }
+
+.single-request {
+    padding: 0 10px 10px 0px;
+}
+
+.request-avatar {
+    color: #F3F4F5;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    margin-right: 8px;
+    font-size: 22px;
+}
+
+.request-info::before {
+    color: #B8B9BF;
+    content: 'Incoming Friend Request';
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.declined::before {
+    color: #F23F42;
+    content: 'Declined';
+}
+
+.accepted::before {
+    color: #248046;
+    content: 'Accepted';
+}
+
+.invalid-request {
+    border: 1px solid #F23F42;
+}
+
+.invalid-request-message {
+    color: #FA777C;
+    font-size: 12px;
+}
+
+::ng-deep .dialog-container {
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+        padding-inline: 0!important;
+        padding-bottom: 0!important;
+    }
+        .mat-mdc-dialog-container .mdc-dialog__surface::-webkit-scrollbar {
+            display: none;
+        }
+    .mat-mdc-dialog-container {
+        --mdc-dialog-container-color: #313338!important;
+        padding: 0!important;
+    }
+    .mat-mdc-radio-button.mat-accent {
+        --mdc-radio-selected-focus-icon-color: #F3F4F5;
+        --mdc-radio-selected-hover-icon-color: #F3F4F5;
+        --mdc-radio-selected-icon-color: #F3F4F5;
+        --mdc-radio-selected-pressed-icon-color: #F3F4F5;
+        --mat-mdc-radio-checked-ripple-color: rgba(0,0,0,0);
+    }
+    mat-dialog-content {
+        padding: 0!important;
+    }
+    .mdc-text-field {
+        background-color: #232428!important;
+    }
+    .mat-mdc-input-element {
+        color: #F3F4F6!important;
+    }
+    mat-label {
+        color: #F3F4F6!important;
+    }
+    .mat-mdc-form-field-required-marker {
+        display: none;
+    }
+    .mat-mdc-raised-button.mat-warn {
+        --mdc-protected-button-container-color: #DA373C;
+    }
+    .mat-mdc-raised-button.mat-warn:hover {
+        --mdc-protected-button-container-color: #A12828;
+    }
+}
+
 

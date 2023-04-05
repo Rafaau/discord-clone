@@ -32,6 +32,23 @@ export class UsersService {
     )
   }
 
+  getFriendRequestsOfUser(userId: number): Observable<HttpResponse<any>> {
+    return this.httpClient.get(
+      this.api+`/users/${userId}/friendRequests`,
+      { observe: 'response' }
+    )
+  }
+
+  removeFriend(
+    userId: number, 
+    friendId: number): Observable<HttpResponse<any>> {
+      return this.httpClient.patch(
+        this.api+`/users/${userId}/removeFriend/${friendId}`,
+        null,
+        { observe: 'response' }
+      )
+  }
+
   updateUser(
     userId: number,
     userDetails: UpdateUserParams

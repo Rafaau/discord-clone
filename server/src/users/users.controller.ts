@@ -85,6 +85,25 @@ export class UsersController {
         }
     }
 
+    @Get(':id/friendRequests')
+    async getFriendRequestsOfUser(
+        @Param('id') id: number,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(HttpStatus.OK)
+                .json(await this.usersService.findFriendRequestsOfUser(id))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
     @Get(':id/query')
     async checkIfPasswordDoesMatch(
         @Param('id') id: number,
@@ -135,6 +154,26 @@ export class UsersController {
             response
                 .status(HttpStatus.OK)
                 .json(await this.usersService.markUsersAsFriends(firstUserId, secondUserId))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
+    @Patch(':firstUserId/removeFriend/:secondUserId')
+    async removeFriendship(
+        @Param('firstUserId') firstUserId: number,
+        @Param('secondUserId') secondUserId: number,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(HttpStatus.OK)
+                .json(await this.usersService.removeFriendshipBetweenUsers(firstUserId, secondUserId))
         } catch (e) {
             response
                 .status(e.status)

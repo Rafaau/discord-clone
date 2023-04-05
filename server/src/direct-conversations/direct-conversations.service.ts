@@ -13,13 +13,23 @@ export class DirectConversationsService {
     ) {}
 
     async createDirectConversation(createDirectConversationDetails: CreateDirectConversationParams) {
+        const users: User[] = []
         for (const user of createDirectConversationDetails.users) {
-            if (!(await this.userRepository.findOneBy({ id: user.id })))
+            const userToPush = await this.userRepository.findOneBy({ id: user.id })
+            if (!userToPush)
                 throw new NotFoundException()
+            else
+                users.push(userToPush)
         }
 
-        const isAlreadyExist = await this.directConversationRepository.findOne({
-            where: { users: createDirectConversationDetails.users }
+        const conversations = await this.directConversationRepository
+            .find({ where: {  users: users }, relations: ['users'] })
+        const isAlreadyExist = conversations.find((conversation) => {
+            const userIds = conversation.users.map((user) => user.id)
+            return (
+              userIds.length === users.length &&
+              users.every((user) => userIds.includes(user.id))
+            )
         })
 
         if (isAlreadyExist)

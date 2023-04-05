@@ -44,6 +44,7 @@ import { ChannelPermissionsDialog } from './views/chat-channels-component/channe
 import { RouteReuseStrategy, UrlSerializer } from '@angular/router';
 import { StandardUrlSerializer } from './utils/StandardUrlSerializer';
 import { CustomRouteReuseStrategy } from './utils/CustomRouteReuseStrategy';
+import { RemoveConfirmDialog } from './views/friends-component/remove-confirm-dialog/remove-confirm-dialog.component';
 
 const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
 
@@ -74,7 +75,8 @@ const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: 
     UserAvatarComponent,
     ChatServerAvatarComponent,
     AssignToRoleDialog,
-    ChannelPermissionsDialog
+    ChannelPermissionsDialog,
+    RemoveConfirmDialog
   ],
   imports: [
     BrowserModule,

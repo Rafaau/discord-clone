@@ -31,6 +31,8 @@ import { Role } from './typeorm/role';
 import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
 import { configuration } from 'config/configuration';
+import { FriendRequest } from './typeorm/friend-request';
+import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 
 @Module({
   imports: [
@@ -49,6 +51,7 @@ import { configuration } from 'config/configuration';
     MessageReactionsModule,
     NotificationsModule,
     RolesModule,
+    FriendRequestsModule,
     AuthModule,
     MulterModule.register({
       dest: '../uploads/chat-server-avatars'
@@ -75,6 +78,7 @@ import { configuration } from 'config/configuration';
         MessageReaction,
         Notification,
         Role,
+        FriendRequest,
         SessionEntity
       ],
       synchronize: true,

@@ -169,7 +169,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         this.members = members
 
         if (!this.usernames.length)
-          members.forEach(x => {
+          members?.forEach(x => {
             this.usernames.push(x.username)
           })
       })
@@ -220,7 +220,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this.showMembers = !this.showMembers
   }
 
-  onValueChange(event: Event) {
+  onValueChange(event: any) {
     const value = (event.target as any).value
     this.messageValue = value
 
@@ -245,12 +245,15 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.members!.length; i++) {
         if (match[0].slice(1) == this.members![i].username) {
           if (!this.usersToNotify.includes(this.members![i].id))
+          {
+            console.log('pa tera')
             this.usersToNotify.push(this.members![i].id)
+          }  
           highlightedText += value.substring(startIndex, match.index) +
                              `<span class="mention-highlight-input">${match[0]}</span>`
           startIndex = regex.lastIndex
         } else {
-          //this.usersToNotify = []
+          setTimeout(() => this.usersToNotify = [], 1000) // TO 
         }      
       }
     }
@@ -266,6 +269,14 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this.fakeInputValue = this.fakeInputValue.slice(0, this.fakeInputValue.length - lastword!.length)
     this.fakeInputValue += `<span class="mention-highlight-input">@${username}</span>`
 
+    const fakeEvent = {
+      target: {
+        value: this.messageValue
+      }
+    }
+
+    this.onValueChange(fakeEvent)
+    
     this.showUsersToMention = false
     this.inputElement().focus()
   }

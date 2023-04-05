@@ -7,6 +7,7 @@ import { DirectMessage } from "./direct-message";
 import { MessageReaction } from "./message-reaction";
 import { Notification } from "./notification";
 import { Role } from "./role";
+import { FriendRequest } from "./friend-request";
 
 @Entity({ name: 'users' })
 export class User {
@@ -83,4 +84,16 @@ export class User {
     })
     @JoinTable({ name: 'users-chat-channels' })
     chatChannels?: ChatChannel[]
+
+    @OneToMany(() => FriendRequest, friendRequest => friendRequest.sender, {
+        onDelete: 'CASCADE',
+        nullable: true
+    })
+    friendRequestsSent?: FriendRequest[]
+
+    @OneToMany(() => FriendRequest, friendRequest => friendRequest.receiver, {
+        onDelete: 'CASCADE',
+        nullable: true
+    })
+    friendRequestsReceived?: FriendRequest[]
 }

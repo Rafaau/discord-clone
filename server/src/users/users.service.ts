@@ -124,6 +124,42 @@ export class UsersService {
         return user.friends
     }
 
+    async findFriendRequestsOfUser(id: number) {
+        const user = await this.userRepository.findOne({
+            where: ({ id }),
+            relations: [
+                'friendRequestsReceived',
+                'friendRequestsReceived.sender'
+            ]
+        })
+        if (!user)
+            throw new NotFoundException()
+        return user.friendRequestsReceived.filter(x => x.status == 'Pending')
+    }
+
+    async removeFriendshipBetweenUsers(
+        firstUserId: number, 
+        secondUserId: number) {
+        const firstUser = await this.userRepository.findOne({ 
+            where: { id: firstUserId },
+            relations: ['friends']
+        })
+        const secondUser = await this.userRepository.findOne({
+            where: { id: secondUserId },
+            relations: ['friends']
+        })
+        if (!firstUser || !secondUser)
+            throw new NotFoundException()
+        firstUser.friends = firstUser.friends.filter(x => x.id != secondUserId)
+        secondUser.friends = secondUser.friends.filter(x => x.id != firstUserId)
+        await this.userRepository.save(firstUser)
+        await this.userRepository.save(secondUser)
+        return {
+            statusCode: 200,
+            message: `Friendship between User(id: ${firstUserId}) and User(id: ${secondUserId}) has been removed successfully`
+        }
+    }
+
     async checkIfPasswordDoesMatch(
         id: number, 
         rawPassword: string

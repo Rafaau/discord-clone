@@ -1,0 +1,27 @@
+<div class="container">
+  <mat-icon 
+    class="close"
+    mat-dialog-close>
+    close
+  </mat-icon>
+  <h1>Remove '{{ data.friend.username }}'</h1>
+  <p>
+    Are you sure you want to permanently remove 
+    <strong>{{ data.friend.username }}</strong>
+    from your friends?
+  </p>
+</div>
+<div class="bottom-actions">
+  <div 
+    class="cancel" 
+    mat-dialog-close>
+    Cancel
+  </div>
+  <button
+    mat-raised-button
+    color="warn"
+    class="submit-btn"
+    (click)="onDelete()">
+    Remove Friend
+  </button>
+</div>

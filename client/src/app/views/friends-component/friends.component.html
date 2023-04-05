@@ -10,8 +10,14 @@
     All
   </div>
   <div 
+    class="all" 
+    (click)="changeView(1)" 
+    [ngClass]="currentView === ViewEnum.Pending ? 'all-current' : ''">
+    Pending
+  </div>
+  <div 
     class="add" 
-    (click)="changeView(1)"
+    (click)="changeView(2)"
     [ngClass]="currentView === ViewEnum.AddFriend ? 'add-current' : ''">
     Add Friend
   </div>
@@ -32,20 +38,69 @@
       class="user-avatar"
       [username]="friend.username"/>
     {{ friend.username }}
-    <i class="fa-solid fa-message message-icon" matTooltip="Message" matTooltipPosition="above"></i>
+    <div style="margin-left: auto; display: flex;">
+      <i class="fa-solid fa-message message-icon" 
+         matTooltip="Message" 
+         matTooltipPosition="above"></i>
+      <i class="fa-solid fa-user-slash message-icon warn"
+         (click)="removeFriend(friend)"
+         matTooltip="Remove Friend" 
+         matTooltipPosition="above"></i>
+    </div>
+  </div>
+</div>
+<!-- PENDING VIEW -->
+<div *ngIf="currentView === ViewEnum.Pending" style="padding: 5px 30px">
+  <h4>PENDING - {{ friendRequests.length }}</h4>
+  <div 
+    class="single-request" 
+    *ngFor="let request of friendRequests">
+    <div style="display: flex;">
+      <user-avatar 
+        [userId]="request.sender.id" 
+        class="request-avatar"
+        [username]="request.sender.username"/>
+      <div>
+        {{ request.sender.username }}
+        <div 
+          class="request-info"
+          [class.declined]="request.status == 'Declined'"
+          [class.accepted]="request.status == 'Accepted'"></div>
+      </div>
+      <div *ngIf="request.status == 'Pending'" style="margin-left: auto;">
+        <i class="fa-solid fa-check message-icon"
+           (click)="acceptFriendRequest(request.id)"
+           matTooltip="Accept"
+           matTooltipPosition="above"></i>
+        <i class="fa-solid fa-xmark message-icon"
+           (click)="declineFriendRequest(request.id)"
+           matTooltip="Decline"
+           matTooltipPosition="above"></i>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
   </div>
 </div>
 <!-- ADD FRIEND VIEW -->
 <div class="friend-view" *ngIf="currentView === ViewEnum.AddFriend">
   <h4>ADD FRIEND</h4>
   <p>You can add a friend with their Discord Tag. It's cAsE-sEnSitIvE!</p>
-  <div class="input-container">
+  <div 
+    class="input-container"       
+    [class.invalid-request]="invalidRequest">
     <input [(ngModel)]="friendInputValue" placeholder="Enter a Username">
     <button 
       mat-raised-button 
       color="primary" 
-      [ngClass]="friendInputValue == '' ? 'disabled' : ''">
-      Send Friend Request
+      [ngClass]="friendInputValue == '' ? 'disabled' : ''"
+      (click)="sendFriendRequest()"
+      style="width: 170px;">
+      {{ successRequest ? 'Sent Request' : 'Send Friend Request' }}
     </button>
+  </div>
+  <div 
+    *ngIf="invalidRequest" 
+    class="invalid-request-message">
+    Hm, didn't work. Double check that the capitalisation, spelling, any spaces and numbers are correct.
   </div>
 </div>
