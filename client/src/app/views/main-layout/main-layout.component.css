@@ -61,6 +61,13 @@ user-avatar {
     margin-right: 8px;
 }
 
+.user-name {
+    width: 130px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .options-icon {
     color: #B5BAC1;
     margin-left: auto;

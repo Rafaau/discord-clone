@@ -26,6 +26,13 @@
     color: #82858F;
 }
 
+.channel-name {
+    width: 70%!important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .members-icon {
     position: absolute;
     right: 4%;
@@ -279,6 +286,9 @@
 h1 {
     margin-left: 15px!important;
     color: #F3F4F5;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 p {
@@ -287,6 +297,9 @@ p {
     font-weight: 400;
     margin-top: 10px;
     padding-bottom: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .date-hr {
@@ -768,4 +781,18 @@ mat-progress-spinner {
     line-height: 25px;
     text-align: center;
     margin-right: 10px;
+}
+
+.username {
+    width: 150px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.user-name-mention {
+    width: 400px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

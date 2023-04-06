@@ -48,8 +48,20 @@ import { HttpResponse } from '@angular/common/http';
 export class RegisterPageComponent implements OnInit {
   registerForm = new FormGroup({
     email: new FormControl('', Validators.email),
-    username: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required),
+    username: new FormControl(
+      '', 
+      Validators.compose([
+        Validators.required,
+        Validators.pattern('^[a-zżźćńółęąśŻŹĆĄŚĘŁÓŃA-Z0-9_.-]*$') // polish letters allowed
+      ])
+    ),
+    password: new FormControl(
+      '', 
+      Validators.compose([
+        Validators.required,
+        Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{8,}')
+      ])
+    ),
     terms: new FormControl(false, Validators.required)
   })
 

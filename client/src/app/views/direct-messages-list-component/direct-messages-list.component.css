@@ -82,6 +82,13 @@ h6 {
     margin-right: 5px;
 }
 
+.user-name {
+    width: 150px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .mat-badge-medium.mat-badge-above .mat-badge-content {
     top: 13px;
     right: 10px;

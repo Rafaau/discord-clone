@@ -56,6 +56,9 @@ mat-icon {
 h5 {
     margin-left: 12px;
     margin-bottom: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 h3 {
@@ -198,6 +201,10 @@ td {
     color: #f3f4f5;
     font-size: 16px;
     font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 140px;
 }
 
 .role-icon {
@@ -276,6 +283,10 @@ td {
     margin: 0;
     font-weight: 500;
     margin-bottom: 30px;
+    width: 95%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .roles-upper {
@@ -326,6 +337,14 @@ td {
     color: #f3f4f5;
 }
 
+.role-wrapper {
+    width: 250px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-right: 20px;
+}
+
 .single-user {
     display: flex;
     line-height: 35px;
@@ -351,6 +370,10 @@ td {
 
 .user-name {
     font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 80%;
 }
 
 .input-container {
@@ -367,6 +390,7 @@ td {
         border: none;
         outline: none;
         color: #f3f4f5;
+        width: 100%;
     }
 
 .remove-btn {

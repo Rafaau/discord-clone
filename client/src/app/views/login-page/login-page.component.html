@@ -55,4 +55,21 @@
       <a (click)="redirectToRegister()" routerLinkActive="active" class="link">Register</a>
     </p>
   </div>
+
+  <div
+    class="expand-panel"
+    [@expandCollapse]="expanded ? 'expanded' : 'collapsed'"
+    (click)="expanded = !expanded">
+    <i class="fa-solid fa-info" 
+       style="font-size: 25px;"
+       *ngIf="!expanded"></i>
+    <p *ngIf="expanded">
+      You can log in by the following credentials:
+      <br>
+      <strong>Email:</strong> test@gmail.com
+      <br>
+      <strong>Password:</strong> password
+    </p>
+  </div>
+
 </div>

@@ -64,3 +64,21 @@ mat-checkbox {
     margin-bottom: 15px;
     left: -10px;
 }
+
+.expand-panel {
+    position: absolute;
+    right: 0;
+    top: 20%;
+    background-color: #f3f4f5;
+    padding: 15px;
+    border-radius: 5px;
+    color: #232428;
+    cursor: pointer;
+    -webkit-box-shadow: 0px 0px 4px -1px rgba(66, 68, 90, 1);
+    -moz-box-shadow: 0px 0px 4px -1px rgba(66, 68, 90, 1);
+    box-shadow: 0px 0px 4px -1px rgba(66, 68, 90, 1);
+}
+
+.expand-panel p {
+    margin: 0!important;
+}

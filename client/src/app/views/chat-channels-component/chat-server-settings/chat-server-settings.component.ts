@@ -176,7 +176,10 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
 
   openAddMembersToRoleDialog() {
     let dialogRef = this.dialog.open(AssignToRoleDialog, {
-      data: { members: this.chatServer!.members, role: this.currentRole!.name },
+      data: { 
+        members: this.chatServer!.members!.filter(x => !x.roles!.some(y => y.id == this.currentRole!.id)), 
+        role: this.currentRole!.name 
+      },
       width: '420px',
       panelClass: 'dialog-container'
     })

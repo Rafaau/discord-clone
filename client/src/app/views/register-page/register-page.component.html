@@ -31,6 +31,9 @@
         <mat-error *ngIf="registerForm.controls.username.hasError('required')">
           Username is <strong>required</strong>
         </mat-error>
+        <mat-error *ngIf="registerForm.controls.username.hasError('pattern')">
+          Special characters are <strong>not allowed</strong>
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
@@ -40,15 +43,20 @@
           matNativeControl
           required
           formControlName="password"
-          [errorStateMatcher]="matcher"/>
+          [errorStateMatcher]="matcher"
+          type="password"/>
         <mat-error *ngIf="registerForm.controls.password.hasError('required')">
           Password is <strong>required</strong>
+        </mat-error>
+        <mat-error *ngIf="registerForm.controls.password.hasError('pattern')">
+          Password is <strong>too weak</strong>
         </mat-error>
       </mat-form-field>
 
       <mat-checkbox
         formControlName="terms">
-        I have read and agree to ChatApp's <a class="link">Terms of Service</a> and <a class="link">Privacy Policy</a>.
+        I have read and agree to ChatApp's <a href="https://discord.com/terms" class="link">Terms of Service</a> 
+        and <a href="https://discord.com/privacy" class="link">Privacy Policy</a>.
       </mat-checkbox>
 
       <button

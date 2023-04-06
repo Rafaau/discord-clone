@@ -131,6 +131,13 @@ h6 {
     margin-right: 8px;
 }
 
+.user-name {
+    width: 400px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .message-icon {
     background-color: #2B2D31;
     margin-left: auto;

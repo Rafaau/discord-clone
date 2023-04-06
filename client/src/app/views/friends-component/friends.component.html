@@ -37,7 +37,7 @@
       [userId]="friend.id" 
       class="user-avatar"
       [username]="friend.username"/>
-    {{ friend.username }}
+    <div class="user-name">{{ friend.username }}</div>
     <div style="margin-left: auto; display: flex;">
       <i class="fa-solid fa-message message-icon" 
          matTooltip="Message" 
@@ -61,7 +61,7 @@
         class="request-avatar"
         [username]="request.sender.username"/>
       <div>
-        {{ request.sender.username }}
+        <div class="user-name">{{ request.sender.username }}</div>
         <div 
           class="request-info"
           [class.declined]="request.status == 'Declined'"

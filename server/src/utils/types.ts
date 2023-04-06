@@ -12,6 +12,7 @@ export type UpdateUserParams = {
     email: string
     password: string
     phonenumber: string
+    aboutMe: string
 }
 
 export type CreateChatServerParams = {

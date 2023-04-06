@@ -2,12 +2,14 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateUserParams, User } from 'src/app/_models/Users';
 import { UsersService } from 'src/app/_services/users.service';
 import { ChangePasswordDialog } from './change-password-dialog/change-password-dialog.component';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
+import { ServerSettingsSnackbar } from '../../chat-channels-component/chat-server-settings/server-settings-snackbar/server-settings-snackbar.component';
 
 @Component({
   selector: 'user-settings',
@@ -38,6 +40,25 @@ import { AuthService } from 'src/app/_services/auth.service';
             filter: 'blur(4px)'
           }))
       ])
+    ]),
+    trigger('onMartToggle', [
+      transition(':enter', [
+        style({
+          opacity: 0,
+          transform: 'translateY(50px)'
+        }),
+        animate('0.2s cubic-bezier(0.35, 0, 0.25, 1.75)',
+          style({
+            opacity: 1,
+            transform: 'translateY(*)'
+          }))
+      ]),
+      transition(':leave',
+        animate('0.1s',
+          style({
+            opacity: 0,
+            transform: 'translateY(-50px)'
+          })))
     ])
   ]
 })
@@ -55,12 +76,17 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   currentForm: Form = Form.None
   userDetailsForm?: FormGroup
   userPassword?: string
+  aboutMeValue?: string
+  showEmojiPicker: boolean = false
+  martToggle: boolean = false
   inputElement = () => document.querySelector('.details-input') as HTMLTextAreaElement
+  textareaElement = () => document.querySelector('.about-me-input') as HTMLTextAreaElement
 
   constructor(
     private readonly _usersService: UsersService,
     private readonly _authService: AuthService,
     private dialog: MatDialog,
+    private snackbar: MatSnackBar,
     private router: Router
   ) { }
 
@@ -101,6 +127,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
         Validators.pattern(/[0-9\+\-\ ]/)
       )
     })
+    this.aboutMeValue = this.user?.aboutMe ? this.user.aboutMe : ''
   }
 
   saveUserDetails() {
@@ -108,7 +135,8 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       username: this.userDetailsForm!.controls['username'].value,
       email: this.userDetailsForm!.controls['email'].value,
       phoneNumber: this.userDetailsForm!.controls['phoneNumber'].value,
-      password: this.userPassword
+      password: this.userPassword,
+      aboutMe: this.aboutMeValue
     }
     this._usersService.updateUser(this.user!.id, reqBody)
       .subscribe(
@@ -167,6 +195,59 @@ export class UserSettingsComponent implements OnInit, OnChanges {
         console.log(response)
       })
   }
+
+  onAboutMeChange(event: Event) {
+    const value = (event.target as any).value
+    this.aboutMeValue = value
+    if (value != this.user?.aboutMe) {
+      this.openSnackbar()
+    }
+  }
+
+  openSnackbar() {
+    if (!this.snackbar._openedSnackBarRef) {
+      let snackBarRef = this.snackbar.openFromComponent(
+        ServerSettingsSnackbar
+      )
+
+      const resetSub = snackBarRef.instance.onResetEvent.subscribe(() => {
+        this.aboutMeValue = this.user?.aboutMe ? this.user.aboutMe : ''
+        this.snackbar.dismiss()
+      })
+      snackBarRef.afterDismissed().subscribe(() => resetSub.unsubscribe())
+
+      const saveSub = snackBarRef.instance.onSaveEvent.subscribe(() => {
+        if (this.aboutMeValue!.length <= 130) {
+          this.saveUserDetails()
+          this.snackbar.dismiss()
+        }
+      })
+      snackBarRef.afterDismissed().subscribe(() => saveSub.unsubscribe())
+    }
+  }
+
+  toggleEmojiPicker() {
+    this.martToggle = false
+    this.showEmojiPicker = !this.showEmojiPicker
+    setTimeout(() => {
+      this.martToggle = true
+    }, 500)
+  }
+
+  closeEmojiPicker(event: Event) {
+    if (this.martToggle) {
+      this.showEmojiPicker = false
+      this.martToggle = false
+    }
+  }
+
+  addEmojiToMessage(event: Event) {
+    this.aboutMeValue += (event as any).emoji.native
+    this.showEmojiPicker = false
+    this.textareaElement().focus()
+    this.openSnackbar()
+  }
+
 }
 
 export enum View {

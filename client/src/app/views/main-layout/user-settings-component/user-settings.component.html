@@ -50,7 +50,7 @@
                 <div class="single-section">
                   <label>USERNAME</label>
                   <div class="data-value">
-                    <div *ngIf="currentForm != Form.Username">
+                    <div *ngIf="currentForm != Form.Username" class="wrapper">
                       {{ user.username }}
                     </div>
                     <input
@@ -71,7 +71,7 @@
                 <div class="single-section">
                   <label>EMAIL</label>
                   <div class="data-value">
-                    <div *ngIf="currentForm != Form.Email">
+                    <div *ngIf="currentForm != Form.Email" class="wrapper">
                       {{ user.email }}
                     </div>
                     <input
@@ -92,7 +92,7 @@
                 <div class="single-section">
                   <label>PHONE NUMBER</label>
                   <div class="data-value">
-                    <div *ngIf="user.phoneNumber && currentForm != Form.PhoneNumber">
+                    <div *ngIf="user.phoneNumber && currentForm != Form.PhoneNumber" class="wrapper">
                       {{ user.phoneNumber }}
                     </div>
                     <div *ngIf="!user.phoneNumber && currentForm != Form.PhoneNumber">
@@ -120,7 +120,7 @@
             </div>
           </div>
         </div>
-        <hr/>
+        <mat-divider></mat-divider>
         <h3>Password and Authentication</h3>
         <button 
           mat-raised-button
@@ -131,29 +131,88 @@
         </button>
       </div>
       <!-- PROFILES VIEW -->
-      <div style="display: flex; justify-content: space-between;"  *ngIf="currentView == View.Profiles">
-        <div class="profiles-left">
-          <h5>AVATAR</h5>
-          <input 
-            type="file" 
-            #fileUpload
-            style="display: none;"
-            (change)="onFileChange($event)"/>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="fileUpload.click()">
-            Change Avatar
-          </button>
-        </div>
-        <div class="profiles-right">
-          <h5>PREVIEW</h5>
-          <div class="preview-container">
-            <div class="bottom-section" style="height: 85%;">
-              <user-avatar 
-                [userId]="user.id" 
-                class="user-avatar"
-                [username]="user.username"/>
+      <div *ngIf="currentView == View.Profiles">
+        <mat-divider></mat-divider>
+        <div style="display: flex; justify-content: space-between;">
+          <div class="profiles-left">
+            <h5>AVATAR</h5>
+            <input 
+              type="file" 
+              #fileUpload
+              style="display: none;"
+              (change)="onFileChange($event)"/>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="fileUpload.click()">
+              Change Avatar
+            </button>
+            <mat-divider></mat-divider>
+            <h5>ABOUT ME</h5>
+            <p>You can use markdown and links if you'd like.</p>
+            <div
+              *ngIf="aboutMeValue != undefined" 
+              style="position: relative;">
+              <textarea
+                class="about-me-input"
+                cdkTextareaAutosize
+                [value]="aboutMeValue"
+                (input)="onAboutMeChange($event)"
+                spellcheck="false">
+              </textarea>
+
+              <div class="chars-left">
+                {{ 130 - aboutMeValue.length }}
+              </div>
+
+              <div 
+                class="picker-container"
+                (click)="toggleEmojiPicker()">
+                <div class="picker picker-input">
+                  😁
+                </div>
+              </div>
+              <div class="emoji-container">
+                <emoji-mart 
+                  class="emoji-mart" 
+                  *ngIf="showEmojiPicker"
+                  [@onMartToggle]
+                  (emojiSelect)="addEmojiToMessage($event)"
+                  [showSingleCategory]="true"
+                  [isNative]="true"
+                  [darkMode]="true"
+                  [enableSearch]="false"
+                  color="#f3f4f5"
+                  [useButton]="true"
+                  (clickOutside)="closeEmojiPicker($event)">
+                </emoji-mart>
+              </div>
+
+            </div>
+          </div>
+          <div class="profiles-right">
+            <h5>PREVIEW</h5>
+            <div class="preview-container">
+              <div 
+                class="bottom-section" 
+                style="height: 85%;">
+                <user-avatar 
+                  [userId]="user.id" 
+                  class="user-avatar"
+                  [username]="user.username"/>
+                <div class="details-container">
+                  <div class="details-username">
+                    {{ user.username }}
+                  </div>
+                  <mat-divider></mat-divider>
+                  <div *ngIf="aboutMeValue">
+                    <h5>ABOUT ME</h5>
+                    <div class="about-me-wrapper">
+                      {{ aboutMeValue }}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

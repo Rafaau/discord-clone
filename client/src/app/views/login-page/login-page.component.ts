@@ -4,6 +4,7 @@ import {
   style,
   animate,
   transition,
+  state,
 } from '@angular/animations'
 import { 
   FormGroup, 
@@ -39,6 +40,21 @@ import { MyErrorStateMatcher } from 'src/app/utils/MyErrorStateMatcher';
             transform: 'translateY(-50px) scale(1.1)'
         }))
       ])
+    ]),
+    trigger('expandCollapse', [
+      state('collapsed', style({
+        width: '12px',
+        height: '24px',
+        fontSize: '0px'
+      })),
+      state('expanded', style({
+        width: '250px',
+        height: '75px',
+        fontSize: '16px'
+      })),
+      transition('expanded <=> collapsed', [
+        animate('0.1s')
+      ])
     ])
   ]
 })
@@ -52,6 +68,7 @@ export class LoginPageComponent implements OnInit {
   matcher = new MyErrorStateMatcher()
 
   isShown: boolean = true
+  expanded: boolean = false
 
   protected unauthorizedResponse: boolean = false
 

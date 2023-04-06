@@ -21,6 +21,12 @@
       <i class="fa-solid fa-circle"></i>
       {{ role.name }}
     </div>
+    <div *ngIf="user.aboutMe">
+      <h5>ABOUT ME</h5>
+      <div class="about-me">
+        {{ user.aboutMe }}
+      </div>
+    </div>
     <div *ngIf="currentUser.id != user.id" class="input-container">
       <input
         [placeholder]="'Message @'+user!.username"

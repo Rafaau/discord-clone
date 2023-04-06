@@ -26,6 +26,9 @@ export class User {
     @Column({ nullable: true })
     phoneNumber?: string
 
+    @Column({ nullable: true })
+    aboutMe?: string
+
     @OneToMany(() => ChatServer, (chatServer) => chatServer.owner, {
         nullable: true
     })

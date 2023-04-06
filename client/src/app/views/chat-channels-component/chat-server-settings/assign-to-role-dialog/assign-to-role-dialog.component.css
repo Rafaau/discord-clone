@@ -34,6 +34,10 @@ h5 {
 
 .user-name {
     font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 80%;
 }
 
 .members-container {

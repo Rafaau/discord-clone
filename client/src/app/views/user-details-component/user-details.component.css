@@ -6,7 +6,7 @@
     z-index: 5;
     right: 230px;
     top: 20vh;
-    bottom: 20vh;
+    height: auto;
 }
 
 .details-upper {
@@ -29,14 +29,12 @@
 }
 
 .details {
-    position: absolute;
-    bottom: 1vw;
-    left: 1vw; 
-    right: 1vw;
-    top: 9vw;
+    position: relative;
+    height: auto;
+    margin: 4vw 15px 15px 15px;
     background-color: #111214;
     border-radius: 8px;
-    padding: 1vw;
+    padding: 1vw 1vw 6vw 1vw;
 }
 
     .details h5 {
@@ -58,10 +56,18 @@
         margin-right: 5px;
     }
 
+.about-me {
+    word-wrap: break-word;
+    font-size: 14px;
+}
+
 .username {
     font-size: 1.5vw;
     padding-bottom: 1vw;
     border-bottom: 1px solid #232428;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .input-container {

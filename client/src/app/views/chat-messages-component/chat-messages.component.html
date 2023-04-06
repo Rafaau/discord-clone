@@ -192,7 +192,7 @@
                   [userId]="user.id" 
                   class="mention-avatar"
                   [username]="user.username"/>
-                {{ user.username }}
+                <div class="user-name-mention">{{ user.username }}</div>
               </div>
           </div>
           
@@ -313,7 +313,7 @@
           [userId]="members![0].id" 
           class="member-avatar"
           [username]="members![0].username"/>
-        {{ members![0].username }}
+        <div class="username">{{ members![0].username }}</div>
       </div>
       <h6 *ngIf="members!.length > 1">MEMBERS  - {{ members!.length - 1 }}</h6>
       <div *ngFor="let member of members; let i = index">
@@ -342,7 +342,7 @@
               [userId]="member.id" 
               class="member-avatar"
               [username]="member.username"/>
-            {{ member.username }}
+            <div class="username">{{ member.username }}</div>
           </div>
         </div>
       </div>

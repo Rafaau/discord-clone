@@ -10,6 +10,7 @@ export interface User {
     phoneNumber?: string,
     isOwner?: boolean
     roles?: Role[]
+    aboutMe?: string,
 }
 
 export interface UserComplex {
@@ -18,6 +19,7 @@ export interface UserComplex {
     email: string,
     directConversations: DirectConversation[]
     roles?: Role[]
+    aboutMe?: string,
 }
 
 
@@ -32,7 +34,8 @@ export interface UpdateUserParams {
     username: string,
     email: string,
     phoneNumber: string,
-    password?: string
+    password?: string,
+    aboutMe?: string,
 }
 
 export interface LoginUserParams {

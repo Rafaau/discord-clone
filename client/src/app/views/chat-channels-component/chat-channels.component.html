@@ -3,7 +3,9 @@
     (click)="toggleServerMenu()"
     [matMenuTriggerFor]="menu" 
     class="top-bar">
-    {{ chatServer.name }}
+    <div class="server-name">
+      {{ chatServer.name }}
+    </div>
     <mat-icon class="server-menu-btn" *ngIf="!isServerMenuExpanded">
       keyboard_arrow_down
     </mat-icon>
@@ -65,7 +67,7 @@
           <div
             cdkDrag
             [cdkDragData]="channel"
-            [ngClass]="router.url.includes('channel/'+channel.id) ? 
+            [ngClass]="router.url.includes('channel/'+channel.id+'/') ? 
             'chat-channel chat-channel-current' : 'chat-channel'" 
             *ngFor="let channel of availableChannels(category.chatChannels)"
             id="channel-{{ channel.id }}"

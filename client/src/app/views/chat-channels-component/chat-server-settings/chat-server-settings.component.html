@@ -79,7 +79,7 @@
               (click)="currentRole = role">
               <div style="display: flex; line-height: 30px;">
                 <mat-icon class="role-icon">verified_user</mat-icon>
-                {{ role.name }}
+                <div class="role-wrapper">{{ role.name }}</div>
               </div>
             </td>
           </ng-container>
@@ -137,7 +137,7 @@
               (contextmenu)="onRoleRightClick(role)"
               (clickOutside)="!doNotInterrupt ? currentRoleOptions = 0 : null">
               <i class="fa-solid fa-circle"></i>
-              {{ role.name }}
+              <div class="role-name">{{ role.name }}</div>
               <div
                 *ngIf="currentRoleOptions == role.id" 
                 class="role-options">
