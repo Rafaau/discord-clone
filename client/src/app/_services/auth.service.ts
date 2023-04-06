@@ -40,4 +40,11 @@ export class AuthService {
       { observe: 'response' }
     )
   }
+
+  logout() : Observable<HttpResponse<{}>> {
+    return this.httpClient.get(
+      this.api+'/auth/logout', 
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
+    )
+  }
 }

@@ -1,4 +1,5 @@
 <div [@fadeIn] *ngIf="isOpen" class="server-settings-container">
+  <!-- SIDE MENU -->
   <div class="side-menu">
     <div *ngIf="user">
       <h5>USER SETTINGS</h5>
@@ -13,6 +14,14 @@
         [class.current-option]="currentView == View.Profiles"
         (click)="currentView = View.Profiles">
         Profiles
+      </div>
+      <mat-divider></mat-divider>
+      <div 
+        class="settings-option"
+        (click)="logout()">
+        Log Out 
+        <i class="fa-solid fa-arrow-right-from-bracket"
+           style="margin-left: auto;"></i>
       </div>
     </div>
   </div>

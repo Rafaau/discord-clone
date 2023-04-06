@@ -6,6 +6,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { UpdateUserParams, User } from 'src/app/_models/Users';
 import { UsersService } from 'src/app/_services/users.service';
 import { ChangePasswordDialog } from './change-password-dialog/change-password-dialog.component';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/_services/auth.service';
 
 @Component({
   selector: 'user-settings',
@@ -57,10 +59,24 @@ export class UserSettingsComponent implements OnInit, OnChanges {
 
   constructor(
     private readonly _usersService: UsersService,
-    private dialog: MatDialog
+    private readonly _authService: AuthService,
+    private dialog: MatDialog,
+    private router: Router
   ) { }
 
   ngOnInit() {
+  }
+
+  logout() {
+    this._authService.logout().subscribe(
+      (data: HttpResponse<{}>) => {
+        console.log(data) 
+        this.router.navigate([''])
+        .then(() => {
+          this.router.navigate(['login'])
+        })
+      }
+    )
   }
 
   ngOnChanges(changes: SimpleChanges) {

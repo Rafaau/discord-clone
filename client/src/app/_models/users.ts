@@ -38,4 +38,5 @@ export interface UpdateUserParams {
 export interface LoginUserParams {
     username: string,
     password: string
+    rememberMe?: boolean
 }

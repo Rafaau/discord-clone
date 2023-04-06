@@ -8,8 +8,10 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(
+        @Body() body: Record<string, any>,
         @Session() session: Record<string, any>
     ) { 
+        session.cookie.maxAge = body.rememberMe ? 2592000000 : null
         return session
     }
 
@@ -25,5 +27,17 @@ export class AuthController {
     @Get('status')
     async getAuthStatus(@Req() req: Request) {
         return req.user;
+    }
+
+    @Get('logout')
+    async logout(@Req() req: Request) {
+        req.session.destroy((err) => {
+            if (err) {
+                console.log(err)
+            }
+        })
+        return {
+            message: 'Logged out'
+        }
     }
 }

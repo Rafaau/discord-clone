@@ -45,7 +45,8 @@ import { MyErrorStateMatcher } from 'src/app/utils/MyErrorStateMatcher';
 export class LoginPageComponent implements OnInit {
   profileForm = new FormGroup({
     email: new FormControl('', Validators.email),
-    password: new FormControl('', Validators.required)
+    password: new FormControl('', Validators.required),
+    rememberMe: new FormControl(false)
   })
 
   matcher = new MyErrorStateMatcher()
@@ -75,7 +76,8 @@ export class LoginPageComponent implements OnInit {
     this.unauthorizedResponse = false
     const credentials: LoginUserParams = {
       username: this.profileForm.value.email!,
-      password: this.profileForm.value.password!
+      password: this.profileForm.value.password!,
+      rememberMe: this.profileForm.value.rememberMe!
     }
     this._authService.authorizeUser(credentials).subscribe(
       (data: HttpResponse<{}>) => {
