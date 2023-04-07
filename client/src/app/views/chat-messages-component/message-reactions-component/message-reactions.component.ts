@@ -4,7 +4,7 @@ import { Socket } from 'ngx-socket-io';
 import { ChatMessage } from 'src/app/_models/chat-message';
 import { DirectMessage } from 'src/app/_models/direct-message';
 import { CreateMessageReactionParams, MessageReaction } from 'src/app/_models/message-reaction';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
 
 @Component({

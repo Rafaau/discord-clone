@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { UpdateUserParams, User } from 'src/app/_models/Users';
+import { UpdateUserParams, User } from 'src/app/_models/user';
 import { UsersService } from 'src/app/_services/users.service';
 import { ChangePasswordDialog } from './change-password-dialog/change-password-dialog.component';
 import { Router } from '@angular/router';

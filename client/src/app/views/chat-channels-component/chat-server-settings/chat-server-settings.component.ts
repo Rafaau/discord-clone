@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatServer, UpdateChatServerParams } from 'src/app/_models/chat-servers';
 import { Role, UpdateRoleParams } from 'src/app/_models/role';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { RolesService } from 'src/app/_services/roles.service';
 import { AssignToRoleDialog } from './assign-to-role-dialog/assign-to-role-dialog.component';

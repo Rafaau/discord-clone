@@ -1,6 +1,6 @@
 import { ChatCategory } from "./chat-category"
 import { Role } from "./role"
-import { User } from "./Users"
+import { User } from "./user"
 
 export interface ChatServer {
     id: number,

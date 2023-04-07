@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 
 @Component({
   selector: 'remove-confirm-dialog',

@@ -9,7 +9,7 @@ import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from 'src/app/_models/chat-message';
 import { CreateMessageReactionParams } from 'src/app/_models/message-reaction';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';

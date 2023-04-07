@@ -2,7 +2,7 @@ import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { Role } from 'src/app/_models/role';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 
 @Component({
   selector: 'channel-permissions',

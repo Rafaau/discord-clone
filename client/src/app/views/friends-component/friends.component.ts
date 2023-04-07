@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CreateDirectConversationParams, DirectConversation } from 'src/app/_models/direct-conversation';
 import { FriendRequest } from 'src/app/_models/friend-request';
-import { User, UserComplex } from 'src/app/_models/Users';
+import { User, UserComplex } from 'src/app/_models/user';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { FriendRequestsService } from 'src/app/_services/friend-requests.service';
 import { UsersService } from 'src/app/_services/users.service';

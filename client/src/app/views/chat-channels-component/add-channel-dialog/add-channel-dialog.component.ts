@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MyErrorStateMatcher } from 'src/app/utils/MyErrorStateMatcher';
 import { CreateChatChannelParams } from 'src/app/_models/chat-channels';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 
 @Component({

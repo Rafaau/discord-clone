@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { DirectConversation } from 'src/app/_models/direct-conversation';
 import { Notification } from 'src/app/_models/notification';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { NotificationsService } from 'src/app/_services/notifications.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';

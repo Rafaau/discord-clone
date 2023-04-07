@@ -11,7 +11,7 @@ import {
 } from '@angular/animations'
 import { AddServerDialog } from './add-server-dialog/add-server-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { Notification } from 'src/app/_models/notification';
 import { Socket } from 'ngx-socket-io';
 import { NotificationsService } from 'src/app/_services/notifications.service';

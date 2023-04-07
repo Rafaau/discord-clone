@@ -1,4 +1,4 @@
-import { User } from "./Users";
+import { User } from "./user";
 
 export interface FriendRequest {
     id: number,

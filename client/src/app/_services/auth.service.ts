@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateUserParams, LoginUserParams } from '../_models/Users';
+import { CreateUserParams, LoginUserParams } from '../_models/user';
 import { ApiHelpers } from './helpers';
 import { Socket } from 'ngx-socket-io';
 

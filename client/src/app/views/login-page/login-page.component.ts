@@ -11,7 +11,7 @@ import {
   FormControl, 
   Validators } from '@angular/forms';
 import { AuthService } from 'src/app/_services/auth.service';
-import { LoginUserParams, User } from 'src/app/_models/Users';
+import { LoginUserParams, User } from 'src/app/_models/user';
 import { HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MyErrorStateMatcher } from 'src/app/utils/MyErrorStateMatcher';

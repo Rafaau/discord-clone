@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { User } from "../_models/Users";
+import { User } from "../_models/user";
 import { ChatServer } from "../_models/chat-servers";
 import { Notification } from "../_models/notification";
 

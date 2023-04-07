@@ -9,7 +9,7 @@ import { DirectConversation } from 'src/app/_models/direct-conversation';
 import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from 'src/app/_models/direct-message';
 import { CreateMessageReactionParams } from 'src/app/_models/message-reaction';
 import { CreateNotificationParams, Notification } from 'src/app/_models/notification';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
 import { GiphyService } from 'src/app/_services/giphy.service';

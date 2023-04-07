@@ -6,7 +6,7 @@ import { indexOf } from 'lodash';
 import { ChatMessage } from 'src/app/_models/chat-message';
 import { ChatServerInvitation } from 'src/app/_models/chat-server-invitation';
 import { ChatServer } from 'src/app/_models/chat-servers';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
 import { ChatServerInvitationService } from 'src/app/_services/chat-server-invitation.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';

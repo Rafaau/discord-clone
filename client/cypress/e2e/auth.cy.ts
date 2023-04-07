@@ -19,7 +19,7 @@ describe('login and register pages tests', () => {
     })
 
     it('should redirect to login page, after successful registration', () => {
-        cy.register('test@gmail.com', 'test', 'password')
+        cy.register('test@gmail.com', 'test', 'Password123!')
         cy.url().should('contain', '/login')
     })
 
@@ -28,7 +28,7 @@ describe('login and register pages tests', () => {
         cy.xpath('//input[@formcontrolname="email"]').type('test@gmail.com')
         cy.xpath('//input[@formcontrolname="password"]').type('password')
         cy.xpath('//button[@type="submit"]').click()
-        cy.url().should('eq', `${Cypress.config().baseUrl}/`)
+        cy.url().should('eq', `${Cypress.config().baseUrl}/(main:friends//secondary:directmessages)`)
     })
 
     it('should display validations messages, when register form is invalid', () => {

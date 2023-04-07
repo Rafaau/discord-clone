@@ -1,6 +1,6 @@
 import { ChatChannel } from "./chat-channels";
 import { MessageReaction } from "./message-reaction";
-import { User } from "./Users";
+import { User } from "./user";
 
 export interface ChatMessage {
     id: number,

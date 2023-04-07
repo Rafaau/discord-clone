@@ -51,7 +51,7 @@ export class GiphyService {
     number
 ) {
     const params = {
-      api_key: GiphyService.giphyApiKey,
+      api_key: GiphyService.giphyApiKey!.toString(),
       q: searchTerm,
       limit: pageSize.toString(),
       offset: offset.toString(),

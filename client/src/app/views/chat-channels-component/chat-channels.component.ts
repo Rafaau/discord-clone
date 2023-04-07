@@ -9,7 +9,7 @@ import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { AddChannelDialog } from './add-channel-dialog/add-channel-dialog.component';
 import { Location } from '@angular/common';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { UsersService } from 'src/app/_services/users.service';
 import { AddCategoryDialog } from './add-category-dialog/add-category-dialog.component';
 import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-invitation.component';

@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { CreateDirectConversationParams } from 'src/app/_models/direct-conversation';
 import { CreateDirectMessageParams } from 'src/app/_models/direct-message';
 import { Role } from 'src/app/_models/role';
-import { User, UserComplex } from 'src/app/_models/Users';
+import { User, UserComplex } from 'src/app/_models/user';
 import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
 

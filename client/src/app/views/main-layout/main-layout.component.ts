@@ -8,7 +8,7 @@ import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatServer } from 'src/app/_models/chat-servers';
 import { Notification } from 'src/app/_models/notification';
 import { Role } from 'src/app/_models/role';
-import { User } from 'src/app/_models/Users';
+import { User } from 'src/app/_models/user';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { RolesService } from 'src/app/_services/roles.service';

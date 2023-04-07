@@ -12,7 +12,7 @@ describe('chat messages tests', () => {
 
     it('should redirect to channel, after clicking on channel', () => {
         cy.xpath('//div[contains(@class, "chat-channel")]').last().click()
-        cy.url().should('contain', 'channel=2')
+        cy.url().should('contain', 'channel/2//')
     })
 
     it('should display message, after sending message', () => {

@@ -1,6 +1,6 @@
 import { DirectConversation } from "./direct-conversation";
 import { MessageReaction } from "./message-reaction";
-import { User } from "./Users";
+import { User } from "./user";
 
 export interface DirectMessage {
     id: number,
