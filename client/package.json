@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "dotenv -e .env ng serve",
-    "build": "dotenv -e .env ng build",
+    "build": "node -r dotenv/config ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "cypress:open": "cypress open",
