@@ -12,7 +12,7 @@
 <div *ngFor="let conversation of directConversations;">
   <div
     class="single-conversation" 
-    [ngClass]="router.url.includes('conversation/'+conversation.id) ? 'current' : ''"
+    [ngClass]="router.url.includes('conversation/'+conversation.id+'/') ? 'current' : ''"
     (click)="redirectToConversation(conversation.id)"
     [matBadgeHidden]="!conversation.hasNotification"
     [matBadge]="conversation.notificationsCount"

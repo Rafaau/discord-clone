@@ -18,7 +18,7 @@ export class ChatMessagesController {
         try {
             response
                 .status(HttpStatus.CREATED)
-                .json(await this.chatMessagesService.createChatMessage(chatChannelId, userId, chatMessageDto))
+                .json((await this.chatMessagesService.createChatMessage(chatChannelId, userId, chatMessageDto)).newChatMessage)
         } catch (e) {
             response
                 .status(e.status)

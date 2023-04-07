@@ -30,11 +30,7 @@ export class AddCategoryDialog {
         name: this.categoryForm.value.name!
       }
       this._chatChannelService.createChatCategory(this.data.serverId, reqBody)
-        .subscribe(
-          (data: HttpResponse<{}>) => {
-            this.onCreate.emit()
-            this.dialog.closeAll()
-          }
-        )
+      this.onCreate.emit()
+      this.dialog.closeAll()
     }
 }

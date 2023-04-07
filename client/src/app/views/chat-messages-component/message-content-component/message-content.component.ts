@@ -142,10 +142,7 @@ export class MessageContentComponent implements OnInit {
             this.isLoading = true
             setTimeout(() => {
               this.onJoinCallback.emit()
-              this.router.navigate(
-                ['/chatserver'], 
-                { queryParams: { id: this.chatServer!.id } }
-              )
+              this.router.navigate([{ outlets: { main: null, secondary: ['chatserver', this.chatServer!.id] } }])
             }, 1000)
           },
           (error) => {

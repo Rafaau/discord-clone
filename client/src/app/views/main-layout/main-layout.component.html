@@ -33,8 +33,7 @@
   <chat-server-settings 
     *ngIf="serverSettingsState" 
     (onClose)="toggleServerSettingsView($event)"
-    [chatServer]="chatServerToPass"
-    (onSave)="updateChatServer($event)">
+    [chatServer]="chatServerToPass">
   </chat-server-settings>
   <user-settings
     *ngIf="userSettingsState"

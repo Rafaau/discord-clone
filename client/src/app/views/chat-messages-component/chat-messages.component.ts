@@ -108,6 +108,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => {
       this.chatMessages = []
       this.page = 1
+      this.messageToReact = 0
+      this.messageToReply = undefined
+      this.messageToEditId = 0
       this.init()
     })
     this._chatMessagesService.getNewMessage()
@@ -246,7 +249,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         if (match[0].slice(1) == this.members![i].username) {
           if (!this.usersToNotify.includes(this.members![i].id))
           {
-            console.log('pa tera')
             this.usersToNotify.push(this.members![i].id)
           }  
           highlightedText += value.substring(startIndex, match.index) +
@@ -274,7 +276,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
         value: this.messageValue
       }
     }
-
     this.onValueChange(fakeEvent)
     
     this.showUsersToMention = false
@@ -415,22 +416,16 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   onKickMember(userId: number) {
-    let chatServerId: number = 0
-    this.route.queryParams.subscribe(
-      params => {
-        chatServerId = params['id']
-      }
-    )
-    this._chatServerService.removeMemberFromChatServer(chatServerId, userId)
-    .subscribe(
-      (data: HttpResponse<any>) => {
-        this.members = this.members!.filter(x => x.id != userId)
-        this.currentMemberOptions = 0
-      },
-      (error) => {
-        console.log('err')
-      }
-    )
+    this._chatServerService.removeMemberFromChatServer(this.chatChannel!.chatCategory.chatServer!.id, userId)
+      .subscribe(
+        (data: HttpResponse<any>) => {
+          this.members = this.members!.filter(x => x.id != userId)
+          this.currentMemberOptions = 0
+        },
+        (error) => {
+          console.log('err')
+        }
+      )
   }
 
   closeMemberOptions(event: Event) {

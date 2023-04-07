@@ -17,25 +17,33 @@ export class ChatChannelService {
   ) { }
 
   createChatChannel(
-    categoryId: number, 
+    categoryId: number,
     chatChannelParams: CreateChatChannelParams
-  ): Observable<HttpResponse<{}>> {
-    return this.httpClient.post(
-      this.api+`/chatchannels/${categoryId}`, 
-      chatChannelParams, 
-      { observe: 'response' }
+  ) {
+    this.socket.emit(
+      'createChatChannel',
+      categoryId,
+      chatChannelParams
     )
+  }
+
+  getCreatedChannel(): Observable<ChatChannel> {
+    return this.socket.fromEvent<ChatChannel>('createdChatChannel')
   }
 
   createChatCategory(
     serverId: number,
     chatCategoryParams: CreateChatCategoryParams
-  ): Observable<HttpResponse<any>> {
-    return this.httpClient.post(
-      this.api+`/chatchannels/category/${serverId}`,
-      chatCategoryParams,
-      { observe: 'response' }
+  ) {
+    this.socket.emit(
+      'createChatCategory',
+      serverId,
+      chatCategoryParams
     )
+  }
+
+  getCreatedCategory(): Observable<ChatCategory> {
+    return this.socket.fromEvent<ChatCategory>('createdChatCategory')
   }
 
   getChatChannelById(id: number): Observable<HttpResponse<any>> {

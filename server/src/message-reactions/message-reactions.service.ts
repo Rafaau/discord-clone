@@ -26,7 +26,17 @@ export class MessageReactionsService {
         if (!user)
             throw new NotFoundException()
         if (chatMessageId) {
-            const chatMessage = await this.chatMessageRepository.findOneBy({ id: chatMessageId })
+            const chatMessage = await this.chatMessageRepository.findOne({ 
+                where: { id: chatMessageId },
+                relations: [
+                    'chatChannel', 
+                    'chatChannel.users',
+                    'chatChannel.roles',
+                    'chatChannel.chatCategory',
+                    'chatChannel.chatCategory.chatServer',
+                    'chatChannel.chatCategory.chatServer.members'
+                ] 
+            })
             if (!chatMessage)
                 throw new NotFoundException()
             const newMessageReaction = this.messageReactionRepository.create({
@@ -34,10 +44,35 @@ export class MessageReactionsService {
                 chatMessage,
                 user: user
             })
+
+            // CHAT CHANNEL USERS
+            let userIds: string[] = []
+            if (chatMessage.chatChannel.isPrivate) {
+                chatMessage.chatChannel.users.forEach(user => {
+                    userIds.push(user.id.toString())
+                })
+                chatMessage.chatChannel.roles.forEach(role => {
+                    role.users.forEach(user => {
+                        if (!userIds.includes(user.id.toString()))
+                            userIds.push(user.id.toString())
+                    })
+                })
+            } else {
+                chatMessage.chatChannel.chatCategory.chatServer.members.forEach(user => {
+                    userIds.push(user.id.toString())
+                })
+            }
+
             await this.messageReactionRepository.save(newMessageReaction)
-            return newMessageReaction
+            return { newMessageReaction, userIds }
         } else if (directMessageId) {
-            const directMessage = await this.directMessageRepository.findOneBy({ id: directMessageId })
+            const directMessage = await this.directMessageRepository.findOne({ 
+                where: { id: directMessageId },
+                relations: [
+                    'directConversation',
+                    'directConversation.users'
+                ]
+            })
             if (!directMessage)
                 throw new NotFoundException()
             const newMessageReaction = this.messageReactionRepository.create({
@@ -45,8 +80,15 @@ export class MessageReactionsService {
                 directMessage,
                 user: user
             })
+
+            // DIRECT MESSAGE USERS
+            let userIds: string[] = []
+            directMessage.directConversation.users.forEach(user => {
+                userIds.push(user.id.toString())
+            })
+
             await this.messageReactionRepository.save(newMessageReaction)
-            return newMessageReaction
+            return { newMessageReaction, userIds }
         } else
             throw new NotFoundException()
     }
@@ -55,10 +97,11 @@ export class MessageReactionsService {
         const reaction = await this.messageReactionRepository.findOneBy({ id })
         if (!reaction)
             throw new NotFoundException()
+
         await this.messageReactionRepository.delete(reaction)
         return {
             statusCode: 200,
-            message: `Message Reaction(id: ${id}) has been deleted successfully`
+            message: `Message Reaction(id: ${id}) has been deleted successfully`,
         }
     }
 }

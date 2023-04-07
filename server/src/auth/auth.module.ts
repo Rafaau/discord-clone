@@ -7,6 +7,7 @@ import { AuthController } from './controllers/auth/auth.controller';
 import { AuthService } from './services/auth/auth.service';
 import { LocalStrategy } from './utils/local-strategy';
 import { SessionSerializer } from './utils/session-serializer';
+import { AuthGateway } from './gateways/auth.gateway';
 
 @Module({
   imports: [
@@ -21,6 +22,10 @@ import { SessionSerializer } from './utils/session-serializer';
     {
       provide: 'USER_SERVICE',
       useClass: UsersService
+    },
+    {
+      provide: 'AUTH_GATEWAY',
+      useClass: AuthGateway
     },
     LocalStrategy,
     SessionSerializer

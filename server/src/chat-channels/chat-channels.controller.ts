@@ -18,7 +18,7 @@ export class ChatChannelsController {
         try {
             response
                 .status(HttpStatus.CREATED)
-                .json(await this.chatChannelsService.createChatChannel(chatCategoryId, createChatChannelDto))
+                .json((await this.chatChannelsService.createChatChannel(chatCategoryId, createChatChannelDto)).newChatChannel)
         } catch (e) {
             response
                 .status(e.status)
@@ -39,7 +39,7 @@ export class ChatChannelsController {
         try {
             response
                 .status(HttpStatus.CREATED)
-                .json(await this.chatChannelsService.createChatCategory(chatServerId, createChatCategoryDto))
+                .json((await this.chatChannelsService.createChatCategory(chatServerId, createChatCategoryDto)).newChatCategory)
         } catch (e) {
             response
                 .status(e.status)

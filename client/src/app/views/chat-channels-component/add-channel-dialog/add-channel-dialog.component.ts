@@ -37,19 +37,12 @@ export class AddChannelDialog {
       const reqBody: CreateChatChannelParams = {
         name: this.channelForm.value.name!,
         isPrivate: isPrivate,
-        users: isPrivate ? [this.data.currentUser] : []
+        users: isPrivate ? [this.data.currentUser] : [],
+        roles: []
       }
-      this._chatChannelService
-        .createChatChannel(this.data.categoryId, reqBody)
-        .subscribe(
-          (data: HttpResponse<{}>) => {
-            this.onCreate.emit()
-            this.dialog.closeAll()
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      this._chatChannelService.createChatChannel(this.data.categoryId, reqBody)
+      this.onCreate.emit()
+      this.dialog.closeAll()
     }
   }
 }

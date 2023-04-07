@@ -9,10 +9,12 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
         private readonly notificationsService: NotificationsService
     ) {
         eventBus.on('newNotification', (notification) => {
-            this.server.emit('newNotification', notification)
+            this.server.to(notification.recipient.id.toString())
+                       .emit('newNotification', notification)
         })
         eventBus.on('readedNotification', (notification) => {
-            this.server.emit('readedNotification', notification)
+            this.server.to(notification.recipient.id.toString())
+                       .emit('readedNotification', notification)
         })
     }
 

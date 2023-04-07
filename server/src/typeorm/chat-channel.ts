@@ -30,6 +30,7 @@ export class ChatChannel {
     chatMessages: ChatMessage[]
 
     @ManyToMany(() => User, user => user.chatChannels, {
+        onDelete: 'CASCADE',
         nullable: true
     })
     users: User[]

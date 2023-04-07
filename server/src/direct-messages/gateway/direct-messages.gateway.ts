@@ -4,12 +4,32 @@ import { OnGatewayConnection, OnGatewayDisconnect } from "@nestjs/websockets/int
 import { Server, Socket } from "socket.io";
 import { CreateDirectMessageParams } from "src/utils/types";
 import { DirectMessagesService } from "../direct-messages.service";
+import eventBus from "src/utils/file-service/event-bus";
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
 export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly directMessagesService: DirectMessagesService
-    ) {}
+    ) {
+        eventBus.on('newDirectMessage', (message) => {
+            message.directConversation.users.forEach(user => {
+                this.server.to(user.id.toString())
+                           .emit('newDirectMessage', message)
+            })
+        })
+        eventBus.on('editedDirectMessage', (message) => {
+            message.directConversation.users.forEach(user => {
+                this.server.to(user.id.toString())
+                           .emit('editedDirectMessage', message)   
+            })
+        })
+        eventBus.on('deletedDirectMessage', (params) => {
+            params.userIds.forEach(id => {
+                this.server.to(id)
+                           .emit('deletedDirectMessage', params.id)
+            })
+        })
+    }
 
     @WebSocketServer()
     server: Server
@@ -29,7 +49,7 @@ export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisc
     ) {
         const message = await this.directMessagesService
            .createDirectMessage(params[0], params[1], params[2])
-        this.server.emit('newDirectMessage', message)
+        eventBus.emit('newDirectMessage', message)
     }
 
     @SubscribeMessage('editDirectMessage')
@@ -39,7 +59,7 @@ export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisc
     ) {
         const editedMessage = await this.directMessagesService
             .updateDirectMessage(params[0], params[1])
-        this.server.emit('editedDirectMessage', editedMessage)
+        eventBus.emit('editedDirectMessage', editedMessage)
     }
 
     @SubscribeMessage('deleteDirectMessage')
@@ -50,6 +70,6 @@ export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisc
         const deletedMessage = await this.directMessagesService
             .deleteDirectMessage(id)
         if (deletedMessage.statusCode == 200)
-            this.server.emit('deletedDirectMessage', id)
+            eventBus.emit('deletedDirectMessage', { id, userIds: deletedMessage.userIds })
     }
 }

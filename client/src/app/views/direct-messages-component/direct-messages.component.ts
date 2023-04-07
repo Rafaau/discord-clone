@@ -93,12 +93,13 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.init()
-    this.location.onUrlChange((url) => {
-      if (url.includes('/directmessages')) {
-        this.directMessages = []
-        this.page = 1
-        this.init()
-      }
+    this.route.params.subscribe(params => {
+      this.directMessages = []
+      this.page = 1
+      this.messageToReact = 0
+      this.messageToEditId = 0
+      this.messageToReply = undefined
+      this.init()
     })
     this._directMessageService.getNewMessage()
       .pipe(takeUntil(this.onDestroy$))

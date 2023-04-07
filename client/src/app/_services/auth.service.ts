@@ -3,13 +3,17 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateUserParams, LoginUserParams } from '../_models/Users';
 import { ApiHelpers } from './helpers';
+import { Socket } from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private readonly api = 'http://localhost:3000'
-  constructor(private readonly httpClient: HttpClient) { }
+  constructor(
+    private readonly httpClient: HttpClient,
+    private socket: Socket
+  ) { }
 
   authorizeUser(loginCredentials: LoginUserParams): Observable<HttpResponse<{}>> {
     return this.httpClient.post(
@@ -39,6 +43,10 @@ export class AuthService {
       accountDetails, 
       { observe: 'response' }
     )
+  }
+
+  joinRoom(userId: string) {
+    this.socket.emit('join', { userId: userId })
   }
 
   logout() : Observable<HttpResponse<{}>> {

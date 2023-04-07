@@ -18,7 +18,10 @@ export class RolesService {
     async createRole(chatServerId: number) {
         const chatServer = await this.chatServerRepository.findOne({ 
             where: { id: chatServerId },
-            relations: ['roles']
+            relations: [
+                'roles',
+                'members'
+            ]
         })
 
         if (!chatServer)
@@ -34,32 +37,48 @@ export class RolesService {
             ]
         })
 
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+
         await this.roleRepository.save(newRole)
         chatServer.roles.push(newRole)
         await this.chatServerRepository.save(chatServer)
-        return newRole
+        return { newRole, userIds }
     }
 
     async assignMembersToRole(
         roleId: number,
-        userIds: number[]
+        users: number[]
     ) {
         const role = await this.roleRepository.findOne({ 
             where: { id: roleId },
-            relations: ['users'] 
+            relations: [
+                'users',
+                'chatServer',
+                'chatServer.members'
+            ] 
         })
         if (!role) 
             throw new NotFoundException()
 
-        userIds.forEach(async id => {
+        users.forEach(async id => {
             const user = await this.userRepository.findOneBy({ id })
             if (!user) 
                 throw new NotFoundException()
             role.users.push(user)
         })
 
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        role.chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+
         await this.roleRepository.save(role)
-        return role
+        return { role, userIds }
     }
 
     async removeMemberFromRole(
@@ -68,7 +87,11 @@ export class RolesService {
     ) {
         const role = await this.roleRepository.findOne({ 
             where: { id: roleId },
-            relations: ['users'] 
+            relations: [
+                'users',
+                'chatServer',
+                'chatServer.members'
+            ] 
         })
         if (!role) 
             throw new NotFoundException()
@@ -76,36 +99,65 @@ export class RolesService {
         const user = await this.userRepository.findOneBy({ id: userId })
         if (!user) 
             throw new NotFoundException()
-
         role.users = role.users.filter(u => u.id !== user.id)
+
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        role.chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+
         await this.roleRepository.save(role)
-        return role
+        return { role, userIds }
     }
 
     async updateRole(
         roleId: number,
         roleDetails: UpdateRoleParams
     ) {
-        const role = await this.roleRepository.findOne({
+        let role = await this.roleRepository.findOne({
             where: { id: roleId },
-            relations: ['users']
+            relations: [
+                'users',
+                'chatServer',
+                'chatServer.members'
+            ]
         })
 
         if (!role) 
             throw new NotFoundException()
 
-        return await this.roleRepository.save({
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        role.chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+
+        role = await this.roleRepository.save({
             ...role,
             ...roleDetails
         })
+        return { role, userIds }
     }
 
     async deleteRole(roleId: number) {
-        const role = await this.roleRepository.findOneBy({ id: roleId })
+        const role = await this.roleRepository.findOne({ 
+            where: { id: roleId },
+            relations: [
+                'chatServer',
+                'chatServer.members'
+            ]
+        })
         if (!role) 
             throw new NotFoundException()
 
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        role.chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+
         await this.roleRepository.remove(role)
-        return role
+        return { role, userIds }
     }
 }

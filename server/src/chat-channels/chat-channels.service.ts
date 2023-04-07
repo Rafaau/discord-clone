@@ -20,7 +20,11 @@ export class ChatChannelsService {
     ) {
         const chatCategory = await this.chatCategoryRepository.findOne({
             where: { id: chatCategoryId },
-            relations: ['chatChannels']
+            relations: [
+                'chatChannels',
+                'chatServer',
+                'chatServer.members'
+            ]
         })
         if (!chatCategory)
             throw new HttpException(
@@ -48,15 +52,27 @@ export class ChatChannelsService {
             index,
             chatCategory
         })
+
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        chatCategory.chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+        console.log(newChatChannel)
         await this.chatChannelRepository.save(newChatChannel)
-        return newChatChannel
+        return { newChatChannel, userIds }
     }
 
     async createChatCategory(
         chatServerId: number,
         chatCategoryDetails: CreateChatCategoryParams
     ) {
-        const chatServer = await this.chatServerRepository.findOneBy({ id: chatServerId })
+        const chatServer = await this.chatServerRepository.findOne({ 
+            where: { id: chatServerId },
+            relations: [
+                'members'
+            ]
+        })
         if (!chatServer)
             throw new HttpException(
                 'Chat server not found. Cannot create chat category',
@@ -66,8 +82,15 @@ export class ChatChannelsService {
             ...chatCategoryDetails,
             chatServer
         })
+
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+
         await this.chatCategoryRepository.save(newChatCategory)
-        return newChatCategory
+        return { newChatCategory, userIds }
     }
 
     async findChatChannelById(id: number) {
@@ -91,7 +114,7 @@ export class ChatChannelsService {
         const channel = await this.chatChannelRepository.findOne({
             where: { id: channelId },
             relations: [
-                'chatCategory',
+                'chatCategory'
             ]
         })
         if (!channel)
@@ -102,7 +125,9 @@ export class ChatChannelsService {
                 'chatChannels',
                 'chatChannels.chatCategory',
                 'chatChannels.roles',
-                'chatChannels.users'
+                'chatChannels.users',
+                'chatServer',
+                'chatServer.members',
             ],
             order: {
                 chatChannels: {
@@ -156,12 +181,20 @@ export class ChatChannelsService {
         id: number,
         chatChannelDetails: UpdateChatChannelParams
     ) {
-        const chatChannelToUpdate = await this.chatChannelRepository.findOneBy({ id })
+        const chatChannelToUpdate = await this.chatChannelRepository.findOne({ 
+            where: { id },
+            relations: [
+                'chatCategory',
+                'chatCategory.chatServer',
+                'chatCategory.chatServer.members'
+            ]
+        })
         if (!chatChannelToUpdate)
             throw new NotFoundException()
+
         return await this.chatChannelRepository.save({
             ...chatChannelToUpdate,
-            ...chatChannelDetails
+            ...chatChannelDetails,
         })
     }
 
@@ -169,7 +202,8 @@ export class ChatChannelsService {
         const chatCategoryToDelete = await this.chatCategoryRepository.findOneBy({ id })
         if (!chatCategoryToDelete)
             throw new NotFoundException()
-        const dupa = await this.chatCategoryRepository.delete(chatCategoryToDelete)
+
+        await this.chatCategoryRepository.delete(chatCategoryToDelete)
         return {
             statusCode: 200,
             message: `Chat Category(id : ${id}) has been deleted successfully`
@@ -177,13 +211,36 @@ export class ChatChannelsService {
     }
 
     async deleteChatChannel(id: number) {
-        const chatChannelToDelete = await this.chatChannelRepository.findOneBy({ id })
+        const chatChannelToDelete = await this.chatChannelRepository.findOne({ 
+            where: { id },
+            relations: [
+                'chatCategory',
+                'chatCategory.chatServer'
+            ]
+        })
+
         if (!chatChannelToDelete)
             throw new NotFoundException()
+
+        // CHAT SERVER MEMBERS
+        let userIds: string[] = []
+        const chatServer = await this.chatServerRepository.findOne({
+            where: { id: chatChannelToDelete.chatCategory.chatServer.id },
+            relations: [
+                'members'
+            ]
+        })
+        if (chatServer) {
+            chatServer.members.forEach(member => {
+                userIds.push(member.id.toString())
+            })
+        }
+
         await this.chatChannelRepository.delete(chatChannelToDelete)
         return {
             statusCode: 200,
-            message: `Chat Channel(id : ${id}) has been deleted successfully`
+            message: `Chat Channel(id : ${id}) has been deleted successfully`,
+            userIds
         }
     }
 }

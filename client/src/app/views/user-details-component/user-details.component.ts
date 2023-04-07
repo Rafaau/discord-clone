@@ -55,11 +55,7 @@ export class UserDetailsComponent implements OnInit {
     }
     console.log((this.user as UserComplex).directConversations)
     const conversation = (this.user as UserComplex).directConversations
-      .filter(
-        x => x.users.filter(
-          x => x.id == this.currentUser!.id
-        )
-      )[0]
+      .find(conversation => conversation.users.some(user => user.id === this.currentUser!.id))
     if (conversation != undefined) {
       const conversationId = conversation.id
       this._directMessageService.createDirectMessage(
@@ -84,10 +80,7 @@ export class UserDetailsComponent implements OnInit {
               messageReqBody
             ).subscribe(
               (data: HttpResponse<{}>) => {
-                this.router.navigate(
-                  ['directmessages'],
-                  { queryParams: { conversation: conversationData.body!.id }}
-                )
+                this.router.navigate([{ outlets: { main: ['conversation', conversationData.body!.id ], secondary: ['directmessages'] } }])
               }
             )           
           }
@@ -96,7 +89,6 @@ export class UserDetailsComponent implements OnInit {
   }
 
   onValueChange(event: Event) {
-    console.log(this.user)
     const value = (event.target as any).value
     this.messageValue = value
   }

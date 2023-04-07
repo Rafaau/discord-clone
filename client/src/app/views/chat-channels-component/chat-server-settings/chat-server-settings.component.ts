@@ -86,6 +86,7 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
     this._rolesService.getRoleDeleted()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((roleId) => {
+        console.log(roleId)
         this.chatServer!.roles = this.chatServer!.roles!.filter(x => x.id != roleId)
         this.currentRole = this.chatServer!.roles![0]
       })

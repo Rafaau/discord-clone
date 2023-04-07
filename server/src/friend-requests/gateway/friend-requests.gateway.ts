@@ -12,16 +12,22 @@ export class FriendRequestsGateway {
         private readonly notificationsService: NotificationsService
     ) {
         eventBus.on('newFriendRequest', (friendRequest, senderId) => {
-            this.server.emit('newFriendRequest', [friendRequest, senderId])
+            friendRequest.userIds.forEach(userId => {
+                this.server.to(userId.toString())
+                           .emit('newFriendRequest', [friendRequest, senderId])
+            })
         })
         eventBus.on('acceptedFriendRequest', (friendRequest) => {
-            this.server.emit('acceptedFriendRequest', friendRequest)
+            this.server.to(friendRequest.sender.id.toString())
+                       .emit('acceptedFriendRequest', friendRequest)
+            this.server.to(friendRequest.receiver.id.toString())
+                       .emit('acceptedFriendRequest', friendRequest)
         })
         eventBus.on('declinedFriendRequest', (friendRequest) => {
-            this.server.emit('declinedFriendRequest', friendRequest)
-        })
-        eventBus.on('newNotification', (notification) => {
-            this.server.emit('newNotification', notification)
+            this.server.to(friendRequest.sender.id.toString())
+                       .emit('declinedFriendRequest', friendRequest)
+            this.server.to(friendRequest.receiver.id.toString())
+                       .emit('declinedFriendRequest', friendRequest)
         })
     }
 

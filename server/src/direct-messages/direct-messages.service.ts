@@ -20,7 +20,10 @@ export class DirectMessagesService {
         createDirectMessageDetails: CreateDirectMessageParams
     ) {
         const user = await this.userRepository.findOneBy({ id: userId })
-        const conversation = await this.directConversationRepository.findOneBy({ id: conversationId })
+        const conversation = await this.directConversationRepository.findOne({ 
+            where: { id: conversationId },
+            relations: ['users'] 
+        })
         if (!user || !conversation)
             throw new NotFoundException()
         const newDirectMessage = this.directMessageRepository.create({
@@ -71,7 +74,13 @@ export class DirectMessagesService {
     }
 
     async updateDirectMessage(id: number, messageDetails: UpdateMessageParams) {
-        const messageToUpdate = await this.directMessageRepository.findOneBy({ id })
+        const messageToUpdate = await this.directMessageRepository.findOne({ 
+            where: { id },
+            relations: [
+                'directConversation',
+                'directConversation.users',
+            ]
+        })
         if (!messageToUpdate)
             throw new NotFoundException()
         return await this.directMessageRepository.save({
@@ -81,13 +90,27 @@ export class DirectMessagesService {
     }
 
     async deleteDirectMessage(id: number) {
-        const messageToDelete = await this.directMessageRepository.findOneBy({ id })
+        const messageToDelete = await this.directMessageRepository.findOne({ 
+            where: { id },
+            relations: [
+                'directConversation',
+                'directConversation.users',
+            ]
+        })
         if (!messageToDelete)
             throw new NotFoundException()
+        
+        // CONVERSATION USERS
+        let userIds: string[] = []
+        messageToDelete.directConversation.users.forEach(user => {
+            userIds.push(user.id.toString())
+        })
+
         await this.directMessageRepository.delete(messageToDelete)
         return {
             statusCode: 200,
-            message: `Direct Message(id: ${id}) has been deleted successfully`
+            message: `Direct Message(id: ${id}) has been deleted successfully`,
+            userIds
         }
     }
 }

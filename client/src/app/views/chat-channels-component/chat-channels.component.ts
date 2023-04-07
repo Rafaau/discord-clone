@@ -90,13 +90,30 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           this.redirectToChatChannel(this.chatServer!.chatCategories![0].chatChannels![0].id)
       })
     this.getCurrentUser()
+    this._chatChannelService.getCreatedCategory()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (category: ChatCategory) => {
+          this.chatServer!.chatCategories!.push(category)
+        }
+      )
+    this._chatChannelService.getCreatedChannel()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (channel: ChatChannel) => {
+          const actualCategory = this.chatServer!.chatCategories!.find(category =>
+            category.id == channel.chatCategory.id
+          )!
+          actualCategory.chatChannels.push(channel)
+        }
+      )
     this._chatChannelService.getDeletedChannel()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (channelId: number) => {
-          const actualCategory = this.chatServer!.chatCategories!
-            .filter(x => x.chatChannels
-              .filter(x => x.id == channelId))[0]
+          const actualCategory = this.chatServer!.chatCategories!.find(category =>
+            category.chatChannels.some(channel => channel.id == channelId)
+          )!
           actualCategory.chatChannels = actualCategory.chatChannels.filter(x => x.id != channelId)
         }
       )
@@ -395,6 +412,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   }
 
   availableChannels(channels: ChatChannel[]) {
-    return channels.filter(x => this.isPermittedToViewChannel(x))
+    return channels ? channels.filter(x => this.isPermittedToViewChannel(x)) : []
   }
 }

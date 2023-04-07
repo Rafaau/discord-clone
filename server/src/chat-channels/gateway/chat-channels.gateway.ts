@@ -8,8 +8,23 @@ export class ChatChannelsGateway {
     constructor (
         private readonly chatChannelsService: ChatChannelsService
     ) {
-        eventBus.on('deletedChatChannel', (id) => {
-            this.server.emit('deletedChatChannel', id)
+        eventBus.on('createdChatCategory', (category) => {
+            category.userIds.forEach(userId => {
+                this.server.to(userId.toString())
+                           .emit('createdChatCategory', category.newChatCategory)
+            })
+        })
+        eventBus.on('createdChatChannel', (channel) => {
+            channel.userIds.forEach(userId => {
+                this.server.to(userId.toString())
+                           .emit('createdChatChannel', channel.newChatChannel)
+            })
+        })
+        eventBus.on('deletedChatChannel', (id, userIds) => {
+            userIds.forEach(userId => {
+                this.server.to(userId.toString())
+                           .emit('deletedChatChannel', id)
+            })
         })
         eventBus.on('updatedChatChannel', (channel) => {
             this.server.emit('updatedChatChannel', channel)
@@ -19,6 +34,26 @@ export class ChatChannelsGateway {
     @WebSocketServer()
     server: Server
 
+    @SubscribeMessage('createChatCategory')
+    async handleCreateCategory(
+        socket: Socket,
+        params: any
+    ) {
+        const category = await this.chatChannelsService
+            .createChatCategory(params[0], params[1])
+        eventBus.emit('createdChatCategory', category)
+    }
+
+    @SubscribeMessage('createChatChannel')
+    async handleCreateChannel(
+        socket: Socket,
+        params: any
+    ) {
+        const channel = await this.chatChannelsService
+            .createChatChannel(params[0], params[1])
+        eventBus.emit('createdChatChannel', channel)
+    }
+
     @SubscribeMessage('deleteChatChannel')
     async handleDeleteChannel(
         socket: Socket,
@@ -27,7 +62,7 @@ export class ChatChannelsGateway {
         const deletedChannel = await this.chatChannelsService
             .deleteChatChannel(id)
         if (deletedChannel.statusCode == 200)
-            eventBus.emit('deletedChatChannel', id)
+            eventBus.emit('deletedChatChannel', id, deletedChannel.userIds)
     }
 
     @SubscribeMessage('moveChannel')
@@ -37,7 +72,13 @@ export class ChatChannelsGateway {
     ) {
         const movedChannelCategory = await this.chatChannelsService
             .moveChannel(params[0], params[1], params[2])
-        this.server.emit('movedChannelCategory', [movedChannelCategory, params[0]])
+        let userIds: string[] = []
+        movedChannelCategory.chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+        userIds.forEach(userId => {
+            this.server.to(userId).emit('movedChannelCategory', [movedChannelCategory, params[0]])
+        })
     }
 
     @SubscribeMessage('updateChannel')
@@ -47,6 +88,13 @@ export class ChatChannelsGateway {
     ) {
         const updatedChannel = await this.chatChannelsService
             .updateChatChannel(params[0], params[1])
-        eventBus.emit('updatedChatChannel', updatedChannel)
+        
+        let userIds: string[] = []
+        updatedChannel.chatCategory.chatServer.members.forEach(member => {
+            userIds.push(member.id.toString())
+        })
+        userIds.forEach(userId => {
+            this.server.to(userId).emit('updatedChatChannel', updatedChannel)
+        })
     }
 }

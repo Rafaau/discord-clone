@@ -27,11 +27,11 @@ export class FriendRequestsService {
             relations: ['friends']
         })
         if (!receiver)
-            return { isSuccess: false }//
+            return { isSuccess: false, userIds: [senderId] }
 
         const isAlreadyFriends = sender.friends.some(friend => friend.id === receiver.id)
         if (isAlreadyFriends)
-            return { isSuccess: false, message: 'Already friends' }
+            return { isSuccess: false, message: 'Already friends', userIds: [senderId] }
 
         const isAlreadySent = await this.friendRequestRepository.findOne({
             where: {
@@ -41,7 +41,7 @@ export class FriendRequestsService {
             }
         })
         if (isAlreadySent)
-            return { isSuccess: false }
+            return { isSuccess: false, userIds: [senderId] }
         
         const friendRequest = this.friendRequestRepository.create({
             sender,
@@ -51,7 +51,8 @@ export class FriendRequestsService {
         await this.friendRequestRepository.save(friendRequest)
         return {
             isSuccess: true,
-            data: friendRequest
+            data: friendRequest,
+            userIds: [senderId, receiver.id]
         }
     }
 

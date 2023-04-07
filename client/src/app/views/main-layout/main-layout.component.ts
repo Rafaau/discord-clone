@@ -113,6 +113,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         console.log('authorized')
         this.currentUser = data.body!
         this._sharedDataProvider.setCurrentUser(this.currentUser)
+        this._authService.joinRoom(this.currentUser!.id.toString())
       },
       (error) => {
         console.log('unauthorized')
@@ -130,10 +131,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.chatServerToPass = event
     else
       this.chatServerToPass = undefined
-  }
-
-  updateChatServer(chatServer: ChatServer) {
-    
   }
 
   toggleUserSettingsView(event: Event) {

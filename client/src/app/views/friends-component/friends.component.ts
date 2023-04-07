@@ -62,9 +62,11 @@ export class FriendsComponent implements OnInit, OnDestroy {
       .subscribe(
         (request: any) => {
           if (request.receiver.id == this.currentUser!.id) {
-            this.friendRequests.filter(x => x.id == request.id)[0].status = request.status 
+            this.friendRequests.filter(x => x.id == request.id)[0].status = request.status
             this.friendsOfUser.push(request.sender)
           }
+          else
+            this.friendsOfUser.push(request.receiver)
         })
     this._friendRequestsService.getDeclinedFriendRequest()
       .pipe(takeUntil(this.onDestroy$))

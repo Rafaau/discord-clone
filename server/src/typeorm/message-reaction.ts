@@ -26,5 +26,5 @@ export class MessageReaction {
         onDelete: 'CASCADE',
         nullable: true,
     })
-    directMessage?: ChatMessage
+    directMessage?: DirectMessage
 }

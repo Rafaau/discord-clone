@@ -19,6 +19,7 @@ export interface CreateChatChannelParams {
     name: string,
     isPrivate: boolean,
     users?: User[],
+    roles?: Role[]
 }
 
 export interface UpdateChatChannelParams {

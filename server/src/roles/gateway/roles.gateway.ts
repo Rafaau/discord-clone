@@ -9,13 +9,22 @@ export class RolesGateway implements OnGatewayConnection, OnGatewayDisconnect {
         private readonly rolesService: RolesService
     ) {
         eventBus.on('roleUpdated', (role) => {
-            this.server.emit('roleUpdated', role)
+            role.userIds.forEach(userId => {
+                this.server.to(userId.toString())
+                           .emit('roleUpdated', role.role)
+                })
         })
         eventBus.on('newRole', (role) => {
-            this.server.emit('newRole', role)
+            role.userIds.forEach(userId => {
+                this.server.to(userId.toString())
+                           .emit('newRole', role.newRole)
+            })
         })
-        eventBus.on('roleDeleted', (roleId) => {
-            this.server.emit('roleDeleted', roleId)
+        eventBus.on('roleDeleted', (params) => {
+            params.role.userIds.forEach(userId => {
+                this.server.to(userId.toString())
+                           .emit('roleDeleted', params.roleId)
+            })
         })
     }
 
@@ -64,8 +73,8 @@ export class RolesGateway implements OnGatewayConnection, OnGatewayDisconnect {
         socket: Socket,
         roleId: number
     ) {
-        await this.rolesService.deleteRole(roleId)
-        eventBus.emit('roleDeleted', roleId)
+        const role = await this.rolesService.deleteRole(roleId)
+        eventBus.emit('roleDeleted', { role, roleId })
     }
 
     @SubscribeMessage('updateRole')

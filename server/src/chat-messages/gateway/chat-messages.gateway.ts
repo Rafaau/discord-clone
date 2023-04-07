@@ -3,12 +3,50 @@ import { SubscribeMessage } from "@nestjs/websockets/decorators";
 import { Server } from "socket.io";
 import { Socket } from "socket.io";
 import { ChatMessagesService } from "../chat-messages.service";
+import eventBus from "src/utils/file-service/event-bus";
+import { ChatMessage } from "src/typeorm/chat-message";
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
 export class ChatMessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly chatMessagesService: ChatMessagesService
-    ) {}
+    ) {
+        eventBus.on('newChatMessage', (message) => {
+            message.userIds.forEach(id => {
+                this.server.to(id)
+                           .emit('newChatMessage', message.newChatMessage)
+            })
+        })
+        eventBus.on('editedChatMessage', (message: ChatMessage) => {
+            let userIds: string[] = []
+            if (message.chatChannel.isPrivate) {
+                message.chatChannel.users.forEach(user => {
+                    userIds.push(user.id.toString())
+                })
+                message.chatChannel.roles.forEach(role => {
+                    role.users.forEach(user => {
+                        if (!userIds.includes(user.id.toString()))
+                            userIds.push(user.id.toString())
+                    })
+                })
+            } else {
+                message.chatChannel.chatCategory.chatServer.members.forEach(member => {
+                    userIds.push(member.id.toString())
+                })
+            }
+
+            userIds.forEach(id => {
+                this.server.to(id)
+                           .emit('editedChatMessage', message)
+            })
+        })
+        eventBus.on('deletedChatMessage', (params) => {
+            params.userIds.forEach(id => {
+                this.server.to(id)
+                           .emit('deletedChatMessage', params.id)
+            })
+        })
+    }
 
     @WebSocketServer()
     server: Server
@@ -26,7 +64,7 @@ export class ChatMessagesGateway implements OnGatewayConnection, OnGatewayDiscon
     ) {
         const message = await this.chatMessagesService
             .createChatMessage(params[0], params[1], params[2])
-        this.server.emit('newChatMessage', message)
+        eventBus.emit('newChatMessage', message)
     }
 
     @SubscribeMessage('editChatMessage')
@@ -36,7 +74,7 @@ export class ChatMessagesGateway implements OnGatewayConnection, OnGatewayDiscon
     ) {
         const editedMessage = await this.chatMessagesService
             .updateChatMessage(params[0], params[1])
-        this.server.emit('editedChatMessage', editedMessage)
+        eventBus.emit('editedChatMessage', editedMessage)
     }
 
     @SubscribeMessage('deleteChatMessage')
@@ -47,6 +85,6 @@ export class ChatMessagesGateway implements OnGatewayConnection, OnGatewayDiscon
         const deletedMessage = await this.chatMessagesService
             .deleteChatMessage(id)
         if (deletedMessage.statusCode == 200)
-            this.server.emit('deletedChatMessage', id)
+            eventBus.emit('deletedChatMessage', { id, userIds: deletedMessage.userIds })
     }
 }

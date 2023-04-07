@@ -21,7 +21,16 @@ export class ChatMessagesService {
         userId: number,
         chatMessageDetails: CreateChatMessageParams
     ) {
-        const chatChannel = await this.chatChannelRepository.findOneBy({ id: chatChannelId })
+        const chatChannel = await this.chatChannelRepository.findOne({ 
+            where: { id: chatChannelId },
+            relations: [
+                'users',
+                'roles',
+                'chatCategory',
+                'chatCategory.chatServer',
+                'chatCategory.chatServer.members'
+            ]
+        })
         if (!chatChannel)
             throw new HttpException(
                 'Chat channel not found. Cannot create chat message.',
@@ -39,8 +48,27 @@ export class ChatMessagesService {
             user,
             reactions: []
         })
+
+        // CHAT CHANNEL USERS
+        let userIds: string[] = []
+        if (chatChannel.isPrivate) {
+            chatChannel.users.forEach(user => {
+                userIds.push(user.id.toString())
+            })
+            chatChannel.roles.forEach(role => {
+                role.users.forEach(user => {
+                    if (!userIds.includes(user.id.toString()))
+                        userIds.push(user.id.toString())
+                })
+            })
+        } else {
+            chatChannel.chatCategory.chatServer.members.forEach(member => {
+                userIds.push(member.id.toString())
+            })
+        }
+
         await this.chatMessageRepository.save(newChatMessage)
-        return newChatMessage
+        return { newChatMessage, userIds }
     }
 
     async findChatMessagesByChannelId(channelId: number, page: number) {
@@ -82,7 +110,18 @@ export class ChatMessagesService {
     }
 
     async updateChatMessage(id: number, messageDetails: UpdateMessageParams) {
-        const chatMessageToUpdate = await this.chatMessageRepository.findOneBy({ id })
+        const chatMessageToUpdate = await this.chatMessageRepository.findOne({ 
+            where: { id },
+            relations: [
+                'chatChannel',
+                'chatChannel.users',
+                'chatChannel.roles',
+                'chatChannel.roles.users',
+                'chatChannel.chatCategory',
+                'chatChannel.chatCategory.chatServer',
+                'chatChannel.chatCategory.chatServer.members'
+            ] 
+        })
         if (!chatMessageToUpdate)
             throw new NotFoundException()
         return await this.chatMessageRepository.save({
@@ -92,13 +131,44 @@ export class ChatMessagesService {
     }
 
     async deleteChatMessage(id: number) {
-        const chatMessageToDelete = await this.chatMessageRepository.findOneBy({ id })
+        const chatMessageToDelete = await this.chatMessageRepository.findOne({ 
+            where: { id },
+            relations: [
+                'chatChannel',
+                'chatChannel.users',
+                'chatChannel.roles',
+                'chatChannel.roles.users',
+                'chatChannel.chatCategory',
+                'chatChannel.chatCategory.chatServer',
+                'chatChannel.chatCategory.chatServer.members'
+            ]
+        })
         if (!chatMessageToDelete)
             throw new NotFoundException()
+
+        // CHAT CHANNEL USERS
+        let userIds: string[] = []
+        if (chatMessageToDelete.chatChannel.isPrivate) {
+            chatMessageToDelete.chatChannel.users.forEach(user => {
+                userIds.push(user.id.toString())
+            })
+            chatMessageToDelete.chatChannel.roles.forEach(role => {
+                role.users.forEach(user => {
+                    if (!userIds.includes(user.id.toString()))
+                        userIds.push(user.id.toString())
+                })
+            })
+        } else {
+            chatMessageToDelete.chatChannel.chatCategory.chatServer.members.forEach(member => {
+                userIds.push(member.id.toString())
+            })
+        }
+
         await this.chatMessageRepository.delete(chatMessageToDelete.id)
         return {
             statusCode: 200,
-            message: `Chat Message(id: ${id}) has been deleted successfully`
+            message: `Chat Message(id: ${id}) has been deleted successfully`,
+            userIds
         }
     }
 }
