@@ -18,7 +18,7 @@ export class ChatServerInvitationService {
     return this.httpClient.post(
       this.api+`/invitations/${chatServerId}`,
       {},
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -27,7 +27,7 @@ export class ChatServerInvitationService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/invitations/bychatserver/${chatServerId}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -36,7 +36,7 @@ export class ChatServerInvitationService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/invitations/${uuid}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 }

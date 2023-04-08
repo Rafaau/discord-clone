@@ -1,6 +1,7 @@
-import { Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { ChatServerInvitationsService } from './chat-server-invitations.service';
+import { AuthenticatedGuard } from 'src/auth/utils/local-guard';
 
 @Controller('invitations')
 export class ChatServerInvitationsController { 
@@ -9,6 +10,7 @@ export class ChatServerInvitationsController {
     ) {}
 
     @Post(':chatServerId')
+    @UseGuards(AuthenticatedGuard)
     async createChatServerInvitation(
         @Param('chatServerId') chatServerId: number,
         @Res() response: Response
@@ -28,6 +30,7 @@ export class ChatServerInvitationsController {
     }
 
     @Get(':uuid')
+    @UseGuards(AuthenticatedGuard)
     async getChatServerInvitation(
         @Param('uuid') uuid: string,
         @Res() response: Response
@@ -47,6 +50,7 @@ export class ChatServerInvitationsController {
     }
 
     @Get('/bychatserver/:chatServerId')
+    @UseGuards(AuthenticatedGuard)
     async getInvitationByChatServer(
         @Param('chatServerId') chatServerId: number,
         @Res() response: Response

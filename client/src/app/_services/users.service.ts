@@ -14,28 +14,28 @@ export class UsersService {
   getUsersByChatServer(chatServerId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/byChatServer/${chatServerId}`, 
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getFriendsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/${userId}/friends`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getConversationsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directconversations/user/${userId}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getFriendRequestsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/${userId}/friendRequests`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -45,7 +45,7 @@ export class UsersService {
       return this.httpClient.patch(
         this.api+`/users/${userId}/removeFriend/${friendId}`,
         null,
-        { observe: 'response' }
+        { observe: 'response', withCredentials: true }
       )
   }
 
@@ -56,7 +56,7 @@ export class UsersService {
     return this.httpClient.patch(
       this.api+`/users/${userId}`,
       userDetails,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -66,7 +66,7 @@ export class UsersService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/${userId}/query?passwordToCheck=${rawPassword}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -79,7 +79,7 @@ export class UsersService {
     return this.httpClient.post(
       this.api+`/users/${userId}/uploadAvatar`,
       formData,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 }

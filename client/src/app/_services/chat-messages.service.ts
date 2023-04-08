@@ -22,14 +22,14 @@ export class ChatMessagesService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/chatmessages?filterByChannel=${channelId}&page=${page}`, 
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getSingleMessage(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/chatmessages/${id}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -41,7 +41,7 @@ export class ChatMessagesService {
     return this.httpClient.post(
       this.api+`/chatmessages/channel=${channelId}/user=${userId}`, 
       chatMessageParams,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -95,14 +95,14 @@ export class ChatMessagesService {
     return this.httpClient.patch(
       this.api+`/chatmessages/${id}`,
       chatMessageParams,
-      { observe: 'response', headers: ApiHelpers.headers }
+      { observe: 'response', headers: ApiHelpers.headers, withCredentials: true }
     )
   }
 
   deleteChatMessage(id: number): Observable<HttpResponse<{}>> {
     return this.httpClient.delete(
       this.api+`/chatmessages/${id}`, 
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 }

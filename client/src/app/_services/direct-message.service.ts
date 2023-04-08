@@ -23,7 +23,7 @@ export class DirectMessageService {
     return this.httpClient.post(
       this.api+`/directmessages/conversation=${conversationId}/sender=${senderId}`,
       directMessageParams,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -76,14 +76,14 @@ export class DirectMessageService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directmessages?conversation=${conversationId}&page=${page}`, 
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getSingleMessage(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directmessages/${id}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -94,14 +94,14 @@ export class DirectMessageService {
     return this.httpClient.patch(
       this.api+`/directmessages/${id}`,
       directMessageParams,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   deleteDirectMessage(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.delete(
       this.api+`/directmessages/${id}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 }

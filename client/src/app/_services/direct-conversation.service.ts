@@ -17,14 +17,14 @@ export class DirectConversationService {
     return this.httpClient.post(
       this.api+`/directconversations`,
       conversationDetails,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getDirectConversationById(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directconversations/${id}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 }

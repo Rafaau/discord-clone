@@ -18,7 +18,7 @@ export class NotificationsService {
   getUnreadNotificationsForUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/notifications/${userId}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
