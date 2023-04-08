@@ -15,7 +15,6 @@ import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { SessionEntity } from './typeorm/session';
 import { ChatCategory } from './typeorm/chat-category';
-import { ChatCategoriesModule } from './chat-categories/chat-categories.module';
 import { DirectConversation } from './typeorm/direct-conversation';
 import { DirectMessage } from './typeorm/direct-message';
 import { DirectConversationModule } from './direct-conversations/direct-conversations.module';
@@ -42,7 +41,6 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
     }),
     UsersModule,
     ChatServerModule,
-    ChatCategoriesModule,
     ChatChannelsModule,
     ChatMessagesModule,
     DirectConversationModule,
