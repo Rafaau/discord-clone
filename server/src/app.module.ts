@@ -61,10 +61,10 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
     }), 
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'mysqlpw',
+      host: process.env.HOST,
+      port: Number(process.env.PORT),
+      username: process.env.USER,
+      password: process.env.PASSWORD,
       database: process.env.DATABASE,
       entities: [
         User, 

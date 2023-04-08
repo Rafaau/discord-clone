@@ -319,12 +319,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       width: '450px',
       panelClass: 'dialog-container'
     })
-    const sub = dialogRef.componentInstance.onDeleteEvent.subscribe(() => {
-      this.fetchDirectMessages(this.directConversation!.id)
-    })
-    dialogRef.afterClosed().subscribe(() => {
-      sub.unsubscribe()
-    })
   }
 
   toggleEmojiPicker() {

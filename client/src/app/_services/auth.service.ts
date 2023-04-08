@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { CreateUserParams, LoginUserParams } from '../_models/user';
 import { ApiHelpers } from './helpers';
 import { Socket } from 'ngx-socket-io';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly api = 'http://localhost:3000'
+  private readonly api = environment.apiUrl
   constructor(
     private readonly httpClient: HttpClient,
     private socket: Socket

@@ -155,7 +155,10 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   }
   
   redirectToHome() {
-    this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+    this.router.navigate([''])
+      .then(() => {
+        this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+      })
   }
 
   openAddServerDialog() {
