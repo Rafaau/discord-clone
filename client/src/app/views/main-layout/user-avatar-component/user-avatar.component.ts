@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { UsersService } from 'src/app/_services/users.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'user-avatar',
@@ -7,7 +8,7 @@ import { UsersService } from 'src/app/_services/users.service';
   styleUrls: ['./user-avatar.component.css']
 })
 export class UserAvatarComponent implements OnInit, OnChanges {
-  readonly api = "http://localhost:3000/users/getAvatar/user-"
+  readonly api = environment.apiUrl+'/users/getAvatar/user-'
 
   @Input()
   userId?: number

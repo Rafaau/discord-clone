@@ -20,15 +20,13 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 36000000,
-        sameSite: 'none',
-        secure: true
+        domain: process.env.CLIENT_ORIGIN,
       },
       store: new TypeormStore().connect(sessionRepository)
     })
   )
   app.enableCors({
     origin: process.env.CLIENT_ORIGIN, 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true
   })
   app.use(passport.initialize())
