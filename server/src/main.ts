@@ -21,6 +21,7 @@ async function bootstrap() {
       cookie: {
         maxAge: 36000000,
         sameSite: 'none',
+        secure: true
       },
       store: new TypeormStore().connect(sessionRepository)
     })
