@@ -6,7 +6,7 @@ import { ChatMessagesService } from "../chat-messages.service";
 import eventBus from "src/utils/file-service/event-bus";
 import { ChatMessage } from "src/typeorm/chat-message";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
 export class ChatMessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly chatMessagesService: ChatMessagesService

@@ -3,7 +3,7 @@ import { NotificationsService } from "../notifications.service";
 import { Server, Socket } from "socket.io";
 import eventBus from "src/utils/file-service/event-bus";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
 export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly notificationsService: NotificationsService

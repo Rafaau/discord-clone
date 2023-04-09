@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import eventBus from "src/utils/file-service/event-bus";
 import { ChatChannelsService } from "../chat-channels.service";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
 export class ChatChannelsGateway {
     constructor (
         private readonly chatChannelsService: ChatChannelsService

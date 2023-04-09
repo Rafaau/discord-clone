@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import eventBus from "src/utils/file-service/event-bus";
 import { RolesService } from "../roles.service";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
 export class RolesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly rolesService: RolesService

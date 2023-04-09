@@ -5,7 +5,7 @@ import { Server, Socket } from "socket.io";
 import { NotificationsService } from "src/notifications/notifications.service";
 import { CreateNotificationParams } from "src/utils/types";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
 export class FriendRequestsGateway {
     constructor (
         private readonly friendRequestsService: FriendRequestsService,

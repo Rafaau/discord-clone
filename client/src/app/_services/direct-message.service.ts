@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from '../_models/direct-message';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DirectMessageService {
-  private readonly api = 'http://localhost:3000'
+  private readonly api = environment.apiUrl
 
   constructor(
     private readonly httpClient: HttpClient,

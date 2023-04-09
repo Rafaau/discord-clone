@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import { MessageReactionsService } from "../message-reactions.service";
 import eventBus from "src/utils/file-service/event-bus";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] }})
+@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] }})
 export class MessagesReactionsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly messageReactionsService: MessageReactionsService

@@ -6,7 +6,7 @@ import { CreateDirectMessageParams } from "src/utils/types";
 import { DirectMessagesService } from "../direct-messages.service";
 import eventBus from "src/utils/file-service/event-bus";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
 export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly directMessagesService: DirectMessagesService
