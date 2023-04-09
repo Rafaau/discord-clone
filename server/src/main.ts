@@ -31,6 +31,6 @@ async function bootstrap() {
   app.use(passport.initialize())
   app.use(passport.session())
   await seedData(app.get(DataSource))
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
