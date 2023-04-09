@@ -2,12 +2,13 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ChatServer, CreateChatServerParams, UpdateChatServerParams } from '../_models/chat-servers';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatServerService {
-  private readonly api = 'http://localhost:3000'
+  private readonly api = environment.apiUrl
 
   constructor(private readonly httpClient: HttpClient) { }
 

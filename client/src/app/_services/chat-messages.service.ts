@@ -4,12 +4,13 @@ import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 import { ChatMessage, CreateChatMessageParams, UpdateChatMessageParams } from '../_models/chat-message';
 import { ApiHelpers } from './helpers';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatMessagesService {
-  private readonly api = 'http://localhost:3000'
+  private readonly api = environment.apiUrl
 
   constructor(
     private readonly httpClient: HttpClient,
