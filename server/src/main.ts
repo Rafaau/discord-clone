@@ -20,6 +20,7 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 36000000,
+        sameSite: 'none',
       },
       store: new TypeormStore().connect(sessionRepository)
     })
