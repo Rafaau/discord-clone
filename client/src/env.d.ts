@@ -7,6 +7,8 @@ declare namespace NodeJS {
      */
     readonly NG_APP_ENV: string;
     readonly NG_APP_GIPHY_API_KEY: string;
+    readonly NG_APP_API_URL: string;
+    readonly NG_APP_CORS_ORIGIN: string;
     // Add your environment variables below
   }
 }

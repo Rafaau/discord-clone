@@ -3,7 +3,7 @@ import { HttpHeaders } from "@angular/common/http"
 export class ApiHelpers {
     static readonly headers = new HttpHeaders({
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'http://localhost:4200',
+        'Access-Control-Allow-Origin': process.env.NG_APP_CORS_ORIGIN || 'http://localhost:4200',
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': '*',
