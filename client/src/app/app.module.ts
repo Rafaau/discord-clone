@@ -46,7 +46,10 @@ import { StandardUrlSerializer } from './utils/StandardUrlSerializer';
 import { CustomRouteReuseStrategy } from './utils/CustomRouteReuseStrategy';
 import { RemoveConfirmDialog } from './views/friends-component/remove-confirm-dialog/remove-confirm-dialog.component';
 
-const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
+const socketIoConfig: SocketIoConfig = { 
+  url: process.env.NG_APP_API_URL || 'http://localhost:3000', 
+  options: {} 
+}
 
 @NgModule({
   declarations: [
