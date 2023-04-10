@@ -34,6 +34,7 @@ export class AuthController {
     @UseGuards(AuthenticatedGuard)
     @Get('status')
     async getAuthStatus(@Req() req: Request) {
+        console.log(req.session)
         return req.user;
     }
 
