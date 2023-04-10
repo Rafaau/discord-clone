@@ -9,11 +9,18 @@ export class AuthController {
     @Post('login')
     async login(
         @Body() body: Record<string, any>,
-        @Session() session: Record<string, any>
+        @Session() session: Record<string, any>,
+        @Res() res: Response
     ) { 
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
         session.authenticated = true
-        return session
+        res.status(200)
+           .cookie('SESSIONID', session.id, {
+                maxAge: session.cookie.maxAge,
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none'
+            })
     }
 
     @Get('')
