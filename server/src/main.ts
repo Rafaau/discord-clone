@@ -20,7 +20,6 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 36000000,
-        domain: process.env.COOKIE_DOMAIN || 'localhost',
         sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
         secure: true
       },
