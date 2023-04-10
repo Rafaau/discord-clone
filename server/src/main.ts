@@ -12,20 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api')
   const sessionRepository = app.get(DataSource).getRepository(SessionEntity)
-  app.use(
-    session({
-      name: 'NESTJS_SESSION_ID',
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: 36000000,
-        sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
-        secure: true
-      },
-      store: new TypeormStore().connect(sessionRepository)
-    })
-  )
+
   app.enableCors({
     origin: '*', 
     credentials: true,
