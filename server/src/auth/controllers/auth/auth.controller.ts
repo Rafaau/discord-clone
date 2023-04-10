@@ -13,14 +13,7 @@ export class AuthController {
         @Res() response: Response
     ) { 
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
-        response
-            .status(200)
-            .cookie('session', session.cookie, {
-                sameSite: 'none',
-                secure: true,
-                httpOnly: true,
-            })
-            .json(session)
+        return session
     }
 
     @Get('')
