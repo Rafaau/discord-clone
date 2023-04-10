@@ -21,8 +21,9 @@ async function bootstrap() {
       cookie: {
         maxAge: 36000000,
         domain: process.env.COOKIE_DOMAIN || 'localhost',
-        sameSite: 'none',
-        secure: true
+        secure: 'auto'
+        // sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
+        // secure: process.env.NODE_ENV === 'test' ? false : true
       },
       store: new TypeormStore().connect(sessionRepository)
     })

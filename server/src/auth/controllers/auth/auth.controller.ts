@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, Req, Session, UseGuards } from '@nestjs/common';
-import { Request } from 'express'
+import { Body, Controller, Get, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express'
 import { AuthenticatedGuard, LocalAuthGuard } from 'src/auth/utils/local-guard';
 
 @Controller('auth')
@@ -9,10 +9,14 @@ export class AuthController {
     @Post('login')
     async login(
         @Body() body: Record<string, any>,
-        @Session() session: Record<string, any>
+        @Session() session: Record<string, any>,
+        @Res() response: Response
     ) { 
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
-        return session
+        response
+            .status(200)
+            .cookie('session', session)
+            .json(session)
     }
 
     @Get('')
