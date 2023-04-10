@@ -9,8 +9,7 @@ export class AuthController {
     @Post('login')
     async login(
         @Body() body: Record<string, any>,
-        @Session() session: Record<string, any>,
-        @Res() response: Response
+        @Session() session: Record<string, any>
     ) { 
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
         return session
