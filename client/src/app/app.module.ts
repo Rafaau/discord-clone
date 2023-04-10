@@ -47,8 +47,8 @@ import { CustomRouteReuseStrategy } from './utils/CustomRouteReuseStrategy';
 import { RemoveConfirmDialog } from './views/friends-component/remove-confirm-dialog/remove-confirm-dialog.component';
 
 const socketIoConfig: SocketIoConfig = { 
-  url: process.env.NG_APP_API_URL || 'http://localhost:3000', 
-  options: {} 
+  url: process.env.NG_APP_SOCKET_PATH || 'http://localhost:3000', 
+  options: {}
 }
 
 @NgModule({
