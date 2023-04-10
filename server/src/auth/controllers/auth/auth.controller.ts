@@ -17,7 +17,7 @@ export class AuthController {
         session.cookie.secure = true
         session.cookie.sameSite = 'none'
         res.status(200)
-           .cookie('SESSIONID', session.id, {
+           .cookie('NESTJS_SESSION_ID', session.id, {
                 maxAge: session.cookie.maxAge,
                 httpOnly: true,
                 secure: true,
