@@ -14,11 +14,9 @@ export class AuthController {
     ) { 
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
         session.authenticated = true
-        session.cookie.secure = true
+        session.cookie.secure = false
         session.cookie.sameSite = 'none'
-        session.cookie.httpOnly = false
-        res.set({ 'access-control-allow-credentials': true, 'access-control-allow-origin': process.env.CLIENT_ORIGIN })
-           .status(200)
+        res.status(200)
            .cookie('SESSIONID', session.id, {
                 maxAge: session.cookie.maxAge,
                 httpOnly: true,
