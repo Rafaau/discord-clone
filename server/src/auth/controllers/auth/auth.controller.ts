@@ -18,6 +18,7 @@ export class AuthController {
             .cookie('session', session, {
                 sameSite: 'none',
                 secure: true,
+                httpOnly: true,
             })
             .json(session)
     }
