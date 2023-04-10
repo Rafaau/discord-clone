@@ -32,13 +32,13 @@ export class AuthController {
         return session
     }
 
-    @UseGuards(AuthenticatedGuard)
+    //@UseGuards(AuthenticatedGuard)
     @Get('status')
     async getAuthStatus(
         @Req() req: Request,
         @Session() session: Record<string, any>
     ) {
-        return req.user;
+        return session
     }
 
     @Get('logout')
