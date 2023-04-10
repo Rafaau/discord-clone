@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { CreateUserParams, LoginUserParams } from '../_models/user';
 import { ApiHelpers } from './helpers';
 import { Socket } from 'ngx-socket-io';
@@ -21,6 +21,13 @@ export class AuthService {
       this.api+'/auth/login', 
       loginCredentials, 
       { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
+    ).pipe(tap((response: HttpResponse<any>) => {
+        const token = response.body.access_token
+        if (token) {
+          ApiHelpers.updateAuthorizationHeader(token)
+          localStorage.setItem('jwt_token', token)
+        }
+      })
     )
   }
 

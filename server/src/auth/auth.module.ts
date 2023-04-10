@@ -8,10 +8,16 @@ import { AuthService } from './services/auth/auth.service';
 import { LocalStrategy } from './utils/local-strategy';
 import { SessionSerializer } from './utils/session-serializer';
 import { AuthGateway } from './gateways/auth.gateway';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
+    JwtModule.register({
+      global: true,
+      secret: 'secret',
+      signOptions: { expiresIn: '60s' }
+    }),
   ],
   controllers: [AuthController],
   providers: [

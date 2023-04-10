@@ -1,29 +1,25 @@
-import { Body, Controller, Get, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express'
-import { AuthenticatedGuard, LocalAuthGuard } from 'src/auth/utils/local-guard';
+import { AuthService } from 'src/auth/services/auth/auth.service';
+import { AuthGuardz, AuthenticatedGuard, LocalAuthGuard } from 'src/auth/utils/local-guard';
 
 @Controller('auth')
 export class AuthController {
+    constructor(
+        @Inject('AUTH_SERVICE') private readonly authService: AuthService
+    ) {}
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(
         @Body() body: Record<string, any>,
-        @Session() session: Record<string, any>,
-        @Res() res: Response
+        @Session() session: Record<string, any>
     ) { 
-        session.cookie.maxAge = body.rememberMe ? 2592000000 : null
-        session.authenticated = true
-        // session.cookie.secure = true
-        // session.cookie.sameSite = 'none'
-        res.status(200)
-           .cookie('SESSIONID', session.id, {
-                maxAge: session.cookie.maxAge,
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none'
-           })
-           .json(session)
+        return this.authService.signIn(
+            body.email, 
+            body.password, 
+            body.rememberMe
+        )
     }
 
     @Get('')
@@ -34,13 +30,12 @@ export class AuthController {
         return session
     }
 
-    //@UseGuards(AuthenticatedGuard)
+    @UseGuards(AuthGuardz)
     @Get('status')
     async getAuthStatus(
         @Req() req: Request,
-        @Session() session: Record<string, any>
     ) {
-        return req.session
+        return req.user
     }
 
     @Get('logout')

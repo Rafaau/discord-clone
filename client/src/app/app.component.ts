@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiHelpers } from './_services/helpers';
 
 @Component({
   selector: 'app-root',
@@ -7,15 +8,18 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  shouldRenderLayout: boolean = !(
-    window.location.pathname === '/login' ||
-    window.location.pathname === '/register'
-  )
-
   constructor (public router: Router) {
+    this.loadTokenFromLocalStorage()
   }
 
   ngOnInit() { }
 
   title = 'client';
+
+  private loadTokenFromLocalStorage() {
+    const token = localStorage.getItem('jwt_token')
+    if (token) {
+      ApiHelpers.updateAuthorizationHeader(token)
+    }
+  }
 }
