@@ -38,7 +38,7 @@ export class AuthController {
         @Req() req: Request,
         @Session() session: Record<string, any>
     ) {
-        return session
+        return req.session
     }
 
     @Get('logout')
