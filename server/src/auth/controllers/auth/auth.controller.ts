@@ -15,7 +15,7 @@ export class AuthController {
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
         response
             .status(200)
-            .cookie('session', session, {
+            .cookie('session', session.cookie, {
                 sameSite: 'none',
                 secure: true,
                 httpOnly: true,
@@ -34,7 +34,6 @@ export class AuthController {
     @UseGuards(AuthenticatedGuard)
     @Get('status')
     async getAuthStatus(@Req() req: Request) {
-        console.log(req.session)
         return req.user;
     }
 
