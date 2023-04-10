@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Inject, Post, Req, Res, Session, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express'
 import { AuthService } from 'src/auth/services/auth/auth.service';
-import { AuthGuardz, AuthenticatedGuard, LocalAuthGuard } from 'src/auth/utils/local-guard';
+import { AuthenticatedGuard, LocalAuthGuard } from 'src/auth/utils/local-guard';
 
 @Controller('auth')
 export class AuthController {
@@ -30,7 +30,7 @@ export class AuthController {
         return session
     }
 
-    @UseGuards(AuthGuardz)
+    @UseGuards(AuthenticatedGuard)
     @Get('status')
     async getAuthStatus(
         @Req() req: Request,

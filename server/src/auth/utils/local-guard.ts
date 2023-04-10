@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 import { Request } from 'express'
 import { Session } from "express-session";
+import { jwtConstants } from "./constants";
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
@@ -16,18 +17,6 @@ export class LocalAuthGuard extends AuthGuard('local') {
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
-    async canActivate(context: ExecutionContext): Promise<any> {
-        const req = context.switchToHttp().getRequest<Request>()
-        const session = context.switchToHttp().getRequest<Session>()
-        console.log(session.cookie)
-        console.log(req.user)
-        console.log(req.session)
-        return req.isAuthenticated()
-    }
-}
-
-@Injectable()
-export class AuthGuardz implements CanActivate {
     constructor (private jwtService: JwtService) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -38,7 +27,7 @@ export class AuthGuardz implements CanActivate {
         try {
             const payload = await this.jwtService.verifyAsync(
                 token,
-                { secret: 'secret' }
+                { secret: jwtConstants.secret }
             )
             req.user = payload
         } catch {

@@ -95,7 +95,9 @@ export class UserSettingsComponent implements OnInit, OnChanges {
 
   logout() {
     localStorage.removeItem('jwt_token')
-    this.router.navigate(['login'])
+    this.router.navigate(['']).then(() => {
+      this.router.navigate(['login'])
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
