@@ -19,6 +19,7 @@ export class AuthController {
                 sameSite: 'none',
                 secure: true,
                 httpOnly: true,
+                domain: process.env.COOKIE_DOMAIN,
             })
             .json(session)
     }
