@@ -21,6 +21,7 @@ export class AuthController {
                 secure: true,
                 sameSite: 'none'
             })
+            .json(session)
     }
 
     @Get('')
