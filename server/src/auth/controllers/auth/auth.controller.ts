@@ -16,15 +16,16 @@ export class AuthController {
         session.authenticated = true
         session.cookie.secure = true
         session.cookie.sameSite = 'none'
+        session.cookie.httpOnly = false
         res.set({ 'access-control-allow-credentials': true, 'access-control-allow-origin': process.env.CLIENT_ORIGIN })
            .status(200)
-           .cookie('NESTJS_SESSION_ID', session.id, {
+           .cookie('SESSIONID', session.id, {
                 maxAge: session.cookie.maxAge,
                 httpOnly: true,
                 secure: true,
                 sameSite: 'none'
-            })
-            .json(session)
+           })
+           .json(session)
     }
 
     @Get('')
