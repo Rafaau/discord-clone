@@ -12,6 +12,7 @@ export class AuthController {
         @Session() session: Record<string, any>
     ) { 
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
+        session.authenticated = true
         return session
     }
 

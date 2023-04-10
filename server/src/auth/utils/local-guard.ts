@@ -18,7 +18,7 @@ export class AuthenticatedGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<any> {
         const req = context.switchToHttp().getRequest<Request>()
         const session = context.switchToHttp().getRequest<Session>()
-        console.log((session as any).body)
+        console.log(session.cookie)
         console.log(req.user)
         console.log(req.session)
         return req.isAuthenticated()
