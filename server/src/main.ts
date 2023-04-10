@@ -21,16 +21,17 @@ async function bootstrap() {
       cookie: {
         maxAge: 36000000,
         domain: process.env.COOKIE_DOMAIN || 'localhost',
-        secure: 'auto'
-        // sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
-        // secure: process.env.NODE_ENV === 'test' ? false : true
+        sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
+        secure: process.env.NODE_ENV === 'test' ? 'auto' : true
       },
       store: new TypeormStore().connect(sessionRepository)
     })
   )
   app.enableCors({
-    origin: process.env.CLIENT_ORIGIN, 
-    credentials: true
+    origin: '*', 
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
   })
   app.use(passport.initialize())
   app.use(passport.session())

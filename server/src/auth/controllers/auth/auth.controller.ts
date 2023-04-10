@@ -15,7 +15,10 @@ export class AuthController {
         session.cookie.maxAge = body.rememberMe ? 2592000000 : null
         response
             .status(200)
-            .cookie('session', session)
+            .cookie('session', session, {
+                sameSite: 'none',
+                secure: true,
+            })
             .json(session)
     }
 

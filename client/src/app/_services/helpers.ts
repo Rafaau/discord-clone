@@ -7,6 +7,7 @@ export class ApiHelpers {
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': '*',
+        'Accept': 'application/json',
         'key': 'x-api-key',
         'value': 'NNctr6Tjrw9794gFXf3fi6zWBZ78j6Gv3UCb3y0x',
       })
