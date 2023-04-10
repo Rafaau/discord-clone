@@ -30,7 +30,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*', 
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'xmlhttprequest'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
   })
   app.use(passport.initialize())
