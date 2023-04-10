@@ -31,9 +31,7 @@ async function bootstrap() {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
   })
-  app.use(passport.initialize({
-    userProperty: 'user'
-  }))
+  app.use(passport.initialize())
   app.use(passport.session())
   await seedData(app.get(DataSource))
   await app.listen(process.env.PORT || 3000);
