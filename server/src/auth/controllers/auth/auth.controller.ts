@@ -16,7 +16,8 @@ export class AuthController {
         session.authenticated = true
         session.cookie.secure = true
         session.cookie.sameSite = 'none'
-        res.status(200)
+        res.set({ 'access-control-allow-credentials': true, 'access-control-allow-origin': process.env.CLIENT_ORIGIN })
+           .status(200)
            .cookie('NESTJS_SESSION_ID', session.id, {
                 maxAge: session.cookie.maxAge,
                 httpOnly: true,
