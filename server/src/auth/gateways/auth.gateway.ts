@@ -1,7 +1,8 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { allowedOrigins } from "src/utils/allowed-origins";
 
-@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: allowedOrigins } })
 export class AuthGateway { 
     constructor() {}
 

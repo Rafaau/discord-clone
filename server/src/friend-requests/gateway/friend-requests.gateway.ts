@@ -4,8 +4,9 @@ import eventBus from "src/utils/file-service/event-bus";
 import { Server, Socket } from "socket.io";
 import { NotificationsService } from "src/notifications/notifications.service";
 import { CreateNotificationParams } from "src/utils/types";
+import { allowedOrigins } from "src/utils/allowed-origins";
 
-@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: allowedOrigins } })
 export class FriendRequestsGateway {
     constructor (
         private readonly friendRequestsService: FriendRequestsService,

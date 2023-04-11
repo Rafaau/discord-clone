@@ -5,8 +5,9 @@ import { Server, Socket } from "socket.io";
 import { CreateDirectMessageParams } from "src/utils/types";
 import { DirectMessagesService } from "../direct-messages.service";
 import eventBus from "src/utils/file-service/event-bus";
+import { allowedOrigins } from "src/utils/allowed-origins";
 
-@WebSocketGateway({ cors: { origin: [process.env.CLIENT_ORIGIN || 'http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: allowedOrigins } })
 export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly directMessagesService: DirectMessagesService
