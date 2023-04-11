@@ -28,7 +28,6 @@ import { ChatServerSettingsComponent } from './views/chat-channels-component/cha
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { MessageContentComponent } from './views/chat-messages-component/message-content-component/message-content.component';
-import { NgxYoutubePlayerModule } from 'ngx-youtube-player';
 import { GenerateInvitationDialog } from './views/chat-channels-component/generate-invitation-dialog/generate-invitation.component';
 import { ClipboardModule } from '@angular/cdk/clipboard'
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
@@ -95,7 +94,6 @@ const socketIoConfig: SocketIoConfig = {
     EmojiModule,
     ClipboardModule,
     InfiniteScrollModule,
-    NgxYoutubePlayerModule.forRoot(),
     SocketIoModule.forRoot(socketIoConfig),
     BrowserAnimationsModule,
   ],

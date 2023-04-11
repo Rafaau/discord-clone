@@ -34,7 +34,6 @@
     "ng-click-outside": "^9.0.1",
     "ngx-infinite-scroll": "^15.0.0",
     "ngx-socket-io": "^4.4.0",
-    "ngx-youtube-player": "^12.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
