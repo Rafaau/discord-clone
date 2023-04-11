@@ -7,6 +7,7 @@ import { SessionEntity } from './typeorm/session';
 import { DataSource } from 'typeorm';
 import { seedData } from './seeds/seed';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { allowedOrigins } from './utils/allowed-origins';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,22 +23,16 @@ async function bootstrap() {
     })
   )
 
-  const defaultOrigin = 'http://localhost:4200'
-  const allowedOrigins = [
-    process.env.CLIENT_ORIGIN_1 || defaultOrigin,
-    process.env.CLIENT_ORIGIN_2 || defaultOrigin,
-    process.env.CLIENT_ORIGIN_3 || defaultOrigin,
-    process.env.CLIENT_ORIGIN_4 || defaultOrigin,
-  ]
-  
+  // const defaultOrigin = 'http://localhost:4200'
+  // const allowedOrigins = [
+  //   process.env.CLIENT_ORIGIN_1 || defaultOrigin,
+  //   process.env.CLIENT_ORIGIN_2 || defaultOrigin,
+  //   process.env.CLIENT_ORIGIN_3 || defaultOrigin,
+  //   process.env.CLIENT_ORIGIN_4 || defaultOrigin,
+  // ]
+
   app.enableCors({
-    origin: (origin, callback) => {
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
   })
