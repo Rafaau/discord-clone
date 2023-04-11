@@ -23,14 +23,14 @@ export class ChatMessagesService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/chatmessages?filterByChannel=${channelId}&page=${page}`, 
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
   getSingleMessage(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/chatmessages/${id}`,
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -42,7 +42,7 @@ export class ChatMessagesService {
     return this.httpClient.post(
       this.api+`/chatmessages/channel=${channelId}/user=${userId}`, 
       chatMessageParams,
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -103,7 +103,7 @@ export class ChatMessagesService {
   deleteChatMessage(id: number): Observable<HttpResponse<{}>> {
     return this.httpClient.delete(
       this.api+`/chatmessages/${id}`, 
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 }
