@@ -97,7 +97,6 @@ export class FriendsComponent implements OnInit, OnDestroy {
     .subscribe(
       (data: HttpResponse<UserComplex[]>) => {
         this.friendsOfUser = data.body!
-        console.log(data.body)
       },
       (error) => {
         console.log('err')

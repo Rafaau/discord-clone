@@ -236,7 +236,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this._directMessageService.getDirectMessagesByConversation(conversationId, this.page)
       .subscribe(
         (data: HttpResponse<DirectMessage[]>) => {
-          console.log('messages fetched')
           if (this.page > 1)
             this.directMessages = this.directMessages.concat(data.body!)
           else
@@ -300,7 +299,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   }
 
   onEditSubmit(event: Event) {
-    console.log('entered')
     if (this.messageToEditValue != '') {
       const reqBody: UpdateDirectMessageParams = {
         content: this.messageToEditValue
@@ -320,12 +318,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       data: { message: message },
       width: '450px',
       panelClass: 'dialog-container'
-    })
-    const sub = dialogRef.componentInstance.onDeleteEvent.subscribe(() => {
-      this.fetchDirectMessages(this.directConversation!.id)
-    })
-    dialogRef.afterClosed().subscribe(() => {
-      sub.unsubscribe()
     })
   }
 
@@ -434,7 +426,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
 
   onScroll() {
     if (!this.loading && !this.orderByPostDate(this.directMessages)[0].isFirst) {
-      console.log('scrolled')
       this.loading = true
       setTimeout(() => {
         this.page++

@@ -105,7 +105,6 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(
         (data: HttpResponse<ChatServer[]>) => {
           this.chatServers = data.body!
-          console.log("servers fetched")
           for (let server of data.body!)
             this.groupedNotifications.push([])
         },
@@ -120,7 +119,6 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(
         (data: HttpResponse<Notification[]>) => {
           this.notifications = data.body!
-          console.log('notifications fetched')
           this.groupNotifications(data.body!)
           this._sharedDataProvider.setServerNotifications(data.body!)
         },
@@ -155,7 +153,10 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   }
   
   redirectToHome() {
-    this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+    this.router.navigate([''])
+      .then(() => {
+        this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+      })
   }
 
   openAddServerDialog() {

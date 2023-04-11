@@ -143,7 +143,6 @@ export class ChatServersController {
 
     @Post(':id/uploadAvatar')
     @UseInterceptors(FileInterceptor('avatar'))
-    @UseGuards(AuthenticatedGuard)
     async uploadAvatar(
         @Param('id') id: number,
         @UploadedFile() file: MulterDiskUploadedFile,
@@ -172,7 +171,6 @@ export class ChatServersController {
     }
 
     @Get('/getAvatar/:filename')
-    @UseGuards(AuthenticatedGuard)
     async getAvatar(
         @Param('filename') filename: string,
         @Res() response: Response

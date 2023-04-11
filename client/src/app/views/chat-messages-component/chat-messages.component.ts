@@ -168,7 +168,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   getMembers() {
     this._sharedDatatProvider.getMembers().subscribe(
       (members: User[]) => {
-        console.log('members fetched')
         this.members = members
 
         if (!this.usernames.length)
@@ -185,7 +184,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatMessages = this.chatMessages.concat(data.body!)
           else
             this.chatMessages = data.body!
-          console.log('messages fetched')
         },
         (error) => {
           console.log('err')
@@ -338,7 +336,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   onEditSubmit(event: Event) {
-    console.log('entered')
     if (this.messageToEditValue != '') {
       const reqBody: UpdateChatMessageParams = {
         content: this.messageToEditValue
@@ -359,12 +356,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       data: { message: message },
       width: '450px',
       panelClass: 'dialog-container'
-    })
-    const sub = dialogRef.componentInstance.onDeleteEvent.subscribe(() => {
-      this.fetchChatMessages(this.chatChannel!.id)
-    })
-    dialogRef.afterClosed().subscribe(() => {
-      sub.unsubscribe()
     })
   }
 

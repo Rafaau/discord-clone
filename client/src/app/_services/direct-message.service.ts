@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 import { CreateDirectMessageParams, DirectMessage, UpdateDirectMessageParams } from '../_models/direct-message';
+import { environment } from 'src/environments/environment';
+import { ApiHelpers } from './helpers';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DirectMessageService {
-  private readonly api = 'http://localhost:3000'
+  private readonly api = environment.apiUrl
 
   constructor(
     private readonly httpClient: HttpClient,
@@ -23,7 +25,7 @@ export class DirectMessageService {
     return this.httpClient.post(
       this.api+`/directmessages/conversation=${conversationId}/sender=${senderId}`,
       directMessageParams,
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -76,14 +78,14 @@ export class DirectMessageService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directmessages?conversation=${conversationId}&page=${page}`, 
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
   getSingleMessage(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directmessages/${id}`,
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -94,14 +96,14 @@ export class DirectMessageService {
     return this.httpClient.patch(
       this.api+`/directmessages/${id}`,
       directMessageParams,
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
   deleteDirectMessage(id: number): Observable<HttpResponse<any>> {
     return this.httpClient.delete(
       this.api+`/directmessages/${id}`,
-      { observe: 'response', withCredentials: true }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 }

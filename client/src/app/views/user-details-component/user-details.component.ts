@@ -53,7 +53,6 @@ export class UserDetailsComponent implements OnInit {
     const messageReqBody: CreateDirectMessageParams = {
       content: this.messageValue
     }
-    console.log((this.user as UserComplex).directConversations)
     const conversation = (this.user as UserComplex).directConversations
       .find(conversation => conversation.users.some(user => user.id === this.currentUser!.id))
     if (conversation != undefined) {

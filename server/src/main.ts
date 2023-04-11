@@ -4,33 +4,32 @@ import session from 'express-session';
 import passport from 'passport'
 import { TypeormStore } from 'connect-typeorm';
 import { SessionEntity } from './typeorm/session';
-import { Connection, DataSource, getConnection, getConnectionManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { seedData } from './seeds/seed';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { allowedOrigins } from './utils/allowed-origins';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  //app.setGlobalPrefix('api')
+  app.setGlobalPrefix('api')
   const sessionRepository = app.get(DataSource).getRepository(SessionEntity)
   app.use(
     session({
       name: 'NESTJS_SESSION_ID',
-      secret: 'DKOGNUGYWFGYFCMKSOXMNVC',
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-      cookie: {
-        maxAge: 36000000,
-      },
       store: new TypeormStore().connect(sessionRepository)
     })
   )
   app.enableCors({
-    origin:'http://localhost:4200', 
-    credentials: true
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
   })
   app.use(passport.initialize())
   app.use(passport.session())
   await seedData(app.get(DataSource))
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

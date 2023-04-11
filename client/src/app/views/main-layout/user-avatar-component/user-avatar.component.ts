@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { UsersService } from 'src/app/_services/users.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'user-avatar',
@@ -7,7 +8,7 @@ import { UsersService } from 'src/app/_services/users.service';
   styleUrls: ['./user-avatar.component.css']
 })
 export class UserAvatarComponent implements OnInit, OnChanges {
-  readonly api = "http://localhost:3000/users/getAvatar/user-"
+  readonly api = environment.apiUrl+'/users/getAvatar/user-'
 
   @Input()
   userId?: number
@@ -25,13 +26,16 @@ export class UserAvatarComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (this.doesExist == undefined) 
       this.checkIfAvatarExists()
+    if (!this.doesExist) {
+      this.checkIfAvatarExists()
+    }
   }
 
   checkIfAvatarExists() {
+    this.doesExist = false
     const img = new Image()
     img.src = `${this.api}${this.userId}.jpeg`
 
-    this.doesExist = img.complete
     img.onload = () => {
       this.doesExist = true
     }
