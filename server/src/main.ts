@@ -22,15 +22,6 @@ async function bootstrap() {
       store: new TypeormStore().connect(sessionRepository)
     })
   )
-
-  // const defaultOrigin = 'http://localhost:4200'
-  // const allowedOrigins = [
-  //   process.env.CLIENT_ORIGIN_1 || defaultOrigin,
-  //   process.env.CLIENT_ORIGIN_2 || defaultOrigin,
-  //   process.env.CLIENT_ORIGIN_3 || defaultOrigin,
-  //   process.env.CLIENT_ORIGIN_4 || defaultOrigin,
-  // ]
-
   app.enableCors({
     origin: allowedOrigins,
     credentials: true,
