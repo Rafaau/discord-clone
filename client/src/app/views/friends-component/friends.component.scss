@@ -128,7 +128,7 @@ h6 {
     height: 34px;
     line-height: 34px;
     text-align: center;
-    margin-right: 8px;
+    margin-right: 10px;
 }
 
 .user-name {
@@ -136,6 +136,7 @@ h6 {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    line-height: 35px;
 }
 
 .message-icon {

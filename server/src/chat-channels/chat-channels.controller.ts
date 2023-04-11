@@ -1,8 +1,9 @@
 import { HttpStatus, ValidationPipe } from "@nestjs/common";
-import { Body, Controller, Delete, Get, Param, Post, Res, UsePipes } from "@nestjs/common/decorators";
+import { Body, Controller, Delete, Get, Param, Post, Res, UseGuards, UsePipes } from "@nestjs/common/decorators";
 import { Response } from "express";
 import { CreateChatCategoryDto, CreateChatChannelDto } from "./chat-channels.dto";
 import { ChatChannelsService } from "./chat-channels.service";
+import { AuthenticatedGuard } from "src/auth/utils/local-guard";
 
 @Controller('chatchannels')
 export class ChatChannelsController {
@@ -10,6 +11,7 @@ export class ChatChannelsController {
 
     @Post(':chatCategoryId')
     @UsePipes(new ValidationPipe())
+    @UseGuards(AuthenticatedGuard)
     async createChatChannel(
         @Param("chatCategoryId") chatCategoryId: number,
         @Body() createChatChannelDto: CreateChatChannelDto,
@@ -31,6 +33,7 @@ export class ChatChannelsController {
 
     @Post('category/:chatServerId')
     @UsePipes(new ValidationPipe())
+    @UseGuards(AuthenticatedGuard)
     async createChatCategory(
         @Param('chatServerId') chatServerId: number,
         @Body() createChatCategoryDto: CreateChatCategoryDto,
@@ -51,6 +54,7 @@ export class ChatChannelsController {
     }
 
     @Get(':id')
+    @UseGuards(AuthenticatedGuard)
     async getChatChannel(
         @Param('id') id: number,
         @Res() response: Response
@@ -70,6 +74,7 @@ export class ChatChannelsController {
     }
 
     @Delete('category/:id')
+    @UseGuards(AuthenticatedGuard)
     async deleteChatCategory(
         @Param('id') id: number,
         @Res() response: Response

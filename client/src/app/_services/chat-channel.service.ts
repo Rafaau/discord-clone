@@ -48,7 +48,10 @@ export class ChatChannelService {
   }
 
   getChatChannelById(id: number): Observable<HttpResponse<any>> {
-    return this.httpClient.get(this.api+`/chatchannels/${id}`, { observe: 'response' })
+    return this.httpClient.get(
+      this.api+`/chatchannels/${id}`, 
+      { observe: 'response', withCredentials: true }
+      )
   }
 
   deleteChatChannel(id: number) {

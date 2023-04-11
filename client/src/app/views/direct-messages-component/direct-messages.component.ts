@@ -134,6 +134,8 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
 
   init() {
     this.doNotScroll = false
+    this.interlocutor = undefined
+    this.messageValue = ''
     this._sharedDataProvider.getCurrentUser().subscribe(
       (user: User) => {
         if (user) {

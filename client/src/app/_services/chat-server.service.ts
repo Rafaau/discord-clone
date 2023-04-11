@@ -19,19 +19,22 @@ export class ChatServerService {
     return this.httpClient.post(
       this.api+`/chatservers/${ownerId}`, 
       chatServerParams, 
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getUserChatServers(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/chatservers/user/${userId}`, 
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
   getChatServerById(id: number): Observable<HttpResponse<any>> {
-    return this.httpClient.get(this.api+`/chatservers/${id}`, { observe: 'response' })
+    return this.httpClient.get(
+      this.api+`/chatservers/${id}`, 
+      { observe: 'response', withCredentials: true }
+      )
   }
 
   addUserToChatServer(
@@ -41,7 +44,7 @@ export class ChatServerService {
     return this.httpClient.patch(
       this.api+`/chatservers/${chatServerId}/adduser/${userId}`,
       {},
-      { observe: 'response' }  
+      { observe: 'response', withCredentials: true }  
     )
   }
 
@@ -52,7 +55,7 @@ export class ChatServerService {
     return this.httpClient.patch(
       this.api+`/chatservers/${id}`,
       serverDetails,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -65,7 +68,7 @@ export class ChatServerService {
     return this.httpClient.post(
       this.api+`/chatservers/${id}/uploadAvatar`,
       formData,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 
@@ -76,7 +79,7 @@ export class ChatServerService {
     return this.httpClient.patch(
       this.api+`/chatservers/${chatServerId}/removeuser/${userId}`,
       {},
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true }
     )
   }
 }

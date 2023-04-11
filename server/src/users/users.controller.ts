@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Patch, Post, Query, Res, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { FileService } from "src/utils/file-service/file.service";
@@ -7,6 +7,7 @@ import { CreateUserDto, UpdateUserDto } from "./users.dto";
 import { UsersService } from "./users.service";
 import * as fs from 'fs'
 import { NotFoundError } from "rxjs";
+import { AuthenticatedGuard } from "src/auth/utils/local-guard";
 
 @Controller('users')
 export class UsersController {
@@ -27,6 +28,7 @@ export class UsersController {
     }
 
     @Get()
+    @UseGuards(AuthenticatedGuard)
     async getUsers(@Res() response: Response) {
         response
             .status(HttpStatus.OK)
@@ -34,6 +36,7 @@ export class UsersController {
     }
 
     @Get(':id')
+    @UseGuards(AuthenticatedGuard)
     async getUserById(
         @Param('id') id: number,
         @Res() response: Response
@@ -53,6 +56,7 @@ export class UsersController {
     }
 
     @Get('byChatServer/:chatServerId')
+    @UseGuards(AuthenticatedGuard)
     async getUsersByChatServer(
         @Param('chatServerId') chatServerId: number,
         @Res() response: Response
@@ -67,6 +71,7 @@ export class UsersController {
     }
 
     @Get(':id/friends')
+    @UseGuards(AuthenticatedGuard)
     async getFriendsOfUser(
         @Param('id') id: number,
         @Res() response: Response
@@ -86,6 +91,7 @@ export class UsersController {
     }
 
     @Get(':id/friendRequests')
+    @UseGuards(AuthenticatedGuard)
     async getFriendRequestsOfUser(
         @Param('id') id: number,
         @Res() response: Response
@@ -105,6 +111,7 @@ export class UsersController {
     }
 
     @Get(':id/query')
+    @UseGuards(AuthenticatedGuard)
     async checkIfPasswordDoesMatch(
         @Param('id') id: number,
         @Query('passwordToCheck') rawPassword: string,
@@ -125,6 +132,7 @@ export class UsersController {
     }
 
     @Patch(':id')
+    @UseGuards(AuthenticatedGuard)
     async updateUser(
         @Param('id') id: number,
         @Body() updateUserDto: UpdateUserDto,
@@ -145,6 +153,7 @@ export class UsersController {
     }
 
     @Patch(':firstUserId/addFriend/:secondUserId')
+    @UseGuards(AuthenticatedGuard)
     async markUsersAsFriends(
         @Param('firstUserId') firstUserId: number,
         @Param('secondUserId') secondUserId: number,
@@ -165,6 +174,7 @@ export class UsersController {
     }
 
     @Patch(':firstUserId/removeFriend/:secondUserId')
+    @UseGuards(AuthenticatedGuard)
     async removeFriendship(
         @Param('firstUserId') firstUserId: number,
         @Param('secondUserId') secondUserId: number,
@@ -186,6 +196,7 @@ export class UsersController {
 
     @Post(':id/uploadAvatar')
     @UseInterceptors(FileInterceptor('avatar'))
+    @UseGuards(AuthenticatedGuard)
     async uploadAvatar(
         @Param('id') id: number,
         @UploadedFile() file: MulterDiskUploadedFile,
@@ -214,6 +225,7 @@ export class UsersController {
     }
 
     @Get('/getAvatar/:filename')
+    @UseGuards(AuthenticatedGuard)
     async getAvatar(
         @Param('filename') filename: string,
         @Res() response: Response
@@ -244,6 +256,7 @@ export class UsersController {
     }
 
     @Delete(':id')
+    @UseGuards(AuthenticatedGuard)
     async deleteUser(
         @Param('id') id: number,
         @Res() response: Response
