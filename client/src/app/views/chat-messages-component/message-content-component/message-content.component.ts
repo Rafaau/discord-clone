@@ -31,7 +31,7 @@ export class MessageContentComponent implements OnInit {
   isAlreadyMember: boolean = false
   isExpired: boolean = false
   isLoading: boolean = false
-  // player?: YT.Player
+  player?: YT.Player
   videoId: string = ''
   videoTitle: string = ''
   videoChannel: string = ''
@@ -159,14 +159,14 @@ export class MessageContentComponent implements OnInit {
     this.videoChannel = params.get('ab_channel')!
   }
 
-  // savePlayer(player: YT.Player) {
-  //   this.player = player
-  //   this.videoTitle = (player as any).videoTitle
-  // }
+  savePlayer(player: YT.Player) {
+    this.player = player
+    this.videoTitle = (player as any).videoTitle
+  }
 
-  // onStateChange(event: YT.PlayerEvent) {
-  //   console.log((event as any).data)
-  // }
+  onStateChange(event: YT.PlayerEvent) {
+    console.log((event as any).data)
+  }
 
   isNotImage() {
     this.isImage = false

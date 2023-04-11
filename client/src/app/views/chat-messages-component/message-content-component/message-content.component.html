@@ -54,11 +54,11 @@
       [href]="messageContent">
       {{ videoTitle }}
     </a>
-    <!-- <youtube-player
+    <youtube-player
       [videoId]="videoId"
       (ready)="savePlayer($event)"
       (change)="onStateChange($event)">
-    </youtube-player> -->
+    </youtube-player>
   </div>
   <!-- GIPHY -->
   <div *ngIf="messageContent.includes('https://media')">
