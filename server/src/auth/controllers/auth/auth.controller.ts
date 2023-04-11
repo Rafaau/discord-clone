@@ -16,7 +16,7 @@ export class AuthController {
         @Session() session: Record<string, any>
     ) { 
         return this.authService.signIn(
-            body.email, 
+            body.username, 
             body.password, 
             body.rememberMe
         )
