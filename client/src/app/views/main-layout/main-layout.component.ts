@@ -82,6 +82,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       else
         this.chatServerToPass = undefined
     })
+    if (this.router.url == '/')
+      this.router.navigate([{ outlets: { main: 'friends', secondary: 'directmessages' } }])
   }
 
   ngOnDestroy() {
@@ -114,6 +116,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         this.currentUser = data.body!
         this._sharedDataProvider.setCurrentUser(this.currentUser)
         this._authService.joinRoom(this.currentUser!.id.toString())
+        this.router.navigate
       },
       (error) => {
         console.log('unauthorized')
