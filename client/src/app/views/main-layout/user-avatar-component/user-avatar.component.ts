@@ -26,15 +26,19 @@ export class UserAvatarComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (this.doesExist == undefined) 
       this.checkIfAvatarExists()
+    if (!this.doesExist) {
+      this.checkIfAvatarExists()
+    }
   }
 
   checkIfAvatarExists() {
+    this.doesExist = false
     const img = new Image()
     img.src = `${this.api}${this.userId}.jpeg`
 
-    this.doesExist = img.complete
     img.onload = () => {
       this.doesExist = true
+      console.log('onload')
     }
   }
 }
