@@ -25,7 +25,6 @@ export class ChannelPermissionsDialog implements OnInit {
     },
     public dialog: MatDialog
   ) { 
-    console.log(data.channel.users!)
     this.isPrivate = data.channel.isPrivate
     this.permittedRoles = data.channel.roles!
     this.permittedUsers = data.channel.users!

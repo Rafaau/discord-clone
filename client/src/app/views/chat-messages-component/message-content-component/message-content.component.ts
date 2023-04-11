@@ -165,7 +165,7 @@ export class MessageContentComponent implements OnInit {
   }
 
   onStateChange(event: YT.PlayerEvent) {
-    console.log((event as any).data)
+
   }
 
   isNotImage() {

@@ -1,12 +1,14 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { ApiHelpers } from './helpers';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatServerInvitationService {
-  api: string = 'http://localhost:3000'
+  readonly api: string = environment.apiUrl
 
   constructor(
     private readonly httpClient: HttpClient
@@ -18,7 +20,7 @@ export class ChatServerInvitationService {
     return this.httpClient.post(
       this.api+`/invitations/${chatServerId}`,
       {},
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -27,7 +29,7 @@ export class ChatServerInvitationService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/invitations/bychatserver/${chatServerId}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -36,7 +38,7 @@ export class ChatServerInvitationService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/invitations/${uuid}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 }

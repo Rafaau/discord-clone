@@ -2,8 +2,9 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/web
 import { Server, Socket } from "socket.io";
 import eventBus from "src/utils/file-service/event-bus";
 import { ChatChannelsService } from "../chat-channels.service";
+import { allowedOrigins } from "src/utils/allowed-origins";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: allowedOrigins } })
 export class ChatChannelsGateway {
     constructor (
         private readonly chatChannelsService: ChatChannelsService

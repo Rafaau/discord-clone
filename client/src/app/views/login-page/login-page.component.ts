@@ -104,7 +104,6 @@ export class LoginPageComponent implements OnInit {
           })
       },
       (error) => {
-        console.log("invalid credentials")
         this.unauthorizedResponse = true
       }) 
   }
@@ -119,7 +118,6 @@ export class LoginPageComponent implements OnInit {
         this.router.navigate([''])
       },
       (error) => {
-        console.log("invalid credentials")
         this.unauthorizedResponse = true
       }) 
   }

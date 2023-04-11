@@ -82,6 +82,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       else
         this.chatServerToPass = undefined
     })
+    if (this.router.url == '/')
+      this.router.navigate([{ outlets: { main: 'friends', secondary: 'directmessages' } }])
   }
 
   ngOnDestroy() {
@@ -99,7 +101,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   refreshUser(user: User) {
-    console.log(user)
     this.currentUser = user
   }
 

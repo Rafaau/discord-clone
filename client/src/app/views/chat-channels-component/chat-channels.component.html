@@ -1,9 +1,9 @@
-<div *ngIf="chatServer" class="container">
+<div class="container">
   <div 
     (click)="toggleServerMenu()"
     [matMenuTriggerFor]="menu" 
     class="top-bar">
-    <div class="server-name">
+    <div *ngIf="chatServer" class="server-name">
       {{ chatServer.name }}
     </div>
     <mat-icon class="server-menu-btn" *ngIf="!isServerMenuExpanded">
@@ -37,7 +37,7 @@
       </div>
     </div>
   </mat-menu>
-  <div cdkDropListGroup>
+  <div *ngIf="chatServer" cdkDropListGroup>
     <div *ngFor="let category of chatServer.chatCategories; index as i;">
       <div 
         class="chat-category"

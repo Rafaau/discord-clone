@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { CreateDirectConversationDto } from "./direct-conversations.dto";
 import { DirectConversationsService } from "./direct-conversations.service";
+import { AuthenticatedGuard } from "src/auth/utils/local-guard";
 
 @Controller('directconversations')
 export class DirectConversationsController {
     constructor(private readonly directConversationsService: DirectConversationsService) {}
 
     @Post()
+    @UseGuards(AuthenticatedGuard)
     async createDirectConversation(
         @Body() createDirectConversationDto: CreateDirectConversationDto,
         @Res() response: Response
@@ -27,6 +29,7 @@ export class DirectConversationsController {
     }
 
     @Get('user/:userId')
+    @UseGuards(AuthenticatedGuard)
     async getConversationsOfUser(
         @Param('userId') userId: number,
         @Res() response: Response
@@ -52,6 +55,7 @@ export class DirectConversationsController {
     }
 
     @Get(':id')
+    @UseGuards(AuthenticatedGuard)
     async getConversation(
         @Param('id') id: number,
         @Res() response: Response
@@ -71,6 +75,7 @@ export class DirectConversationsController {
     }
 
     @Delete(':id')
+    @UseGuards(AuthenticatedGuard)
     async deleteDirectConversation(
         @Param('id') id: number,
         @Res() response: Response

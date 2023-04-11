@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { response, Response } from "express";
 import { CreateChatMessageDto, UpdateChatMessageDto } from "./chat-messages.dto";
 import { ChatMessagesService } from "./chat-messages.service";
+import { AuthenticatedGuard } from "src/auth/utils/local-guard";
 
 @Controller('chatmessages')
 export class ChatMessagesController {
@@ -9,6 +10,7 @@ export class ChatMessagesController {
 
     @Post('channel=:chatChannelId/user=:userId')
     @UsePipes(new ValidationPipe())
+    @UseGuards(AuthenticatedGuard)
     async createChatMessage(
         @Param('chatChannelId', ParseIntPipe) chatChannelId: number,
         @Param('userId', ParseIntPipe) userId: number,
@@ -30,6 +32,7 @@ export class ChatMessagesController {
     }
 
     @Get()
+    @UseGuards(AuthenticatedGuard)
     async getChatMessagesFromChannel(
         @Query('filterByChannel', ParseIntPipe) filterByChannel: number,
         @Query('page', ParseIntPipe) page: number,
@@ -50,6 +53,7 @@ export class ChatMessagesController {
     }
 
     @Get(':id')
+    @UseGuards(AuthenticatedGuard)
     async getSingleChatMessage(
         @Param('id') id: number,
         @Res() response: Response
@@ -69,6 +73,7 @@ export class ChatMessagesController {
     }
 
     @Patch(':id')
+    @UseGuards(AuthenticatedGuard)
     async editChatMessage(
         @Param('id') id: number,
         @Body() messageDetails: UpdateChatMessageDto,
@@ -89,6 +94,7 @@ export class ChatMessagesController {
     }
 
     @Delete(':id')
+    @UseGuards(AuthenticatedGuard)
     async deleteChatMessage(
         @Param('id') id: number,
         @Res() response: Response

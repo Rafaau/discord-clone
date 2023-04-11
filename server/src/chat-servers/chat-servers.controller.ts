@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { FileService } from "src/utils/file-service/file.service";
@@ -6,6 +6,7 @@ import { MulterDiskUploadedFile } from "src/utils/file-service/multer-disk-uploa
 import { CreateChatServerDto, UpdateChatServerDto } from "./chat-servers.dto";
 import { ChatServersService } from "./chat-servers.service";
 import * as fs from 'fs'
+import { AuthenticatedGuard } from "src/auth/utils/local-guard";
 
 
 @Controller('chatservers')
@@ -17,6 +18,7 @@ export class ChatServersController {
 
     @Post(':userId')
     @UsePipes(new ValidationPipe())
+    @UseGuards(AuthenticatedGuard)
     async createChatServer(
         @Param('userId') userId: number,
         @Body() createChatServerDto: CreateChatServerDto,
@@ -37,6 +39,7 @@ export class ChatServersController {
     }
 
     @Get()
+    @UseGuards(AuthenticatedGuard)
     async getChatServers(@Res() response: Response) {
         response
             .status(HttpStatus.OK)
@@ -44,6 +47,7 @@ export class ChatServersController {
     }
 
     @Get(':id')
+    @UseGuards(AuthenticatedGuard)
     async getChatServer(
         @Param('id') id: number,
         @Res() response: Response
@@ -63,6 +67,7 @@ export class ChatServersController {
     }
 
     @Get('user/:userId') 
+    @UseGuards(AuthenticatedGuard)
     async getUserChatServers(
         @Param('userId') userId: number,
         @Res() response: Response
@@ -73,6 +78,7 @@ export class ChatServersController {
     }
 
     @Patch(':chatServerId/adduser/:userId')
+    @UseGuards(AuthenticatedGuard)
     async addUserToChatServer(
         @Param('chatServerId') chatServerId: number,
         @Param('userId') userId: number,
@@ -93,6 +99,7 @@ export class ChatServersController {
     }
 
     @Patch(':chatServerId/removeuser/:userId')
+    @UseGuards(AuthenticatedGuard)
     async removeMemberFromChatServer(
         @Param('chatServerId') chatServerId: number,
         @Param('userId') userId: number,
@@ -114,6 +121,7 @@ export class ChatServersController {
 
     @Patch(':chatServerId')
     @UsePipes(new ValidationPipe())
+    @UseGuards(AuthenticatedGuard)
     async updateChatServer(
         @Param('chatServerId') id: number,
         @Body() serverDetails: UpdateChatServerDto,
@@ -193,6 +201,7 @@ export class ChatServersController {
     }
 
     @Delete(':id')
+    @UseGuards(AuthenticatedGuard)
     async deleteChatServer(
         @Param('id') id: number,
         @Res() response: Response

@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'chat-server-avatar',
@@ -7,7 +8,7 @@ import { ChatServerService } from 'src/app/_services/chat-server.service';
   styleUrls: ['./chat-server-avatar.component.css']
 })
 export class ChatServerAvatarComponent implements OnInit, OnChanges {
-  readonly api = "http://localhost:3000/chatservers/getAvatar/chat-server-"
+  readonly api = environment.apiUrl+'/chatservers/getAvatar/chat-server-'
 
   @Input()
   serverId?: number

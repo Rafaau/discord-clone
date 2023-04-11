@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 import { CreateNotificationParams } from '../_models/notification';
+import { environment } from 'src/environments/environment';
+import { ApiHelpers } from './helpers';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
-  private readonly api = 'http://localhost:3000'
+  private readonly api = environment.apiUrl
 
   constructor(
     private readonly httpClient: HttpClient,
@@ -18,7 +20,7 @@ export class NotificationsService {
   getUnreadNotificationsForUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/notifications/${userId}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 

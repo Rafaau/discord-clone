@@ -2,40 +2,42 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UpdateUserParams } from '../_models/user';
+import { environment } from 'src/environments/environment';
+import { ApiHelpers } from './helpers';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  private readonly api = 'http://localhost:3000'
+  private readonly api = environment.apiUrl
 
   constructor(private readonly httpClient: HttpClient) { }
 
   getUsersByChatServer(chatServerId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/byChatServer/${chatServerId}`, 
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
   getFriendsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/${userId}/friends`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
   getConversationsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/directconversations/user/${userId}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
   getFriendRequestsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/${userId}/friendRequests`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -45,7 +47,7 @@ export class UsersService {
       return this.httpClient.patch(
         this.api+`/users/${userId}/removeFriend/${friendId}`,
         null,
-        { observe: 'response' }
+        { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
       )
   }
 
@@ -56,7 +58,7 @@ export class UsersService {
     return this.httpClient.patch(
       this.api+`/users/${userId}`,
       userDetails,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -66,7 +68,7 @@ export class UsersService {
   ): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/${userId}/query?passwordToCheck=${rawPassword}`,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 
@@ -79,7 +81,7 @@ export class UsersService {
     return this.httpClient.post(
       this.api+`/users/${userId}/uploadAvatar`,
       formData,
-      { observe: 'response' }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
   }
 }

@@ -45,8 +45,12 @@ import { RouteReuseStrategy, UrlSerializer } from '@angular/router';
 import { StandardUrlSerializer } from './utils/StandardUrlSerializer';
 import { CustomRouteReuseStrategy } from './utils/CustomRouteReuseStrategy';
 import { RemoveConfirmDialog } from './views/friends-component/remove-confirm-dialog/remove-confirm-dialog.component';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
-const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} }
+const socketIoConfig: SocketIoConfig = { 
+  url: process.env.NG_APP_SOCKET_PATH || 'http://localhost:3000', 
+  options: {}
+}
 
 @NgModule({
   declarations: [
@@ -98,6 +102,7 @@ const socketIoConfig: SocketIoConfig = { url: 'http://localhost:3000', options: 
   providers: [
     HttpClient,
     AuthService,
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],
   bootstrap: [AppComponent],
 })

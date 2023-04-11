@@ -2,8 +2,9 @@ import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGa
 import { NotificationsService } from "../notifications.service";
 import { Server, Socket } from "socket.io";
 import eventBus from "src/utils/file-service/event-bus";
+import { allowedOrigins } from "src/utils/allowed-origins";
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: allowedOrigins } })
 export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor (
         private readonly notificationsService: NotificationsService
