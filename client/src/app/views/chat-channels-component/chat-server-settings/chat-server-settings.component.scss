@@ -25,6 +25,8 @@
     margin: 0 100px 0 0;
     padding: 30px 80px 50px 45px;
     overflow-y: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
 
     .main-container::-webkit-scrollbar {
