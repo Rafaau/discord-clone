@@ -77,7 +77,6 @@ export class DirectMessagesListComponent implements OnInit, OnDestroy {
   }
 
   fetchUserConversations(userId: number) {
-    console.log('fetching')
     this._usersService.getConversationsOfUser(userId)
       .subscribe(
         (data: HttpResponse<DirectConversation[]>) => {

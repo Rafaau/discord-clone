@@ -179,7 +179,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     this._chatServerService.getChatServerById(id).subscribe(
       (data: HttpResponse<ChatServer>) => {
         this.chatServer = data.body!
-        console.log(data.body!)
         for (let i = 0; i < data.body!.chatCategories!.length; i++) {
           this.toExpand.push(true)
         }
@@ -384,7 +383,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     this.movedChannel = event.item.data
     this.categorySrc = this.chatServer!.chatCategories!
       .filter(x => x.id == previousCategory)[0]
-    console.log(destinationCategory)
     this._chatChannelService.moveChannel(channelId, destinationIndex, destinationCategory)
   }
 

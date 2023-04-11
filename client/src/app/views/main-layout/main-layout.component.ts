@@ -101,7 +101,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   refreshUser(user: User) {
-    console.log(user)
     this.currentUser = user
   }
 
@@ -116,7 +115,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         this.currentUser = data.body!
         this._sharedDataProvider.setCurrentUser(this.currentUser)
         this._authService.joinRoom(this.currentUser!.id.toString())
-        this.router.navigate
       },
       (error) => {
         console.log('unauthorized')

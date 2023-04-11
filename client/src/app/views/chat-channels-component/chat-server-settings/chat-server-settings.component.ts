@@ -86,7 +86,6 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
     this._rolesService.getRoleDeleted()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((roleId) => {
-        console.log(roleId)
         this.chatServer!.roles = this.chatServer!.roles!.filter(x => x.id != roleId)
         this.currentRole = this.chatServer!.roles![0]
       })
@@ -152,7 +151,6 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
         .subscribe(
           (data: HttpResponse<ChatServer>) => {
             this.chatServer = data.body!
-            console.log(data.body!)
             this._sharedDataProvider.emitUpdatedServer(data.body!)
           }
         )
@@ -171,7 +169,7 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
     const file: File = (event.target as any).files[0]
     this._chatServerService.uploadAvatar(this.chatServer!.id, file)
       .subscribe((response: HttpResponse<any>) => {
-        console.log(response)
+
       })
   }
 
@@ -197,7 +195,6 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
   }
 
   onCreateRole() {
-    console.log(this.chatServer)
     this._rolesService.createRole(this.chatServer!.id)
   }
 

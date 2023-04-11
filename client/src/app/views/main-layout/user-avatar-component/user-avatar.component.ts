@@ -38,7 +38,6 @@ export class UserAvatarComponent implements OnInit, OnChanges {
 
     img.onload = () => {
       this.doesExist = true
-      console.log('onload')
     }
   }
 }
