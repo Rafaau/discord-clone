@@ -31,8 +31,7 @@
               }
             ],
             "scripts": [
-              "./node_modules/jquery/dist/jquery.js",
-              "src/scripts.js"
+              "./node_modules/jquery/dist/jquery.js"
             ]
           },
           "configurations": {
