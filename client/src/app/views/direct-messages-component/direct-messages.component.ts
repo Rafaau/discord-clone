@@ -245,6 +245,26 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
           console.log('err')
         }
       )
+    // RETRIEVE NEW CACHED MESSAGES
+    const cachedMessages = this._sharedDataProvider.getCachedDirectMessages(conversationId)
+    this.directMessages.push(...cachedMessages)
+    this._sharedDataProvider.clearCachedDirectMessages(conversationId)
+    // RETRIEVE UPDATED MESSAGES
+    const updatedMessages = this._sharedDataProvider.getCachedUpdatedDirectMessages(conversationId)
+    for (const message of updatedMessages) {
+      const index = this.directMessages.findIndex(x => x.id == message.id)
+      if (index != -1)
+        this.directMessages[index].content = message.content
+    }
+    // RETRIEVE DELETED MESSAGES
+    const deletedMessages = this._sharedDataProvider.getDeletedDirectMessageIds()
+    for (const messageId of deletedMessages) {
+      const index = this.directMessages.findIndex(x => x.id == messageId)
+      if (index != -1) {
+        this.directMessages.splice(index, 1)
+        this._sharedDataProvider.clearDeletedDirectMessageId(messageId)
+      }
+    }
   }
 
   onSubmit(event?: Event) {

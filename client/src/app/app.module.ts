@@ -9,7 +9,7 @@ import { LayoutModule } from '@angular/cdk/layout'
 import { MaterialModule } from './material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './_services/auth.service';
-import { HttpClient, HttpClientModule, HttpHandler } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { RegisterPageComponent } from './views/register-page/register-page.component';
 import { ChatServersComponent } from './views/chat-servers-component/chat-servers.component';
 import { AddServerDialog } from './views/chat-servers-component/add-server-dialog/add-server-dialog.component';
@@ -46,6 +46,8 @@ import { StandardUrlSerializer } from './utils/StandardUrlSerializer';
 import { CustomRouteReuseStrategy } from './utils/CustomRouteReuseStrategy';
 import { RemoveConfirmDialog } from './views/friends-component/remove-confirm-dialog/remove-confirm-dialog.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { CacheInterceptor } from './utils/CacheInterceptor';
+import { CacheResolverService } from './utils/CacheResolver.service';
 
 const socketIoConfig: SocketIoConfig = { 
   url: process.env.NG_APP_SOCKET_PATH || 'http://localhost:3000', 
@@ -102,7 +104,9 @@ const socketIoConfig: SocketIoConfig = {
   providers: [
     HttpClient,
     AuthService,
+    CacheResolverService,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

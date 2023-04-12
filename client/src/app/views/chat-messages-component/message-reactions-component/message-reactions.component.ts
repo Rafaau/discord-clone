@@ -1,18 +1,20 @@
-import { Component, DoCheck, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { groupBy } from 'lodash';
 import { Socket } from 'ngx-socket-io';
+import { Subject, takeUntil } from 'rxjs';
 import { ChatMessage } from 'src/app/_models/chat-message';
 import { DirectMessage } from 'src/app/_models/direct-message';
 import { CreateMessageReactionParams, MessageReaction } from 'src/app/_models/message-reaction';
 import { User } from 'src/app/_models/user';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 
 @Component({
   selector: 'message-reactions',
   templateUrl: './message-reactions.component.html',
   styleUrls: ['./message-reactions.component.css']
 })
-export class MessageReactionsComponent implements OnInit {
+export class MessageReactionsComponent implements OnInit, OnDestroy {
   @Input()
   message?: ChatMessage | DirectMessage
   lastMessage?: ChatMessage
@@ -21,34 +23,60 @@ export class MessageReactionsComponent implements OnInit {
   reactionGroups: any[] = []
   groupToIncrement = [0, '']
   counter: number = 0
+  onDestroy$ = new Subject<void>()
 
   constructor(
     private readonly _messageReactionsService: MessageReactionsService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     private readonly socket: Socket
   ) { }
 
   ngOnInit() {
+    // RETRIEVE CACHED REACTIONS
+    const cachedReactions = this._sharedDataProvider.getCachedMessageReactions(this.message!.id)
+    cachedReactions.forEach((reaction: MessageReaction) => {
+      if (!this.message!.reactions?.some(x => x.id == reaction.id)) {
+        this.message!.reactions!.push(reaction)
+      }
+    })
+    // RETRIEVE DELETED REACTIONS
+    const deletedReactions = this._sharedDataProvider.getDeletedMessageReactions(this.message!.id)
+    for (const reactionId of deletedReactions) {
+      const index = this.message!.reactions?.findIndex(x => x.id == reactionId)
+      if (index != -1) {
+        this.message!.reactions?.splice(index!, 1)
+        this._sharedDataProvider.clearDeletedMessageReaction(this.message!.id)
+      }
+    }   
+    this._sharedDataProvider.clearCachedMessageReactions(this.message!.id)
     this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
     this._messageReactionsService.getNewMessageReaction()
-    .subscribe(
-      (reaction: MessageReaction) => {
-        if (reaction.chatMessage?.id == this.message!.id
-         || reaction.directMessage?.id == this.message!.id ) {
-          this.message!.reactions!.push(reaction)
-          this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (reaction: MessageReaction) => {
+          if (reaction.chatMessage?.id == this.message!.id
+          || reaction.directMessage?.id == this.message!.id ) {
+            this.message!.reactions!.push(reaction)
+            this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
+          }
         }
-      }
-    )
+      )
     this._messageReactionsService.getDeletedReaction()
-    .subscribe(
-      (data: any) => {
-        if (this.message!.id == data[1]) {
-          this.message!.reactions = this.message!.reactions!
-            .filter(x => x.id != data[0])
-          this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data: any) => {
+          if (this.message!.id == data[1]) {
+            this.message!.reactions = this.message!.reactions!
+              .filter(x => x.id != data[0])
+            this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
+          }
         }
-      }
-    )
+      )
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next()
+    this.onDestroy$.complete()
   }
 
   getReactionGroups(reactions: MessageReaction[]) {

@@ -58,7 +58,6 @@ export class ChatChannelsService {
         chatCategory.chatServer.members.forEach(member => {
             userIds.push(member.id.toString())
         })
-        console.log(newChatChannel)
         await this.chatChannelRepository.save(newChatChannel)
         return { newChatChannel, userIds }
     }

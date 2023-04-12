@@ -97,7 +97,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     private readonly _chatServerService: ChatServerService,
     private readonly _messageReactionsService: MessageReactionsService,
     private readonly _notificationsService: NotificationsService,
-    private readonly _sharedDatatProvider: SharedDataProvider,
+    private readonly _sharedDataProvider: SharedDataProvider,
     private readonly _usersService: UsersService,
     public dialog: MatDialog,
     private socket: Socket
@@ -117,7 +117,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: ChatMessage) => {
-          if (message.chatChannel.id == this.chatChannel!.id) {
+          if (message.chatChannel.id == this.chatChannel!.id) {          
             this.chatMessages.push(message)
             this.smoothScroll()
           }
@@ -127,7 +127,9 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: ChatMessage) => {
-          this.chatMessages.filter(x => x.id == message.id)[0].content = message.content
+          if (message.chatChannel.id == this.chatChannel!.id) { 
+            this.chatMessages.filter(x => x.id == message.id)[0].content = message.content
+          }
         }
       )
     this._chatMessagesService.getDeletedMessage()
@@ -159,14 +161,14 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   getCurrentUser() {
-    this._sharedDatatProvider.getCurrentUser().subscribe(
+    this._sharedDataProvider.getCurrentUser().subscribe(
       (user: User) => {
         this.currentUser = user
       })
   }
 
   getMembers() {
-    this._sharedDatatProvider.getMembers().subscribe(
+    this._sharedDataProvider.getMembers().subscribe(
       (members: User[]) => {
         this.members = members
 
@@ -178,17 +180,39 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   fetchChatMessages(channelId: number) {
-      this._chatMessagesService.getChatMessages(channelId, this.page).subscribe(
-        (data: HttpResponse<ChatMessage[]>) => {
-          if (this.page > 1)
-            this.chatMessages = this.chatMessages.concat(data.body!)
-          else
-            this.chatMessages = data.body!
-        },
-        (error) => {
-          console.log('err')
-        }
-      )
+    this._chatMessagesService.getChatMessages(channelId, this.page).subscribe(
+      (data: HttpResponse<ChatMessage[]>) => {
+        if (this.page > 1)
+          this.chatMessages = this.chatMessages.concat(data.body!)
+        else
+          this.chatMessages = data.body!
+      },
+      (error) => {
+        console.log('err')
+      }
+    )
+    // RETRIEVE NEW CACHED MESSAGES
+    const cachedMessages = this._sharedDataProvider.getCachedChatMessages(channelId)
+    this.chatMessages.push(...cachedMessages)
+    this._sharedDataProvider.clearCachedChatMessages(channelId)
+    // RETRIEVE UPDATED MESSAGES
+    const updatedMessages = this._sharedDataProvider.getCachedUpdatedChatMessages(channelId)
+    for (const message of updatedMessages) {
+      const index = this.chatMessages.findIndex(x => x.id == message.id)
+      if (index != -1) {
+        this.chatMessages[index].content = message.content
+      }
+    }
+    this._sharedDataProvider.clearCachedUpdatedChatMessages(channelId)
+    // RETRIEVE DELETED MESSAGES
+    const deletedMessages = this._sharedDataProvider.getDeletedMessageIds()
+    for (const messageId of deletedMessages) {
+      const index = this.chatMessages.findIndex(x => x.id == messageId)
+      if (index != -1) {
+        this.chatMessages.splice(index, 1)
+        this._sharedDataProvider.clearDeletedMessageId(messageId)
+      }
+    }    
   }
 
   scrollToLastMessage() {

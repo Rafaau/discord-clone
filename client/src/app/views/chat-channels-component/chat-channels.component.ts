@@ -94,6 +94,7 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (category: ChatCategory) => {
+          category.chatChannels = []
           this.chatServer!.chatCategories!.push(category)
         }
       )
@@ -101,9 +102,11 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (channel: ChatChannel) => {
+          console.log(channel)
           const actualCategory = this.chatServer!.chatCategories!.find(category =>
             category.id == channel.chatCategory.id
           )!
+          console.log(actualCategory)
           actualCategory.chatChannels.push(channel)
         }
       )

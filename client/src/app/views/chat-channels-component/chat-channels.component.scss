@@ -27,6 +27,21 @@
     overflow: hidden;
 }
 
+.channels-container {
+    overflow-y: scroll;
+    position: absolute;
+    top: 42px;
+    bottom: 76px;
+    right: -150px;
+    left: 0;
+    padding-bottom: 10px;
+    padding-right: 150px;
+}
+
+    .channels-container::-webkit-scrollbar {
+        display: none;
+    }
+
 .arrow {
     font-size: 16px;
     width: 16px;

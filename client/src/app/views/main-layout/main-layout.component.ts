@@ -19,6 +19,13 @@ import { DirectMessagesListComponent } from '../direct-messages-list-component/d
 import { FriendsComponent } from '../friends-component/friends.component';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { Subject, takeUntil } from 'rxjs';
+import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
+import { ChatMessage } from 'src/app/_models/chat-message';
+import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
+import { MessageReaction } from 'src/app/_models/message-reaction';
+import { DirectMessageService } from 'src/app/_services/direct-message.service';
+import { DirectMessage } from 'src/app/_models/direct-message';
+import { initListeners } from 'src/app/utils/CacheListeners';
 
 @Component({
   selector: 'app-main-layout',
@@ -62,6 +69,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     private readonly _authService: AuthService,
     private readonly _rolesService: RolesService,
     private readonly _sharedDataProvider: SharedDataProvider,
+    private readonly _chatMessagesService: ChatMessagesService,
+    private readonly _messageReactionsService: MessageReactionsService,
+    private readonly _directMessagesService: DirectMessageService,
     public router: Router,
     private location: Location
   ) { }
@@ -82,6 +92,16 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       else
         this.chatServerToPass = undefined
     })
+
+    initListeners(
+      this.onDestroy$,
+      this._chatMessagesService,
+      this._sharedDataProvider,
+      this._messageReactionsService,
+      this._directMessagesService,
+      this.router,
+    )
+
     if (this.router.url == '/')
       this.router.navigate([{ outlets: { main: 'friends', secondary: 'directmessages' } }])
   }
