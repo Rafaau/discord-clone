@@ -87,6 +87,9 @@ export class MessageContentComponent implements OnInit {
       this._chatMessageService.getSingleMessage(Number(messageId))
         .subscribe(
           (data: HttpResponse<ChatMessage>) => {
+            if (data.body!.content.includes('<!replyTo'))
+            data.body!.content = data.body!.content
+              .slice(indexOf(data.body!.content, '>') + 1)
             this.messageToReply = data.body!
           },
           (error) => {
@@ -97,6 +100,9 @@ export class MessageContentComponent implements OnInit {
       this._directMessageService.getSingleMessage(Number(messageId))
         .subscribe(
           (data: HttpResponse<ChatMessage>) => {
+            if (data.body!.content.includes('<!replyTo'))
+            data.body!.content = data.body!.content
+              .slice(indexOf(data.body!.content, '>') + 1)
             this.messageToReply = data.body!
           },
           (error) => {

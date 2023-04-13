@@ -319,7 +319,7 @@ p {
 hr {
     background-color: #3F4147;
     border: none;
-    height: 1px;
+    height: 0.1px;
     flex-grow: 1;
     margin-inline: 15px;
 }
