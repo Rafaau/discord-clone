@@ -19,6 +19,7 @@ import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-d
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @Component({
   selector: 'app-direct-messages',
@@ -54,6 +55,7 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   @Output()
   onJoinCallback = new EventEmitter()
   @ViewChild('wrapper') myScrollContainer?: ElementRef
+  @ViewChild(InfiniteScrollDirective) infiniteScrollDirective?: InfiniteScrollDirective
   currentRoute = new LocationHrefProvider(this.location)
   directConversation?: DirectConversation
   directMessages: DirectMessage[] = []
@@ -100,6 +102,8 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       this.messageToEditId = 0
       this.messageToReply = undefined
       this.init()
+      this.infiniteScrollDirective!.destroyScroller()
+      this.infiniteScrollDirective!.setup()
     })
     this._directMessageService.getNewMessage()
       .pipe(takeUntil(this.onDestroy$))
@@ -121,8 +125,9 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this._directMessageService.getDeletedMessage()
         .pipe(takeUntil(this.onDestroy$))
         .subscribe(
-          (messageId: number) => {
-            this.directMessages = this.directMessages.filter(x => x.id != messageId)
+          (message: DirectMessage) => {
+            console.log(message)
+            this.directMessages = this.directMessages.filter(x => x.id != message.id)
           }
         )  
   }
@@ -245,26 +250,6 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
           console.log('err')
         }
       )
-    // RETRIEVE NEW CACHED MESSAGES
-    const cachedMessages = this._sharedDataProvider.getCachedDirectMessages(conversationId)
-    this.directMessages.push(...cachedMessages)
-    this._sharedDataProvider.clearCachedDirectMessages(conversationId)
-    // RETRIEVE UPDATED MESSAGES
-    const updatedMessages = this._sharedDataProvider.getCachedUpdatedDirectMessages(conversationId)
-    for (const message of updatedMessages) {
-      const index = this.directMessages.findIndex(x => x.id == message.id)
-      if (index != -1)
-        this.directMessages[index].content = message.content
-    }
-    // RETRIEVE DELETED MESSAGES
-    const deletedMessages = this._sharedDataProvider.getDeletedDirectMessageIds()
-    for (const messageId of deletedMessages) {
-      const index = this.directMessages.findIndex(x => x.id == messageId)
-      if (index != -1) {
-        this.directMessages.splice(index, 1)
-        this._sharedDataProvider.clearDeletedDirectMessageId(messageId)
-      }
-    }
   }
 
   onSubmit(event?: Event) {

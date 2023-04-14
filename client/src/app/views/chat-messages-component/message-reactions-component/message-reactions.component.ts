@@ -32,23 +32,6 @@ export class MessageReactionsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // RETRIEVE CACHED REACTIONS
-    const cachedReactions = this._sharedDataProvider.getCachedMessageReactions(this.message!.id)
-    cachedReactions.forEach((reaction: MessageReaction) => {
-      if (!this.message!.reactions?.some(x => x.id == reaction.id)) {
-        this.message!.reactions!.push(reaction)
-      }
-    })
-    // RETRIEVE DELETED REACTIONS
-    const deletedReactions = this._sharedDataProvider.getDeletedMessageReactions(this.message!.id)
-    for (const reactionId of deletedReactions) {
-      const index = this.message!.reactions?.findIndex(x => x.id == reactionId)
-      if (index != -1) {
-        this.message!.reactions?.splice(index!, 1)
-        this._sharedDataProvider.clearDeletedMessageReaction(this.message!.id)
-      }
-    }   
-    this._sharedDataProvider.clearCachedMessageReactions(this.message!.id)
     this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
     this._messageReactionsService.getNewMessageReaction()
       .pipe(takeUntil(this.onDestroy$))
@@ -64,10 +47,14 @@ export class MessageReactionsComponent implements OnInit, OnDestroy {
     this._messageReactionsService.getDeletedReaction()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
-        (data: any) => {
-          if (this.message!.id == data[1]) {
+        (reaction: MessageReaction) => {
+          if (reaction.chatMessage && this.message!.id == reaction.chatMessage.id) {
             this.message!.reactions = this.message!.reactions!
-              .filter(x => x.id != data[0])
+              .filter(x => x.id != reaction.id)
+            this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
+          } else if (reaction.directMessage && this.message!.id == reaction.directMessage.id) {
+            this.message!.reactions = this.message!.reactions!
+              .filter(x => x.id != reaction.id)
             this.reactionGroups = this.getReactionGroups(this.message!.reactions!)
           }
         }

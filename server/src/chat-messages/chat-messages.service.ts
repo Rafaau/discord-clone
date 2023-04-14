@@ -119,7 +119,10 @@ export class ChatMessagesService {
                 'chatChannel.roles.users',
                 'chatChannel.chatCategory',
                 'chatChannel.chatCategory.chatServer',
-                'chatChannel.chatCategory.chatServer.members'
+                'chatChannel.chatCategory.chatServer.members',
+                'user',
+                'reactions',
+                'reactions.user',
             ] 
         })
         if (!chatMessageToUpdate)
@@ -166,8 +169,7 @@ export class ChatMessagesService {
 
         await this.chatMessageRepository.delete(chatMessageToDelete.id)
         return {
-            statusCode: 200,
-            message: `Chat Message(id: ${id}) has been deleted successfully`,
+            chatMessageToDelete,
             userIds
         }
     }

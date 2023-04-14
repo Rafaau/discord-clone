@@ -64,7 +64,10 @@ export class FriendRequestsService {
                 'receiver',
                 'sender.friends',
                 'sender.directConversations',
-                'receiver.friends'
+                'sender.directConversations.users',
+                'receiver.friends',
+                'receiver.directConversations',
+                'receiver.directConversations.users'
             ]
         })
         if (!friendRequest)

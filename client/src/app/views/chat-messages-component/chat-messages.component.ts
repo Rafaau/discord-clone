@@ -21,6 +21,7 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { Subject, takeUntil } from 'rxjs';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @Component({
   selector: 'app-chat-messages',
@@ -57,6 +58,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   @Output()
   onJoinCallback = new EventEmitter()
   @ViewChild('wrapper') myScrollContainer?: ElementRef
+  @ViewChild(InfiniteScrollDirective) infiniteScrollDirective?: InfiniteScrollDirective
   currentRoute = new LocationHrefProvider(this.location)
   chatMessages: ChatMessage[] = []
   chatChannel?: ChatChannel
@@ -90,7 +92,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   constructor(
     private location: Location,
     private route: ActivatedRoute,
-    private router: Router,
     private readonly _chatMessagesService: ChatMessagesService,
     private readonly _chatChannelsService: ChatChannelService,
     public readonly _giphyService: GiphyService,
@@ -98,20 +99,19 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     private readonly _messageReactionsService: MessageReactionsService,
     private readonly _notificationsService: NotificationsService,
     private readonly _sharedDataProvider: SharedDataProvider,
-    private readonly _usersService: UsersService,
     public dialog: MatDialog,
-    private socket: Socket
   ) { }
 
   ngOnInit() {
     this.init()
     this.route.params.subscribe(params => {
       this.chatMessages = []
-      this.page = 1
       this.messageToReact = 0
       this.messageToReply = undefined
       this.messageToEditId = 0
       this.init()
+      this.infiniteScrollDirective!.destroyScroller()
+      this.infiniteScrollDirective!.setup()
     })
     this._chatMessagesService.getNewMessage()
       .pipe(takeUntil(this.onDestroy$))
@@ -135,8 +135,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this._chatMessagesService.getDeletedMessage()
         .pipe(takeUntil(this.onDestroy$))
         .subscribe(
-          (messageId: number) => {
-            this.chatMessages = this.chatMessages.filter(x => x.id != messageId)
+          (message: ChatMessage) => {
+            this.chatMessages = this.chatMessages.filter(x => x.id != message.id)
           }
         )
   }
@@ -151,8 +151,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this.getCurrentUser()
     this.getMembers()
     const channelId = this.route.snapshot.paramMap.get('channelId')
-    if (this.page == 1 && Number(channelId)) {
-      this.fetchChatMessages(Number(channelId))
+    if (Number(channelId)) {
+      const cachedPage = this._sharedDataProvider.getChannelPage(Number(channelId))
+      const pages = cachedPage ? cachedPage : 1
+      for (let i = 1; i <= pages; i++) {
+        this.page = i
+        this.fetchChatMessages(Number(channelId))
+      }
       this.getChatChannel(Number(channelId))
     }
     setTimeout(() => {
@@ -186,33 +191,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
           this.chatMessages = this.chatMessages.concat(data.body!)
         else
           this.chatMessages = data.body!
+        this._sharedDataProvider.setChannelPage(channelId, this.page)
       },
       (error) => {
         console.log('err')
       }
     )
-    // RETRIEVE NEW CACHED MESSAGES
-    const cachedMessages = this._sharedDataProvider.getCachedChatMessages(channelId)
-    this.chatMessages.push(...cachedMessages)
-    this._sharedDataProvider.clearCachedChatMessages(channelId)
-    // RETRIEVE UPDATED MESSAGES
-    const updatedMessages = this._sharedDataProvider.getCachedUpdatedChatMessages(channelId)
-    for (const message of updatedMessages) {
-      const index = this.chatMessages.findIndex(x => x.id == message.id)
-      if (index != -1) {
-        this.chatMessages[index].content = message.content
-      }
-    }
-    this._sharedDataProvider.clearCachedUpdatedChatMessages(channelId)
-    // RETRIEVE DELETED MESSAGES
-    const deletedMessages = this._sharedDataProvider.getDeletedMessageIds()
-    for (const messageId of deletedMessages) {
-      const index = this.chatMessages.findIndex(x => x.id == messageId)
-      if (index != -1) {
-        this.chatMessages.splice(index, 1)
-        this._sharedDataProvider.clearDeletedMessageId(messageId)
-      }
-    }    
   }
 
   scrollToLastMessage() {

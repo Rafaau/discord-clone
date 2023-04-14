@@ -86,7 +86,7 @@ export class ChatMessagesService {
   }
 
   getDeletedMessage(): Observable<any> {
-    return this.socket.fromEvent<number>('deletedChatMessage')
+    return this.socket.fromEvent<ChatMessage>('deletedChatMessage')
   }
 
   updateChatMessage(

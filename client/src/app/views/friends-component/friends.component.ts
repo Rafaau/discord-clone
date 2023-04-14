@@ -12,6 +12,8 @@ import { FriendRequestsService } from 'src/app/_services/friend-requests.service
 import { UsersService } from 'src/app/_services/users.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { RemoveConfirmDialog } from './remove-confirm-dialog/remove-confirm-dialog.component';
+import { environment } from 'src/environments/environment';
+import { CacheResolverService } from 'src/app/utils/CacheResolver.service';
 
 @Component({
   selector: 'app-friends',
@@ -30,18 +32,31 @@ export class FriendsComponent implements OnInit, OnDestroy {
   invalidRequest: boolean = false
   successRequest: boolean = false
   doNotRedirect: boolean = false
+  newConversations: DirectConversation[] = []
 
   constructor(
     private readonly _usersService: UsersService,
     private readonly _directConversationService: DirectConversationService,
     private readonly _sharedDataProvider: SharedDataProvider,
     private readonly _friendRequestsService: FriendRequestsService,
+    private readonly _cacheResolver: CacheResolverService,
     private router: Router,
     private dialog: MatDialog
   ) { }
 
   ngOnInit() {
     this.getCurrentUser()
+    this._directConversationService.getNewConversation()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (conversation: DirectConversation) => {
+          conversation.users.sort((a, b) => {
+            if (a.id === this.currentUser!.id) return -1
+            if (b.id === this.currentUser!.id) return 1
+            return 0
+          })
+          this.newConversations!.push(conversation)
+        })
     this._friendRequestsService.getNewFriendRequest()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
@@ -127,30 +142,50 @@ export class FriendsComponent implements OnInit, OnDestroy {
   }
 
   redirectToConversation(friend: UserComplex) {
-    const conversation = friend.directConversations.filter(
-      x => x.users.filter(
-        x => x.id == this.currentUser!.id
-      )
-    )[0]
+    const targetUserIds = [this.currentUser!.id, friend.id]
+    let conversation = friend.directConversations.find(conversation => {
+      const conversationUserIds = conversation.users.map(user => user.id)
+      return targetUserIds.every(id => conversationUserIds.includes(id))
+    })
+
+    if (conversation == undefined)
+      conversation = this.newConversations.find(conversation => {
+        const conversationUserIds = conversation.users.map(user => user.id)
+        return targetUserIds.every(id => conversationUserIds.includes(id))
+      })
 
     if (conversation != undefined) { // WHEN CONVERSATION ALREADY EXISTS
       const conversationId = conversation.id
       if (!this.doNotRedirect)
         this.router.navigate([{ outlets: { main: ['conversation', conversationId] } }])
-    } else { // WHEN CONVERSATION DOES NOT EXIST, CREATING NEW ONE
+    } else { // WHEN CONVERSATION DOES NOT EXIST, CREATE NEW ONE
       const reqBody: CreateDirectConversationParams = {
         users: [this.currentUser!, friend]
       }
       this._directConversationService.createDirectConversation(reqBody)
+      this._directConversationService.getNewConversation()
+        .pipe(takeUntil(this.onDestroy$))
         .subscribe(
-          (data: HttpResponse<DirectConversation>) => {
+          (conversation: DirectConversation) => {
+            // DIRECT CONVERSATIONS CACHE
+            const key = environment.apiUrl + `/directconversations/user/${this.currentUser!.id}`
+            const cachedResponse = this._cacheResolver.get(key)
+
+            if (cachedResponse) {
+              const body = conversation
+              conversation.users.sort((a, b) => {
+                if (a.id == this.currentUser!.id) return -1
+                if (b.id == this.currentUser!.id) return 1
+                return 0
+              })
+              const updatedData = [...cachedResponse.body, conversation]
+              const updatedResponse = cachedResponse.clone({ body: updatedData })
+              //this._cacheResolver.set(key, updatedResponse)
+            }
+
             if (!this.doNotRedirect)
-              this.router.navigate([{ outlets: { main: ['conversation', data.body!.id] } }])
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+              this.router.navigate([{ outlets: { main: ['conversation', conversation.id] } }])
+          })
     }
   }
 

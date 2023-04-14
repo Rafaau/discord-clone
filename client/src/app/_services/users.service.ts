@@ -13,6 +13,13 @@ export class UsersService {
 
   constructor(private readonly httpClient: HttpClient) { }
 
+  getUserById(userId: number): Observable<HttpResponse<any>> {
+    return this.httpClient.get(
+      this.api+`/users/${userId}`,
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
+    )
+  }
+
   getUsersByChatServer(chatServerId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/byChatServer/${chatServerId}`, 
@@ -37,7 +44,7 @@ export class UsersService {
   getFriendRequestsOfUser(userId: number): Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+`/users/${userId}/friendRequests`,
-      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.noInterceptHeaders }
     )
   }
 

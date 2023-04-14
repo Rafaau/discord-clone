@@ -49,6 +49,8 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   notifications: Notification[] = []
   @Output()
   notificationsToPass = new EventEmitter<Notification[]>
+  @Output()
+  updateUser = new EventEmitter<number>()
   groupedNotifications: Array<Array<Notification>> = [
     [],
   ]
@@ -161,7 +163,7 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
 
   openAddServerDialog() {
     let dialogRef = this.dialog.open(AddServerDialog, {
-      data: { name: 'Rafau' },
+      data: { currentUser: this.currentUser },
       width: '450px',
       panelClass: 'add-server-dialog',
       height: '272px'
@@ -170,10 +172,8 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
       this.getChatServers(this.currentUser!.id)
       setTimeout(() => {
         const lastChatServer = this.chatServers.sort((a,b) => a.id - b.id)[this.chatServers.length - 1]
-        this.router.navigate(
-          ['/chatserver'], 
-          { queryParams: { id: lastChatServer.id } }
-        )
+        this.updateUser.emit(this.currentUser!.id)
+        this.router.navigate([{ outlets: { main: null, secondary: ['chatserver', lastChatServer.id] } }])
       }, 100)
     })
     dialogRef.afterClosed().subscribe(() => {

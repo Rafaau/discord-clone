@@ -26,6 +26,9 @@ import { MessageReaction } from 'src/app/_models/message-reaction';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
 import { DirectMessage } from 'src/app/_models/direct-message';
 import { initListeners } from 'src/app/utils/CacheListeners';
+import { ChatChannelService } from 'src/app/_services/chat-channel.service';
+import { CacheResolverService } from 'src/app/utils/CacheResolver.service';
+import { UsersService } from 'src/app/_services/users.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -72,6 +75,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     private readonly _chatMessagesService: ChatMessagesService,
     private readonly _messageReactionsService: MessageReactionsService,
     private readonly _directMessagesService: DirectMessageService,
+    private readonly _chatChannelService: ChatChannelService,
+    private readonly _cacheResolver: CacheResolverService,
+    private readonly _usersService: UsersService,
     public router: Router,
     private location: Location
   ) { }
@@ -99,6 +105,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this._sharedDataProvider,
       this._messageReactionsService,
       this._directMessagesService,
+      this._chatChannelService,
+      this._cacheResolver,
       this.router,
     )
 
@@ -132,9 +140,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     await this._authService.getAuthStatus().subscribe(
       async (data: HttpResponse<User>) => {
         console.log('authorized')
-        this.currentUser = data.body!
-        this._sharedDataProvider.setCurrentUser(this.currentUser)
-        this._authService.joinRoom(this.currentUser!.id.toString())
+        this.fetchUser(data.body!.id)
       },
       (error) => {
         console.log('unauthorized')
@@ -142,6 +148,19 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
           .then(() => {
             this.router.navigate(['login'])
           })
+      }
+    )
+  }
+
+  async fetchUser(userId: number) {
+    await this._usersService.getUserById(userId).subscribe(
+      (data: HttpResponse<User>) => {
+        this.currentUser = data.body!
+        this._sharedDataProvider.setCurrentUser(this.currentUser)
+        this._authService.joinRoom(this.currentUser!.id.toString())
+      },
+      (error) => {
+        console.log(error)
       }
     )
   }

@@ -237,8 +237,7 @@ export class ChatChannelsService {
 
         await this.chatChannelRepository.delete(chatChannelToDelete)
         return {
-            statusCode: 200,
-            message: `Chat Channel(id : ${id}) has been deleted successfully`,
+            chatChannelToDelete,
             userIds
         }
     }

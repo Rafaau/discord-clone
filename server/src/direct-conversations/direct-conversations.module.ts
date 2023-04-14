@@ -4,6 +4,7 @@ import { DirectConversation } from "src/typeorm/direct-conversation";
 import { User } from "src/typeorm/user";
 import { DirectConversationsController } from "./direct-conversations.controller";
 import { DirectConversationsService } from "./direct-conversations.service";
+import { DirectConversationsGateway } from "./gateway/direct-conversations.gateway";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
@@ -11,6 +12,9 @@ import { DirectConversationsService } from "./direct-conversations.service";
         User
     ])],
     controllers: [DirectConversationsController],
-    providers: [DirectConversationsService]
+    providers: [
+        DirectConversationsService,
+        DirectConversationsGateway
+    ]
 })
 export class DirectConversationModule {}

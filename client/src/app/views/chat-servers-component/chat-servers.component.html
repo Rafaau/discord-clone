@@ -31,12 +31,11 @@
       <div [@routeChange] *ngIf="router.url.includes('chatserver/'+chatServer.id)" class="current"></div>
     </div>
   </div>
-</div>
-
-<div 
-  class="add-chat-server"
-  matTooltip="Add a Server"
-  matTooltipPosition="right"
-  (click)="openAddServerDialog()">
-  <mat-icon>add</mat-icon>
+  <div 
+    class="add-chat-server"
+    matTooltip="Add a Server"
+    matTooltipPosition="right"
+    (click)="openAddServerDialog()">
+    <mat-icon>add</mat-icon>
+  </div>
 </div>

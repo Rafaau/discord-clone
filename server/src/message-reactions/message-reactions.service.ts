@@ -94,14 +94,39 @@ export class MessageReactionsService {
     }
 
     async deleteReaction(id: number) {
-        const reaction = await this.messageReactionRepository.findOneBy({ id })
+        const reaction = await this.messageReactionRepository.findOne({ 
+            where: { id },
+            relations: [
+                'directMessage',
+                'directMessage.directConversation',
+                'directMessage.directConversation.users',
+                'chatMessage',
+                'chatMessage.chatChannel',
+                'chatMessage.chatChannel.chatCategory',
+                'chatMessage.chatChannel.chatCategory.chatServer',
+                'chatMessage.chatChannel.chatCategory.chatServer.members',
+                'user',
+            ]
+        })
         if (!reaction)
             throw new NotFoundException()
 
-        await this.messageReactionRepository.delete(reaction)
+        let userIds: string[] = []
+        if (reaction.directMessage) {
+            // DIRECT MESSAGE USERS
+            reaction.directMessage.directConversation.users.forEach(user => {
+                userIds.push(user.id.toString())
+            })
+        } else if (reaction.chatMessage) {
+            // CHAT SERVER USERS
+            reaction.chatMessage.chatChannel.chatCategory.chatServer.members.forEach(user => {
+                userIds.push(user.id.toString())
+            })
+        }
+        await this.messageReactionRepository.delete({ id: reaction.id })
         return {
-            statusCode: 200,
-            message: `Message Reaction(id: ${id}) has been deleted successfully`,
+            reaction,
+            userIds
         }
     }
 }

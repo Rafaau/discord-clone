@@ -11,6 +11,7 @@ import { UsersService } from 'src/app/_services/users.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { indexOf } from 'lodash';
 import { Subject, takeUntil } from 'rxjs';
+import { DirectConversationService } from 'src/app/_services/direct-conversation.service';
 
 @Component({
   selector: 'app-direct-messages-list',
@@ -28,12 +29,24 @@ export class DirectMessagesListComponent implements OnInit, OnDestroy {
     private readonly _usersService: UsersService,
     private readonly _notificationsService: NotificationsService,
     private readonly _sharedDataProvider: SharedDataProvider,
+    private readonly _directConvesationsService: DirectConversationService,
     public router: Router,
     private route: ActivatedRoute,
     private location: Location
   ) { }
 
   ngOnInit() {
+    this._directConvesationsService.getNewConversation()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (conversation: DirectConversation) => {
+          conversation.users.sort((a, b) => {
+            if (a.id == this.currentUser!.id) return -1
+            if (b.id == this.currentUser!.id) return 1
+            return 0
+          })
+          this.directConversations!.push(conversation)
+        })
     this.getCurrentUser()
     const regex = /main:conversation\/(\d+)/
     const match = this.router.url.match(regex)

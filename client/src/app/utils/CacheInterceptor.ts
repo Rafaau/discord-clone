@@ -15,6 +15,12 @@ export class CacheInterceptor implements HttpInterceptor {
         req: HttpRequest<any>,
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
+        if (req.headers.has('No-Intercept')) {
+            const modifiedReq = req.clone({
+                headers: req.headers.delete('No-Intercept')
+            })
+            return next.handle(modifiedReq)
+        }
         if (req.method !== 'GET')
             return next.handle(req)
         

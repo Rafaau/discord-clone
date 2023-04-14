@@ -21,10 +21,10 @@ export class ChatChannelsGateway {
                            .emit('createdChatChannel', channel.newChatChannel)
             })
         })
-        eventBus.on('deletedChatChannel', (id, userIds) => {
+        eventBus.on('deletedChatChannel', (channel, userIds) => {
             userIds.forEach(userId => {
                 this.server.to(userId.toString())
-                           .emit('deletedChatChannel', id)
+                           .emit('deletedChatChannel', channel)
             })
         })
         eventBus.on('updatedChatChannel', (channel) => {
@@ -62,8 +62,11 @@ export class ChatChannelsGateway {
     ) {
         const deletedChannel = await this.chatChannelsService
             .deleteChatChannel(id)
-        if (deletedChannel.statusCode == 200)
-            eventBus.emit('deletedChatChannel', id, deletedChannel.userIds)
+        eventBus.emit(
+            'deletedChatChannel', 
+            deletedChannel.chatChannelToDelete, 
+            deletedChannel.userIds
+        )
     }
 
     @SubscribeMessage('moveChannel')

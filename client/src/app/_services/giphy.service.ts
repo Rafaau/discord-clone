@@ -59,7 +59,7 @@ export class GiphyService {
       lang: this.lang
     }
 
-    this.http.get<GiphyResult>(GiphyService.giphyUrl, { params })
+    this.http.get<GiphyResult>(GiphyService.giphyUrl, { params, headers: { 'No-Intercept': 'true' } })
         .subscribe((giphyResult) => {
             this.imageResult = this.imageResult.concat((giphyResult as any).data)
             this.currentOffset = giphyResult.pagination.offset + giphyResult.pagination.count

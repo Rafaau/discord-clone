@@ -44,7 +44,7 @@ export class ChatMessagesGateway implements OnGatewayConnection, OnGatewayDiscon
         eventBus.on('deletedChatMessage', (params) => {
             params.userIds.forEach(id => {
                 this.server.to(id)
-                           .emit('deletedChatMessage', params.id)
+                           .emit('deletedChatMessage', params.message)
             })
         })
     }
@@ -85,7 +85,9 @@ export class ChatMessagesGateway implements OnGatewayConnection, OnGatewayDiscon
     ) {
         const deletedMessage = await this.chatMessagesService
             .deleteChatMessage(id)
-        if (deletedMessage.statusCode == 200)
-            eventBus.emit('deletedChatMessage', { id, userIds: deletedMessage.userIds })
+        eventBus.emit(
+            'deletedChatMessage', 
+            { message: deletedMessage.chatMessageToDelete, userIds: deletedMessage.userIds }
+        )
     }
 }

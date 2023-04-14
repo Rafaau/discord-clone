@@ -59,8 +59,8 @@ export class ChatChannelService {
     this.socket.emit('deleteChatChannel', id )
   }
 
-  getDeletedChannel(): Observable<number> {
-    return this.socket.fromEvent<number>('deletedChatChannel')
+  getDeletedChannel(): Observable<any> {
+    return this.socket.fromEvent<any>('deletedChatChannel')
   }
 
   moveChannel(

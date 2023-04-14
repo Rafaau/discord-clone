@@ -3,7 +3,8 @@
     <div class="primary-side-bar">
       <app-chat-servers 
         [currentUser]="currentUser"
-        (notificationsToPass)="fetchNotificationsFromServers($event)">
+        (notificationsToPass)="fetchNotificationsFromServers($event)"
+        (updateUser)="fetchUser($event)">
       </app-chat-servers>
     </div>
     <div class="secondary-side-bar">
