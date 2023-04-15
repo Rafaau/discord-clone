@@ -22,6 +22,7 @@ import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { Subject, takeUntil } from 'rxjs';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { ChatServer } from 'src/app/_models/chat-servers';
 
 @Component({
   selector: 'app-chat-messages',
@@ -92,6 +93,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   constructor(
     private location: Location,
     private route: ActivatedRoute,
+    private router: Router,
     private readonly _chatMessagesService: ChatMessagesService,
     private readonly _chatChannelsService: ChatChannelService,
     public readonly _giphyService: GiphyService,
@@ -110,8 +112,6 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       this.messageToReply = undefined
       this.messageToEditId = 0
       this.init()
-      this.infiniteScrollDirective!.destroyScroller()
-      this.infiniteScrollDirective!.setup()
     })
     this._chatMessagesService.getNewMessage()
       .pipe(takeUntil(this.onDestroy$))
@@ -121,8 +121,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
             this.chatMessages.push(message)
             this.smoothScroll()
           }
-        }
-      )
+        })
     this._chatMessagesService.getEditedMessage()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
@@ -130,15 +129,32 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
           if (message.chatChannel.id == this.chatChannel!.id) { 
             this.chatMessages.filter(x => x.id == message.id)[0].content = message.content
           }
-        }
-      )
+        })
     this._chatMessagesService.getDeletedMessage()
-        .pipe(takeUntil(this.onDestroy$))
-        .subscribe(
-          (message: ChatMessage) => {
-            this.chatMessages = this.chatMessages.filter(x => x.id != message.id)
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (message: ChatMessage) => {
+          this.chatMessages = this.chatMessages.filter(x => x.id != message.id)
+        })
+    this._chatServerService.getNewMember()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (chatServer: ChatServer) => {
+          console.log(chatServer.members)
+          if (this.router.url.includes(`chatserver/${chatServer.id})`)) {
+            chatServer.members!.forEach(member => {
+              if (!this.members!.find(x => x.id == member.id))
+                this.members!.push(member)
+            })
           }
-        )
+        })
+    this._chatServerService.getRemovedMember()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data: any) => {
+          if (this.router.url.includes(`chatserver/${data.chatServer.id})`))
+            this.members = this.members!.filter(x => x.id != data.userId)
+        })
   }
 
   ngOnDestroy() {
@@ -161,6 +177,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       this.getChatChannel(Number(channelId))
     }
     setTimeout(() => {
+      this.infiniteScrollDirective!.destroyScroller()
+      this.infiniteScrollDirective!.setup()
       this.doNotScroll = true // to avoid scrolling on tooltip display
     }, 500)
   }
@@ -415,16 +433,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   onKickMember(userId: number) {
-    this._chatServerService.removeMemberFromChatServer(this.chatChannel!.chatCategory.chatServer!.id, userId)
-      .subscribe(
-        (data: HttpResponse<any>) => {
-          this.members = this.members!.filter(x => x.id != userId)
-          this.currentMemberOptions = 0
-        },
-        (error) => {
-          console.log('err')
-        }
-      )
+    this._chatServerService.removeMemberFromChatServer(
+      this.chatChannel!.chatCategory.chatServer!.id, 
+      userId
+    )
+    this.currentMemberOptions = 0
   }
 
   closeMemberOptions(event: Event) {

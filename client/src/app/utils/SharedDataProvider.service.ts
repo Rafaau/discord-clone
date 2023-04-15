@@ -16,10 +16,13 @@ export class SharedDataProvider {
     private members = new BehaviorSubject<any>(null)
     private serverNotifications = new BehaviorSubject<any>(null)
     private channelPage = new Map<number, number>()
-    public userAvatarCache = new Map<number, HTMLImageElement>()
+    public userAvatarCache = new Map<number, boolean>()
     public serverSettings: EventEmitter<ChatServer> = new EventEmitter<ChatServer>()
     public updatedServer: EventEmitter<ChatServer> = new EventEmitter<ChatServer>()
     public updatedConversationsList: EventEmitter<void> = new EventEmitter<void>()
+    public joinedServer: EventEmitter<ChatServer> = new EventEmitter<ChatServer>()
+    public removedFromServer: EventEmitter<ChatServer> = new EventEmitter<ChatServer>()
+    public updatedUser: EventEmitter<number> = new EventEmitter<number>()
     readonly api = environment.apiUrl+'/users/getAvatar/user-'
 
     setCurrentUser(user: User) {
@@ -64,5 +67,17 @@ export class SharedDataProvider {
 
     emitUpdatedConversationsList() {
         this.updatedConversationsList.emit()
+    }
+
+    emitJoinedServer(server: ChatServer) {
+        this.joinedServer.emit(server)
+    }
+
+    emitRemovedFromServer(server: ChatServer) {
+        this.removedFromServer.emit(server)
+    }
+
+    emitUpdatedUser(userId: number) {
+        this.updatedUser.emit(userId)
     }
 }

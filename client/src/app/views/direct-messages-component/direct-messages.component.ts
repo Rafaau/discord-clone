@@ -101,9 +101,8 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       this.messageToReact = 0
       this.messageToEditId = 0
       this.messageToReply = undefined
+      this.interlocutor = undefined
       this.init()
-      this.infiniteScrollDirective!.destroyScroller()
-      this.infiniteScrollDirective!.setup()
     })
     this._directMessageService.getNewMessage()
       .pipe(takeUntil(this.onDestroy$))
@@ -152,6 +151,8 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       })
     setTimeout(() => {
       this.doNotScroll = true // to avoid scrolling on tooltip display
+      this.infiniteScrollDirective!.destroyScroller()
+      this.infiniteScrollDirective!.setup()
     }, 500)
   }
 

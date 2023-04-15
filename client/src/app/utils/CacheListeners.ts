@@ -12,6 +12,9 @@ import { environment } from "src/environments/environment"
 import { ChatCategory } from "../_models/chat-category"
 import { CacheResolverService } from "./CacheResolver.service"
 import { ChatChannel } from "../_models/chat-channels"
+import { ChatServerService } from "../_services/chat-server.service"
+import { ChatServer } from "../_models/chat-servers"
+import { User } from "../_models/user"
 
 export function initListeners(
     onDestroy$: Subject<void>,
@@ -20,6 +23,7 @@ export function initListeners(
     _messageReactionsService: MessageReactionsService,
     _directMessagesService: DirectMessageService,
     _chatChannelService: ChatChannelService,
+    _chatServerService: ChatServerService,
     cacheResolver: CacheResolverService,
     router: Router
 ) {
@@ -40,8 +44,6 @@ export function initListeners(
   _chatMessagesService.getDeletedMessage()
     .pipe(takeUntil(onDestroy$))
     .subscribe((message: ChatMessage) => {
-      if (router.url.includes(`channel/${message.chatChannel.id}/`)) return
-
       const key = environment.apiUrl + `/chatmessages?filterByChannel=${message.chatChannel.id}&page=1`
       const cachedResponse = cacheResolver.get(key)
 
@@ -168,8 +170,6 @@ export function initListeners(
   _directMessagesService.getDeletedMessage()
     .pipe(takeUntil(onDestroy$))
     .subscribe((message: DirectMessage) => {
-      if (router.url.includes(`conversation/${message.directConversation.id}/`)) return
-
       const key = environment.apiUrl + `/directmessages?conversation=${message.directConversation.id}&page=1`
       const cachedResponse = cacheResolver.get(key)
 
@@ -295,6 +295,40 @@ export function initListeners(
           ],
         }
         
+        const updatedResponse = cachedResponse.clone({ body: updatedData })
+        cacheResolver.set(key, updatedResponse)
+      }
+    })
+  _chatServerService.getNewMember()
+    .pipe(takeUntil(onDestroy$))
+    .subscribe((chatServer: ChatServer) => {
+      if (router.url.includes(`chatserver/${chatServer.id})`)) return
+
+      const key = environment.apiUrl + `/users/byChatServer/${chatServer.id}`
+      const cachedResponse = cacheResolver.get(key)
+
+      if (cachedResponse) {
+        const updatedData = [
+          ...cachedResponse.body,
+          ...chatServer.members!.filter(
+            (newMember) =>
+              !cachedResponse.body.some(
+                (existingMember: User) => existingMember.id == newMember.id
+              )
+          ),
+        ]
+        const updatedResponse = cachedResponse.clone({ body: updatedData })
+        cacheResolver.set(key, updatedResponse)
+      }
+    })
+  _chatServerService.getRemovedMember()
+    .pipe(takeUntil(onDestroy$))
+    .subscribe((data: any) => {
+      const key = environment.apiUrl + `/users/byChatServer/${data.chatServer.id}`
+      const cachedResponse = cacheResolver.get(key)
+
+      if (cachedResponse) {
+        const updatedData = cachedResponse.body.filter((user: User) => user.id != data.userId)
         const updatedResponse = cachedResponse.clone({ body: updatedData })
         cacheResolver.set(key, updatedResponse)
       }

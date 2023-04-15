@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ChatServer, CreateChatServerParams, UpdateChatServerParams } from '../_models/chat-servers';
 import { environment } from 'src/environments/environment';
 import { ApiHelpers } from './helpers';
+import { Socket } from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,10 @@ import { ApiHelpers } from './helpers';
 export class ChatServerService {
   private readonly api = environment.apiUrl
 
-  constructor(private readonly httpClient: HttpClient) { }
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly socket: Socket
+  ) { }
 
   createChatServer(
     chatServerParams: CreateChatServerParams,
@@ -38,15 +42,26 @@ export class ChatServerService {
       )
   }
 
-  addUserToChatServer(
+  getChatServerInvitationDetails(id: number): Observable<HttpResponse<any>> {
+    return this.httpClient.get(
+      this.api+`/chatservers/invitationDetails/${id}`,
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.noInterceptHeaders }
+    )
+  }
+  
+  addMemberToChatServer(
     chatServerId: number,
     userId: number
-  ): Observable<HttpResponse<any>> {
-    return this.httpClient.patch(
-      this.api+`/chatservers/${chatServerId}/adduser/${userId}`,
-      {},
-      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }  
+  ) {
+    this.socket.emit(
+      'addMemberToChatServer', 
+      userId,
+      chatServerId
     )
+  }
+
+  getNewMember(): Observable<any> {
+    return this.socket.fromEvent<ChatServer>('newChatServerMember')
   }
 
   updateChatServer(
@@ -58,6 +73,14 @@ export class ChatServerService {
       serverDetails,
       { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
     )
+  }
+
+  deleteChatServer(id: number) {
+    this.socket.emit('deleteChatServer', id)
+  }
+
+  getDeletedChatServer(): Observable<any> {
+    return this.socket.fromEvent<ChatServer>('deletedChatServer')
   }
 
   uploadAvatar(
@@ -76,11 +99,15 @@ export class ChatServerService {
   removeMemberFromChatServer(
     chatServerId: number,
     userId: number
-  ): Observable<HttpResponse<any>> {
-    return this.httpClient.patch(
-      this.api+`/chatservers/${chatServerId}/removeuser/${userId}`,
-      {},
-      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
+  ) {
+    this.socket.emit(
+      'removeMemberFromChatServer',
+      userId,
+      chatServerId
     )
+  }
+
+  getRemovedMember(): Observable<any> {
+    return this.socket.fromEvent<any>('removedChatServerMember')
   }
 }

@@ -77,6 +77,26 @@ export class ChatServersController {
             .json(await this.chatServersService.getChatServersByUserId(userId))
     }
 
+    @Get('invitationDetails/:id')
+    @UseGuards(AuthenticatedGuard)
+    async getChatServerInvitationDetails(
+        @Param('id') id: number,
+        @Res() response: Response
+    ) {
+        try {
+            response
+                .status(HttpStatus.OK)
+                .json(await this.chatServersService.getChatServerInvitationDetails(id))
+        } catch (e) {
+            response
+                .status(e.status)
+                .json({
+                    statusCode: e.status,
+                    message: e.message
+                })
+        }
+    }
+
     @Patch(':chatServerId/adduser/:userId')
     @UseGuards(AuthenticatedGuard)
     async addUserToChatServer(
@@ -148,7 +168,6 @@ export class ChatServersController {
         @UploadedFile() file: MulterDiskUploadedFile,
         @Res() response: Response
     ) {
-        console.log(file)
         try {
             const filename = await this.fileService.saveFile(
                 file,

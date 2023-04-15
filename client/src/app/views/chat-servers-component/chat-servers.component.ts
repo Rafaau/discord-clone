@@ -66,6 +66,37 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this._chatServerService.getDeletedChatServer()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (chatServer: ChatServer) => {
+          this.chatServers = this.chatServers.filter(x => x.id != chatServer.id)
+          if (this.router.url.includes(`chatserver/${chatServer.id}`))
+            this.router.navigate([''])
+              .then(() => {
+                this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+              })
+        })
+    this._sharedDataProvider.joinedServer
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (chatServer: ChatServer) => {
+          this.chatServers.push(chatServer)
+          this.getNotifications(this.currentUser!.id)
+        })
+    this._chatServerService.getRemovedMember()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data: any) => {
+          if (data.userId == this.currentUser!.id) {
+            this.chatServers = this.chatServers.filter(x => x.id != data.chatServer.id)
+            if (this.router.url.includes(`chatserver/${data.chatServer.id})`))
+              this.router.navigate([''])
+                .then(() => {
+                  this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+              })
+          } 
+      })
   }
 
   ngOnChanges(changes: SimpleChanges) {

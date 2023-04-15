@@ -48,6 +48,7 @@ import { RemoveConfirmDialog } from './views/friends-component/remove-confirm-di
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { CacheInterceptor } from './utils/CacheInterceptor';
 import { CacheResolverService } from './utils/CacheResolver.service';
+import { DeleteServerConfirmDialog } from './views/chat-channels-component/chat-server-settings/delete-server-confirm-dialog/delete-server-confirm-dialog.component';
 
 const socketIoConfig: SocketIoConfig = { 
   url: process.env.NG_APP_SOCKET_PATH || 'http://localhost:3000', 
@@ -82,7 +83,8 @@ const socketIoConfig: SocketIoConfig = {
     ChatServerAvatarComponent,
     AssignToRoleDialog,
     ChannelPermissionsDialog,
-    RemoveConfirmDialog
+    RemoveConfirmDialog,
+    DeleteServerConfirmDialog
   ],
   imports: [
     BrowserModule,

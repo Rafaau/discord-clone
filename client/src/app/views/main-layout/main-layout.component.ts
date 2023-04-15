@@ -78,6 +78,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     private readonly _chatChannelService: ChatChannelService,
     private readonly _cacheResolver: CacheResolverService,
     private readonly _usersService: UsersService,
+    private readonly _chatServerService: ChatServerService,
     public router: Router,
     private location: Location
   ) { }
@@ -98,6 +99,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       else
         this.chatServerToPass = undefined
     })
+    this._sharedDataProvider.updatedUser.subscribe((event: number) => {
+      this.fetchUser(event)
+    })
 
     initListeners(
       this.onDestroy$,
@@ -106,6 +110,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this._messageReactionsService,
       this._directMessagesService,
       this._chatChannelService,
+      this._chatServerService,
       this._cacheResolver,
       this.router,
     )

@@ -26,23 +26,27 @@ export class UserAvatarComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.doesExist == undefined || !this.doesExist) 
+    const hasAvatar = this._sharedDataProvider.userAvatarCache.get(this.userId!)
+    if (!hasAvatar) 
       this.checkIfAvatarExists()
+    else
+      this.doesExist = true
   }
 
   checkIfAvatarExists() {
-    if (this._sharedDataProvider.userAvatarCache.has(this.userId!)) {
-      this.doesExist = true
-      return
-    }
     this.doesExist = false
+    this._sharedDataProvider.userAvatarCache.set(this.userId!, false)
 
     const img = new Image()
     img.src = `${this.api}${this.userId}.jpeg`
 
     img.onload = () => {
       this.doesExist = true
-      this._sharedDataProvider.userAvatarCache.set(this.userId!, img)
+      this._sharedDataProvider.userAvatarCache.set(this.userId!, true)
     }
+  }
+
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
   }
 }

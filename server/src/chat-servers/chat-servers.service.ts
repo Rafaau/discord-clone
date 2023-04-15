@@ -69,6 +69,19 @@ export class ChatServersService {
         })
     }
 
+    async getChatServerInvitationDetails(id: number) {
+        const chatServer = await this.chatServerRepository.findOne({
+            where: { id },
+            relations: ['members']
+        })
+        if (!chatServer)
+            throw new HttpException(
+                'Chat server not found',
+                HttpStatus.BAD_REQUEST
+            )
+        return chatServer
+    }
+
     async addMemberToChatServer(userId: number, chatServerId: number) {
         const member = await this.userRepository.findOneBy({ id: userId })
         if (!member)
@@ -78,7 +91,10 @@ export class ChatServersService {
             )
         const chatServer = await this.chatServerRepository.findOne({ 
             where: { id: chatServerId },
-            relations: ['members'] 
+            relations: [
+                'members',
+                'roles',
+            ] 
         })
         if (!chatServer) 
                 throw new HttpException(
@@ -86,6 +102,12 @@ export class ChatServersService {
                     HttpStatus.BAD_REQUEST
                 );
         chatServer.members = [...chatServer.members, {...member}]
+        const memberRole = await this.roleRepository.findOne({ 
+            where: { id: chatServer.roles.find(x => x.name == 'Member').id },
+            relations: ['users']
+        })
+        memberRole.users.push(member)
+        await this.roleRepository.save(memberRole)
         await this.chatServerRepository.save(chatServer)
         return chatServer
     }
@@ -115,8 +137,8 @@ export class ChatServersService {
         chatServer.members = [...chatServer.members.filter(x => x.id != member.id)]
         await this.chatServerRepository.save(chatServer)
         return {
-            statusCode: 200,
-            message: `User (id: ${userId}) has been successfully removed from Chat Server (id: ${chatServerId})`
+            chatServer,
+            userId
         }
     }
 
@@ -173,18 +195,18 @@ export class ChatServersService {
     }
 
     async deleteChatServer(id: number) {
-        const chatServerToDelete = await this.chatServerRepository.findOneBy({ id })
+        const chatServerToDelete = await this.chatServerRepository.findOne({ 
+            where: { id },
+            relations: [
+                'members'
+            ]
+        })
         if (!chatServerToDelete)
             throw new NotFoundException()
-
         try {
             await this.chatServerRepository.delete({ id })
-            return {
-                statusCode: 200,
-                message: `Chat Server(id: ${id}) has been deleted successfully`
-            }
+            return chatServerToDelete
         } catch (e) {
-            console.log(e)
             throw new HttpException(
                 'Error while deleting chat server', 
                 HttpStatus.INTERNAL_SERVER_ERROR

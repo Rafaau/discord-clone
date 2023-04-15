@@ -12,6 +12,8 @@ import { AssignToRoleDialog } from './assign-to-role-dialog/assign-to-role-dialo
 import { ServerSettingsSnackbar } from './server-settings-snackbar/server-settings-snackbar.component';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { Subject, Subscription, takeUntil } from 'rxjs';
+import { DeleteServerConfirmDialog } from './delete-server-confirm-dialog/delete-server-confirm-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'chat-server-settings',
@@ -67,7 +69,8 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
     private readonly _rolesService: RolesService,
     private readonly _sharedDataProvider: SharedDataProvider,
     private snackbar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -228,6 +231,18 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
     }
   }
 
+  openDeleteConfirmDialog() {
+    let dialogRef = this.dialog.open(DeleteServerConfirmDialog, {
+      data: { serverName: this.chatServer!.name },
+      width: '420px',
+      panelClass: 'dialog-container'
+    })
+    const sub = dialogRef.componentInstance.onDeleteEvent.subscribe(() => {
+      this._chatServerService.deleteChatServer(this.chatServer!.id)
+      this.dialog.closeAll()
+      this.onCloseClick()
+    })
+  }
 
   isPermissed(roleName: string) {
     const permission = this.currentRole!.permissions.find(p => p[roleName])
