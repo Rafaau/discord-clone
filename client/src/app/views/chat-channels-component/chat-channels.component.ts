@@ -79,15 +79,12 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.init()
     this.router.events
+      .pipe(takeUntil(this.onDestroy$))
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         if (event.url.includes('chatserver')
         && !event.url.includes(`chatserver/${this.chatServer?.id}`))
           this.init()
-        else if (this.chatServer 
-              && event.url.includes('chatserver')
-              && !event.url.includes(`channel`)) 
-          this.redirectToChatChannel(this.chatServer!.chatCategories![0].chatChannels![0].id)
       })
     this.getCurrentUser()
     this._chatChannelService.getCreatedCategory()
@@ -164,6 +161,7 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
 
   init() {
     const serverId = this.route.snapshot.paramMap.get('serverId')
+    console.log(serverId)
     this.getChatServerDetails(Number(serverId))
     this.fetchUsers(Number(serverId))
     this.getNotifications()
