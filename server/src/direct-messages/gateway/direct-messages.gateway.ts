@@ -24,10 +24,10 @@ export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisc
                            .emit('editedDirectMessage', message)   
             })
         })
-        eventBus.on('deletedDirectMessage', (params) => {
-            params.userIds.forEach(id => {
-                this.server.to(id)
-                           .emit('deletedDirectMessage', params.id)
+        eventBus.on('deletedDirectMessage', (message) => {
+            message.directConversation.users.forEach(user => {
+                this.server.to(user.id.toString())
+                           .emit('deletedDirectMessage', message)
             })
         })
     }
@@ -70,7 +70,9 @@ export class DirectMessagesGateway implements OnGatewayConnection, OnGatewayDisc
     ) {
         const deletedMessage = await this.directMessagesService
             .deleteDirectMessage(id)
-        if (deletedMessage.statusCode == 200)
-            eventBus.emit('deletedDirectMessage', { id, userIds: deletedMessage.userIds })
+        eventBus.emit(
+            'deletedDirectMessage', 
+            deletedMessage
+        )
     }
 }

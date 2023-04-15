@@ -16,6 +16,7 @@
 
 .primary-side-bar {
     width: 65px;
+    min-width: 65px;
     height: 100%;
 }
 

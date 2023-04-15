@@ -37,7 +37,10 @@
       </div>
     </div>
   </mat-menu>
-  <div *ngIf="chatServer" cdkDropListGroup>
+  <div 
+    *ngIf="chatServer" 
+    class="channels-container"
+    cdkDropListGroup>
     <div *ngFor="let category of chatServer.chatCategories; index as i;">
       <div 
         class="chat-category"

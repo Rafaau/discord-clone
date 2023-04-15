@@ -69,7 +69,7 @@ export class DirectMessageService {
   }
 
   getDeletedMessage(): Observable<any> {
-    return this.socket.fromEvent<number>('deletedDirectMessage')
+    return this.socket.fromEvent<DirectMessage>('deletedDirectMessage')
   }
 
   getDirectMessagesByConversation(

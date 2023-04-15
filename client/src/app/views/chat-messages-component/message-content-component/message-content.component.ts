@@ -11,6 +11,7 @@ import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
 import { ChatServerInvitationService } from 'src/app/_services/chat-server-invitation.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 
 @Component({
   selector: 'message-content',
@@ -45,6 +46,7 @@ export class MessageContentComponent implements OnInit {
     private readonly _invitationService: ChatServerInvitationService,
     private readonly _chatMessageService: ChatMessagesService,
     private readonly _directMessageService: DirectMessageService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     private router: Router,
   ) { }
 
@@ -122,7 +124,7 @@ export class MessageContentComponent implements OnInit {
     this._invitationService.getInvitationByUuid(uuid)
       .subscribe(
         (invData: HttpResponse<ChatServerInvitation>) => {
-          this._chatServerService.getChatServerById(invData.body!.chatServer.id)
+          this._chatServerService.getChatServerInvitationDetails(invData.body!.chatServer.id)
           .subscribe(
             (data: HttpResponse<ChatServer>) => {
               this.chatServer = data.body!
@@ -142,19 +144,14 @@ export class MessageContentComponent implements OnInit {
 
   handleJoinChatServer() {
     if (!this.isAlreadyMember) {
-      this._chatServerService.addUserToChatServer(this.chatServer!.id, this.currentUser!.id)
-        .subscribe(
-          (data: HttpResponse<any>) => {
-            this.isLoading = true
-            setTimeout(() => {
-              this.onJoinCallback.emit()
-              this.router.navigate([{ outlets: { main: null, secondary: ['chatserver', this.chatServer!.id] } }])
-            }, 1000)
-          },
-          (error) => {
-            console.log('err')
-          }
-        )
+      this._chatServerService.addMemberToChatServer(this.chatServer!.id, this.currentUser!.id)
+      this.isLoading = true
+      setTimeout(() => {
+        this.onJoinCallback.emit()
+        this._sharedDataProvider.emitJoinedServer(this.chatServer!)
+        this._sharedDataProvider.emitUpdatedUser(this.currentUser!.id)
+        this.router.navigate([{ outlets: { main: null, secondary: ['chatserver', this.chatServer!.id] } }])
+      }, 1000)
     }
   }
 

@@ -34,7 +34,7 @@ export class AuthService {
   getAuthStatus() : Observable<HttpResponse<any>> {
     return this.httpClient.get(
       this.api+'/auth/status', 
-      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.noInterceptHeaders }
     )
   }
 
@@ -60,7 +60,7 @@ export class AuthService {
   logout() : Observable<HttpResponse<{}>> {
     return this.httpClient.get(
       this.api+'/auth/logout', 
-      { observe: 'response', withCredentials: true, headers: ApiHelpers.headers }
+      { observe: 'response', withCredentials: true, headers: ApiHelpers.noInterceptHeaders }
     )
   }
 }

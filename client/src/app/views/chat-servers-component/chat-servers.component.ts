@@ -49,6 +49,8 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   notifications: Notification[] = []
   @Output()
   notificationsToPass = new EventEmitter<Notification[]>
+  @Output()
+  updateUser = new EventEmitter<number>()
   groupedNotifications: Array<Array<Notification>> = [
     [],
   ]
@@ -64,6 +66,37 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this._chatServerService.getDeletedChatServer()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (chatServer: ChatServer) => {
+          this.chatServers = this.chatServers.filter(x => x.id != chatServer.id)
+          if (this.router.url.includes(`chatserver/${chatServer.id}`))
+            this.router.navigate([''])
+              .then(() => {
+                this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+              })
+        })
+    this._sharedDataProvider.joinedServer
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (chatServer: ChatServer) => {
+          this.chatServers.push(chatServer)
+          this.getNotifications(this.currentUser!.id)
+        })
+    this._chatServerService.getRemovedMember()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data: any) => {
+          if (data.userId == this.currentUser!.id) {
+            this.chatServers = this.chatServers.filter(x => x.id != data.chatServer.id)
+            if (this.router.url.includes(`chatserver/${data.chatServer.id})`))
+              this.router.navigate([''])
+                .then(() => {
+                  this.router.navigate([{ outlets: { main: 'friends', secondary: ['directmessages'] } }])
+              })
+          } 
+      })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -161,7 +194,7 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
 
   openAddServerDialog() {
     let dialogRef = this.dialog.open(AddServerDialog, {
-      data: { name: 'Rafau' },
+      data: { currentUser: this.currentUser },
       width: '450px',
       panelClass: 'add-server-dialog',
       height: '272px'
@@ -170,10 +203,8 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
       this.getChatServers(this.currentUser!.id)
       setTimeout(() => {
         const lastChatServer = this.chatServers.sort((a,b) => a.id - b.id)[this.chatServers.length - 1]
-        this.router.navigate(
-          ['/chatserver'], 
-          { queryParams: { id: lastChatServer.id } }
-        )
+        this.updateUser.emit(this.currentUser!.id)
+        this.router.navigate([{ outlets: { main: null, secondary: ['chatserver', lastChatServer.id] } }])
       }, 100)
     })
     dialogRef.afterClosed().subscribe(() => {

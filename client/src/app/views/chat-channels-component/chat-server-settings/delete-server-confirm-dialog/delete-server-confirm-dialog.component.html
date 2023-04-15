@@ -1,0 +1,36 @@
+<div class="container">
+  <mat-icon 
+    class="close"
+    mat-dialog-close>
+    close
+  </mat-icon>
+  <h1>Delete '{{ data.serverName }}'</h1>
+  <p>
+    Are you sure you want to delete <strong>{{ data.serverName }}</strong>? This action cannot be undone.
+  </p>
+  <h5>ENTER SERVER NAME</h5>
+  <mat-form-field appearance="fill" class="full-width">
+    <input
+      matInput
+      matNativeControl
+      (value)="inputValue"
+      (input)="onValueChange($event)"/>
+  </mat-form-field>
+  <mat-error *ngIf="isInvalid">
+    Server name is <strong>invalid</strong>
+  </mat-error>
+</div>
+<div class="bottom-actions">
+  <div 
+    class="cancel"
+    mat-dialog-close>
+    Cancel
+  </div>
+  <button
+    mat-raised-button
+    color="warn"
+    class="submit-btn"
+    (click)="onDelete()">
+    Delete Server
+  </button>
+</div>

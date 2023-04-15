@@ -79,6 +79,9 @@ export class DirectMessagesService {
             relations: [
                 'directConversation',
                 'directConversation.users',
+                'user',
+                'reactions',
+                'reactions.user'
             ]
         })
         if (!messageToUpdate)
@@ -99,18 +102,8 @@ export class DirectMessagesService {
         })
         if (!messageToDelete)
             throw new NotFoundException()
-        
-        // CONVERSATION USERS
-        let userIds: string[] = []
-        messageToDelete.directConversation.users.forEach(user => {
-            userIds.push(user.id.toString())
-        })
 
         await this.directMessageRepository.delete(messageToDelete)
-        return {
-            statusCode: 200,
-            message: `Direct Message(id: ${id}) has been deleted successfully`,
-            userIds
-        }
+        return messageToDelete
     }
 }

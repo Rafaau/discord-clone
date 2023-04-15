@@ -58,7 +58,6 @@ export class ChatChannelsService {
         chatCategory.chatServer.members.forEach(member => {
             userIds.push(member.id.toString())
         })
-        console.log(newChatChannel)
         await this.chatChannelRepository.save(newChatChannel)
         return { newChatChannel, userIds }
     }
@@ -238,8 +237,7 @@ export class ChatChannelsService {
 
         await this.chatChannelRepository.delete(chatChannelToDelete)
         return {
-            statusCode: 200,
-            message: `Chat Channel(id : ${id}) has been deleted successfully`,
+            chatChannelToDelete,
             userIds
         }
     }

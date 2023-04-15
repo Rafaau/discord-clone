@@ -15,8 +15,11 @@ export class MessagesReactionsGateway implements OnGatewayConnection, OnGatewayD
                            .emit('newMessageReaction', reaction.newMessageReaction)
             })
         })
-        eventBus.on('deletedReaction', (params) => {
-            this.server.emit('deletedReaction', [params[0], params[1]])
+        eventBus.on('deletedReaction', (reaction) => {
+            reaction.userIds.forEach(userId => {
+                this.server.to(userId)
+                           .emit('deletedReaction', reaction.reaction)
+            })
         })
     }
 
@@ -44,7 +47,6 @@ export class MessagesReactionsGateway implements OnGatewayConnection, OnGatewayD
     ) {
         const deletedReaction = await this.messageReactionsService
             .deleteReaction(params[0])
-        if (deletedReaction.statusCode == 200)
-            eventBus.emit('deletedReaction', [params[0], params[1]])
+        eventBus.emit('deletedReaction', deletedReaction)
     }
 }

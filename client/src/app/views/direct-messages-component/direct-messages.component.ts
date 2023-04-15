@@ -19,6 +19,7 @@ import { ConfirmDeleteDialog } from '../chat-messages-component/confirm-delete-d
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @Component({
   selector: 'app-direct-messages',
@@ -54,6 +55,7 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
   @Output()
   onJoinCallback = new EventEmitter()
   @ViewChild('wrapper') myScrollContainer?: ElementRef
+  @ViewChild(InfiniteScrollDirective) infiniteScrollDirective?: InfiniteScrollDirective
   currentRoute = new LocationHrefProvider(this.location)
   directConversation?: DirectConversation
   directMessages: DirectMessage[] = []
@@ -99,6 +101,7 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       this.messageToReact = 0
       this.messageToEditId = 0
       this.messageToReply = undefined
+      this.interlocutor = undefined
       this.init()
     })
     this._directMessageService.getNewMessage()
@@ -121,8 +124,9 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
     this._directMessageService.getDeletedMessage()
         .pipe(takeUntil(this.onDestroy$))
         .subscribe(
-          (messageId: number) => {
-            this.directMessages = this.directMessages.filter(x => x.id != messageId)
+          (message: DirectMessage) => {
+            console.log(message)
+            this.directMessages = this.directMessages.filter(x => x.id != message.id)
           }
         )  
   }
@@ -147,6 +151,8 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       })
     setTimeout(() => {
       this.doNotScroll = true // to avoid scrolling on tooltip display
+      this.infiniteScrollDirective!.destroyScroller()
+      this.infiniteScrollDirective!.setup()
     }, 500)
   }
 

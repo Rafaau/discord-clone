@@ -8,6 +8,7 @@ import { User } from "src/typeorm/user";
 import { FileService } from "src/utils/file-service/file.service";
 import { ChatServersController } from "./chat-servers.controller";
 import { ChatServersService } from "./chat-servers.service";
+import { ChatServersGateway } from "./gateway/chat-servers.gateway";
 
 
 @Module({
@@ -19,6 +20,10 @@ import { ChatServersService } from "./chat-servers.service";
         Role,
     ])],
     controllers: [ChatServersController],
-    providers: [ChatServersService, FileService]
+    providers: [
+        ChatServersService, 
+        FileService,
+        ChatServersGateway
+    ]
 })
 export class ChatServerModule {}

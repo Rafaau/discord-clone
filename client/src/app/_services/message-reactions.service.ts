@@ -38,6 +38,6 @@ export class MessageReactionsService {
   }
 
   getDeletedReaction(): Observable<any> {
-    return this.socket.fromEvent<any>('deletedReaction')
+    return this.socket.fromEvent<MessageReaction>('deletedReaction')
   }
 }

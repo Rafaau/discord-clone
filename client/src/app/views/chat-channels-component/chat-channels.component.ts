@@ -94,6 +94,7 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (category: ChatCategory) => {
+          category.chatChannels = []
           this.chatServer!.chatCategories!.push(category)
         }
       )
@@ -104,17 +105,18 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           const actualCategory = this.chatServer!.chatCategories!.find(category =>
             category.id == channel.chatCategory.id
           )!
+          console.log(actualCategory)
           actualCategory.chatChannels.push(channel)
         }
       )
     this._chatChannelService.getDeletedChannel()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
-        (channelId: number) => {
+        (channel: ChatChannel) => {
           const actualCategory = this.chatServer!.chatCategories!.find(category =>
-            category.chatChannels.some(channel => channel.id == channelId)
+            category.chatChannels.some(channel => channel.id == channel.id)
           )!
-          actualCategory.chatChannels = actualCategory.chatChannels.filter(x => x.id != channelId)
+          actualCategory.chatChannels = actualCategory.chatChannels.filter(x => x.id != channel.id)
         }
       )
     this._chatChannelService.getMovedChannel()
@@ -182,7 +184,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.body!.chatCategories!.length; i++) {
           this.toExpand.push(true)
         }
-
         this.chatChannels = data.body!.chatCategories!.map(x => x.chatChannels).flat()
         this.redirectToChatChannel(
           data.body!.chatCategories![0].chatChannels![0].id
@@ -390,7 +391,7 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     if (this.currentUser && this.chatServer) {
       const currentChatServerId = this.chatServer.id
       const userRolesForCurrentServer = this.currentUser.roles!.filter(role => role.chatServer.id === currentChatServerId)
-    
+      
       return userRolesForCurrentServer.some(role => {
         return role.permissions.some(permission => permission['administrator'] === true)
       })

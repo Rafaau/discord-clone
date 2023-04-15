@@ -1,6 +1,18 @@
 .chat-servers-container {
+    position: absolute;
     display: block;
+    overflow-y: scroll;
+    top: 65px;
+    left: 0px;
+    bottom: 0;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    padding: 0 0 30px 10px;
 }
+
+    .chat-servers-container::-webkit-scrollbar {
+        display: none;
+    }
 
 hr {
     width: 45%;

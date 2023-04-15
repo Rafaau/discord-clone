@@ -15,9 +15,14 @@ export class DirectConversationsController {
         @Res() response: Response
     ) {
         try {
+            const conversation = await this.directConversationsService
+                .createDirectConversation(createDirectConversationDto)
+            conversation.users[0].id != createDirectConversationDto.users[1].id ? 
+                conversation.users = [conversation.users[1], conversation.users[0]]
+            : null
             response
                 .status(HttpStatus.CREATED)
-                .json(await this.directConversationsService.createDirectConversation(createDirectConversationDto))
+                .json(conversation)
         } catch (e) {
             response
                 .status(e.status)

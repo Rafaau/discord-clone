@@ -21,6 +21,8 @@ import { NotificationsService } from 'src/app/_services/notifications.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { Subject, takeUntil } from 'rxjs';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { ChatServer } from 'src/app/_models/chat-servers';
 
 @Component({
   selector: 'app-chat-messages',
@@ -57,6 +59,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   @Output()
   onJoinCallback = new EventEmitter()
   @ViewChild('wrapper') myScrollContainer?: ElementRef
+  @ViewChild(InfiniteScrollDirective) infiniteScrollDirective?: InfiniteScrollDirective
   currentRoute = new LocationHrefProvider(this.location)
   chatMessages: ChatMessage[] = []
   chatChannel?: ChatChannel
@@ -97,17 +100,14 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     private readonly _chatServerService: ChatServerService,
     private readonly _messageReactionsService: MessageReactionsService,
     private readonly _notificationsService: NotificationsService,
-    private readonly _sharedDatatProvider: SharedDataProvider,
-    private readonly _usersService: UsersService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     public dialog: MatDialog,
-    private socket: Socket
   ) { }
 
   ngOnInit() {
     this.init()
     this.route.params.subscribe(params => {
       this.chatMessages = []
-      this.page = 1
       this.messageToReact = 0
       this.messageToReply = undefined
       this.messageToEditId = 0
@@ -117,26 +117,44 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: ChatMessage) => {
-          if (message.chatChannel.id == this.chatChannel!.id) {
+          if (message.chatChannel.id == this.chatChannel!.id) {          
             this.chatMessages.push(message)
             this.smoothScroll()
           }
-        }
-      )
+        })
     this._chatMessagesService.getEditedMessage()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (message: ChatMessage) => {
-          this.chatMessages.filter(x => x.id == message.id)[0].content = message.content
-        }
-      )
-    this._chatMessagesService.getDeletedMessage()
-        .pipe(takeUntil(this.onDestroy$))
-        .subscribe(
-          (messageId: number) => {
-            this.chatMessages = this.chatMessages.filter(x => x.id != messageId)
+          if (message.chatChannel.id == this.chatChannel!.id) { 
+            this.chatMessages.filter(x => x.id == message.id)[0].content = message.content
           }
-        )
+        })
+    this._chatMessagesService.getDeletedMessage()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (message: ChatMessage) => {
+          this.chatMessages = this.chatMessages.filter(x => x.id != message.id)
+        })
+    this._chatServerService.getNewMember()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (chatServer: ChatServer) => {
+          console.log(chatServer.members)
+          if (this.router.url.includes(`chatserver/${chatServer.id})`)) {
+            chatServer.members!.forEach(member => {
+              if (!this.members!.find(x => x.id == member.id))
+                this.members!.push(member)
+            })
+          }
+        })
+    this._chatServerService.getRemovedMember()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data: any) => {
+          if (this.router.url.includes(`chatserver/${data.chatServer.id})`))
+            this.members = this.members!.filter(x => x.id != data.userId)
+        })
   }
 
   ngOnDestroy() {
@@ -149,24 +167,31 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     this.getCurrentUser()
     this.getMembers()
     const channelId = this.route.snapshot.paramMap.get('channelId')
-    if (this.page == 1 && Number(channelId)) {
-      this.fetchChatMessages(Number(channelId))
+    if (Number(channelId)) {
+      const cachedPage = this._sharedDataProvider.getChannelPage(Number(channelId))
+      const pages = cachedPage ? cachedPage : 1
+      for (let i = 1; i <= pages; i++) {
+        this.page = i
+        this.fetchChatMessages(Number(channelId))
+      }
       this.getChatChannel(Number(channelId))
     }
     setTimeout(() => {
+      this.infiniteScrollDirective!.destroyScroller()
+      this.infiniteScrollDirective!.setup()
       this.doNotScroll = true // to avoid scrolling on tooltip display
     }, 500)
   }
 
   getCurrentUser() {
-    this._sharedDatatProvider.getCurrentUser().subscribe(
+    this._sharedDataProvider.getCurrentUser().subscribe(
       (user: User) => {
         this.currentUser = user
       })
   }
 
   getMembers() {
-    this._sharedDatatProvider.getMembers().subscribe(
+    this._sharedDataProvider.getMembers().subscribe(
       (members: User[]) => {
         this.members = members
 
@@ -178,17 +203,18 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   fetchChatMessages(channelId: number) {
-      this._chatMessagesService.getChatMessages(channelId, this.page).subscribe(
-        (data: HttpResponse<ChatMessage[]>) => {
-          if (this.page > 1)
-            this.chatMessages = this.chatMessages.concat(data.body!)
-          else
-            this.chatMessages = data.body!
-        },
-        (error) => {
-          console.log('err')
-        }
-      )
+    this._chatMessagesService.getChatMessages(channelId, this.page).subscribe(
+      (data: HttpResponse<ChatMessage[]>) => {
+        if (this.page > 1)
+          this.chatMessages = this.chatMessages.concat(data.body!)
+        else
+          this.chatMessages = data.body!
+        this._sharedDataProvider.setChannelPage(channelId, this.page)
+      },
+      (error) => {
+        console.log('err')
+      }
+    )
   }
 
   scrollToLastMessage() {
@@ -407,16 +433,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   onKickMember(userId: number) {
-    this._chatServerService.removeMemberFromChatServer(this.chatChannel!.chatCategory.chatServer!.id, userId)
-      .subscribe(
-        (data: HttpResponse<any>) => {
-          this.members = this.members!.filter(x => x.id != userId)
-          this.currentMemberOptions = 0
-        },
-        (error) => {
-          console.log('err')
-        }
-      )
+    this._chatServerService.removeMemberFromChatServer(
+      this.chatChannel!.chatCategory.chatServer!.id, 
+      userId
+    )
+    this.currentMemberOptions = 0
   }
 
   closeMemberOptions(event: Event) {
