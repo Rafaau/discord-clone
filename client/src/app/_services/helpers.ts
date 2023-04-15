@@ -18,7 +18,6 @@ export class ApiHelpers {
     'No-Intercept': 'true'
   })
 
-
   static updateAuthorizationHeader(token: string) {
     this.headers = this.headers.set('Authorization', `Bearer ${token}`)
     this.noInterceptHeaders = this.noInterceptHeaders.set('Authorization', `Bearer ${token}`)

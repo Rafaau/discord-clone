@@ -38,7 +38,8 @@
             [class.reply-message]="message.content.includes('<!replyToDirectMessage')">
             <div 
               *ngIf="toDate(directMessages[i-1]?.postDate!) != toDate(message.postDate)"
-              class="date-hr">
+              class="date-hr"
+              [ngClass]="message.content.includes('<!replyToDirectMessage') ? 'reply-date-hr' : ''">
               <hr/>
               {{ message.postDate | date:'d MMM y' }}
               <hr/>
