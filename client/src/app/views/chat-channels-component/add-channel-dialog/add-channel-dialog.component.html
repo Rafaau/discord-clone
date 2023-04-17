@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [formGroup]="channelForm">
   <mat-icon 
     class="close"
     mat-dialog-close>
@@ -7,18 +7,35 @@
   <h1>Create Channel</h1>
   <p>in {{ data.categoryName }} </p>
   <h2>CHANNEL TYPE</h2>
-  <div class="channel-type">
-    <div class="hashtag">#</div>
-    <div>
-      <div class="type-title">Text</div>
-      <div class="type-desc">
-        Send messages, images, GIFs, emoji, opinions and puns
+  <mat-radio-group formControlName="type">
+    <div class="channel-type">
+      <div class="hashtag">#</div>
+      <div>
+        <div class="type-title">Text</div>
+        <div class="type-desc">
+          Send messages, images, GIFs, emoji, opinions and puns
+        </div>
       </div>
+      <mat-radio-button 
+        checked 
+        [value]="channelType.Text">
+      </mat-radio-button>
     </div>
-    <mat-radio-button checked></mat-radio-button>
-  </div>
+    <div class="channel-type">
+      <div class="hashtag">
+        <i class="fa-solid fa-volume-high"></i>
+      </div>
+      <div>
+        <div class="type-title">Voice</div>
+        <div class="type-desc">
+          Hang out together with voice, video and screen share
+        </div>
+      </div>
+      <mat-radio-button [value]="channelType.Voice"></mat-radio-button>
+    </div>
+  </mat-radio-group>
   <h2>CHANNEL NAME</h2>
-  <mat-dialog-content [formGroup]="channelForm">
+  <mat-dialog-content>
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>#</mat-label>
       <input

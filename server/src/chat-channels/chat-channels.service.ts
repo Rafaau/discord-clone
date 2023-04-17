@@ -176,6 +176,20 @@ export class ChatChannelsService {
         }
     }
 
+    async getMembersByChannelId(id: number) {
+        const chatChannel = await this.chatChannelRepository.findOne({ 
+            where: { id },
+            relations: [
+                'chatCategory',
+                'chatCategory.chatServer',
+                'chatCategory.chatServer.members'
+            ]
+        })
+        if (!chatChannel)
+            throw new NotFoundException()
+        return chatChannel.chatCategory.chatServer.members
+    }
+
     async updateChatChannel(
         id: number,
         chatChannelDetails: UpdateChatChannelParams

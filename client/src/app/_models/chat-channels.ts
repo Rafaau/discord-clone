@@ -7,16 +7,19 @@ export interface ChatChannel {
     id: number,
     name: string,
     index: number,
+    type: ChannelType,
     chatCategory: ChatCategory,
     chatMessages: ChatMessage[],
     hasNotification?: boolean,
     isPrivate: boolean,
     users?: User[],
-    roles?: Role[]
+    roles?: Role[],
+    voiceUsers?: User[]
 }
 
 export interface CreateChatChannelParams {
     name: string,
+    type: ChannelType,
     isPrivate: boolean,
     users?: User[],
     roles?: Role[]
@@ -27,5 +30,10 @@ export interface UpdateChatChannelParams {
     isPrivate?: boolean,
     users?: User[],
     roles?: Role[]
+}
+
+export enum ChannelType {
+    Text = 'text',
+    Voice = 'voice'
 }
 

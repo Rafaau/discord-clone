@@ -45,6 +45,7 @@ h2 {
     line-height: 60px;
     padding: auto;
     cursor: pointer;
+    margin-bottom: 10px;
 }
 
 .hashtag {
@@ -107,6 +108,10 @@ h2 i {
     margin-right: 7px;
 }
 
+mat-radio-button {
+    margin-left: auto;
+}
+
 mat-slide-toggle {
     margin-left: auto;
     margin-top: 18px;
@@ -115,4 +120,8 @@ mat-slide-toggle {
 
 mat-dialog-content {
     overflow-x: hidden;
+}
+
+.fa-volume-high {
+    font-size: 20px;
 }

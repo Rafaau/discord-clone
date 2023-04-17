@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ChatCategory } from 'src/app/_models/chat-category';
@@ -15,13 +15,15 @@ import { AddCategoryDialog } from './add-category-dialog/add-category-dialog.com
 import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-invitation.component';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ChatChannel, UpdateChatChannelParams } from 'src/app/_models/chat-channels';
+import { ChannelType, ChatChannel, UpdateChatChannelParams } from 'src/app/_models/chat-channels';
 import { Notification } from 'src/app/_models/notification';
 import { NotificationsService } from 'src/app/_services/notifications.service';
 import { ChannelPermissionsDialog } from './channel-permissions-dialog/channel-permissions.component';
 import { RouteParamsProvider } from 'src/app/utils/RouteParamsProvider.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { Subject, Subscription, filter, takeUntil } from 'rxjs';
+import { VoiceService } from 'src/app/_services/voice.service';
+import Peer, { MediaConnection } from 'peerjs';
 
 @Component({
   selector: 'app-chat-channels',
@@ -49,6 +51,7 @@ import { Subject, Subscription, filter, takeUntil } from 'rxjs';
 export class ChatChannelsComponent implements OnInit, OnDestroy {
   chatServer?: ChatServer
   chatChannels?: ChatChannel[]
+  channelType = ChannelType
   toExpand: boolean[] = []
   isOpen: boolean[] = []
   isServerMenuExpanded: boolean = false
@@ -62,6 +65,19 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   categorySrc?: ChatCategory
   currentChannel: number = 0
   onDestroy$ = new Subject<void>()
+  currentVoiceChannel?: ChatChannel
+  peer?: Peer
+  channelPeers: Peer[] = []
+  peerId: string = 'empty'
+  currentPeer: any
+  peerList: any[] = []
+  peerToCall: string = ''
+  currentConnection: MediaConnection | null = null
+  @ViewChild('remoteAudio') remoteAudio?: ElementRef
+
+  onPeerValueChange(event: Event) {
+    this.peerToCall = (event.target as any).value
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -73,8 +89,11 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     private readonly _chatChannelService: ChatChannelService,
     private readonly _notificationsService: NotificationsService,
     private readonly _sharedDataProvider: SharedDataProvider,
+    private readonly _voiceService: VoiceService,
     private location: Location,
-  ) { }
+  ) { 
+    this.peer = new Peer()
+  }
 
   ngOnInit() {
     this.init()
@@ -146,6 +165,28 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       (event: ChatServer) => {
         this.chatServer = event
       })
+    this._voiceService.getJoinedVoiceChannel()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data) => {
+          console.log(`User ${data.user.id} has joined channel ${data.voiceChannelId}`)
+          const actualChannel = this.chatServer!.chatCategories!.find(category => 
+            category.chatChannels.some(channel => channel.id == data.voiceChannelId)
+          )!.chatChannels.find(channel => channel.id == data.voiceChannelId)!
+          if (!actualChannel.voiceUsers)
+            actualChannel.voiceUsers = []
+          actualChannel.voiceUsers!.push(data.user)
+        })
+    this._voiceService.getLeftVoiceChannel()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data) => {
+          console.log(`User ${data.user.id} has left channel ${data.voiceChannelId}`)
+          const actualChannel = this.chatServer!.chatCategories!.find(category => 
+            category.chatChannels.some(channel => channel.id == data.voiceChannelId)
+          )!.chatChannels.find(channel => channel.id == data.voiceChannelId)!
+          actualChannel.voiceUsers = actualChannel.voiceUsers!.filter(x => x.id != data.user.id)
+        })
 
     const regex = /main:channel\/(\d+)/
     const match = this.router.url.match(regex)
@@ -183,6 +224,13 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           this.toExpand.push(true)
         }
         this.chatChannels = data.body!.chatCategories!.map(x => x.chatChannels).flat()
+        
+        this.chatChannels.forEach(x => {
+          if (x.type == this.channelType.Voice)
+            this.channelPeers.push(new Peer(`channel-${x.id}`))
+        })
+        this.initPeerConnection()
+
         this.redirectToChatChannel(
           data.body!.chatCategories![0].chatChannels![0].id
         )
@@ -240,6 +288,105 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
 
       this.currentChannel = channelId
     }
+  }
+
+  joinVoiceChannel(channel: ChatChannel) {
+    this._voiceService.joinVoiceChannel(this.currentUser!.id, channel.id)
+    this.currentVoiceChannel = channel
+    const joinSound = document.getElementById('joinSound')! as HTMLAudioElement
+    joinSound.currentTime = 0
+    joinSound.play()
+    this.callPeer(`channel-${channel.id}`)
+  }
+  
+  leaveVoiceChannel(channelId: number) {
+    this._voiceService.leaveVoiceChannel(this.currentUser!.id, this.currentVoiceChannel!.id)
+    this.currentConnection?.close()
+    const leaveSound = document.getElementById('leaveSound')! as HTMLAudioElement
+    leaveSound.currentTime = 0
+    leaveSound.play()
+    this.currentVoiceChannel = undefined
+  }
+
+  initPeerConnection() {
+    this.peer?.on('open', id => {
+      console.log('open')
+      this.peerId = id
+    })
+
+    this.channelPeers.forEach(x => {
+      x.on('open', id => {
+        console.log('open')
+      })
+
+      x.on('call', call => {
+        console.log('called')
+        navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+          },
+          video: false 
+        }).then(stream => {
+          call.answer(stream)
+          call.on('stream', remoteStream => {
+            console.log('rec')
+            this.currentPeer = call.peerConnection
+            this.peerList.push(call.peer)
+            this.remoteAudio!.nativeElement.srcObject = remoteStream
+          })
+        }).catch(err => {
+          console.log(err)
+        })
+      })
+    })
+
+    this.peer?.on('call', call => {
+      console.log('called')
+      navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+        },
+        video: false 
+      }).then(stream => {
+        call.answer(stream)
+        call.on('stream', remoteStream => {
+          console.log('rec')
+          this.currentPeer = call.peerConnection
+          this.peerList.push(call.peer)
+          this.remoteAudio!.nativeElement.srcObject = remoteStream
+        })
+      }).catch(err => {
+        console.log(err)
+      })
+    })
+  }
+
+  callPeer(id: string) {
+    navigator.mediaDevices.getUserMedia({ 
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+      },
+      video: false 
+    }).then(stream => {
+      const call = this.peer!.call(id, stream)
+      this.currentConnection = call
+      call!.on('stream', remoteStream => {
+        console.log('stream')
+        if (!this.peerList.includes(call.peer)) {
+          this.currentPeer = call.peerConnection
+          this.peerList.push(call.peer)
+          const audio = document.createElement('audio');
+          audio.style.display = "none";
+          this.remoteAudio!.nativeElement.srcObject = remoteStream;
+          document.body.appendChild(audio);
+        }
+      })
+    }).catch(err => {
+      console.log(err)
+    })
   }
 
   openCreateChannelDialog(category: ChatCategory, doNotCollapse: number) {
