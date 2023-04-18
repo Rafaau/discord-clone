@@ -49,6 +49,7 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { CacheInterceptor } from './utils/CacheInterceptor';
 import { CacheResolverService } from './utils/CacheResolver.service';
 import { DeleteServerConfirmDialog } from './views/chat-channels-component/chat-server-settings/delete-server-confirm-dialog/delete-server-confirm-dialog.component';
+import { VoicePanelComponent } from './views/main-layout/voice-panel/voice-panel.component';
 
 const socketIoConfig: SocketIoConfig = { 
   url: process.env.NG_APP_SOCKET_PATH || 'http://localhost:3000', 
@@ -84,7 +85,8 @@ const socketIoConfig: SocketIoConfig = {
     AssignToRoleDialog,
     ChannelPermissionsDialog,
     RemoveConfirmDialog,
-    DeleteServerConfirmDialog
+    DeleteServerConfirmDialog,
+    VoicePanelComponent
   ],
   imports: [
     BrowserModule,

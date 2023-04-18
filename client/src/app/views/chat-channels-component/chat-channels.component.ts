@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { HttpResponse } from '@angular/common/http';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, NavigationSkippedCode, NavigationStart, Router } from '@angular/router';
 import { ChatCategory } from 'src/app/_models/chat-category';
 import { ChatServer } from 'src/app/_models/chat-servers';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
@@ -23,7 +23,7 @@ import { RouteParamsProvider } from 'src/app/utils/RouteParamsProvider.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { Subject, Subscription, filter, takeUntil } from 'rxjs';
 import { VoiceService } from 'src/app/_services/voice.service';
-import Peer, { MediaConnection } from 'peerjs';
+import Peer, { DataConnection, MediaConnection } from 'peerjs';
 
 @Component({
   selector: 'app-chat-channels',
@@ -69,15 +69,18 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   peer?: Peer
   channelPeers: Peer[] = []
   peerId: string = 'empty'
-  currentPeer: any
+  currentPeer?: RTCPeerConnection
   peerList: any[] = []
-  peerToCall: string = ''
   currentConnection: MediaConnection | null = null
+  current?: Peer
+  channelVoiceUsers = new Map<string, number[]>()
+  activeCalls: MediaConnection[] = []
   @ViewChild('remoteAudio') remoteAudio?: ElementRef
-
-  onPeerValueChange(event: Event) {
-    this.peerToCall = (event.target as any).value
-  }
+  @ViewChild('localAudio') localAudio?: ElementRef
+  userStream?: MediaStream
+  isMuted: boolean = false
+  dataConnections: DataConnection[] = []
+  mutedPeers: { [peerId: string]: boolean } = {}
 
   constructor(
     private route: ActivatedRoute,
@@ -91,19 +94,21 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     private readonly _sharedDataProvider: SharedDataProvider,
     private readonly _voiceService: VoiceService,
     private location: Location,
-  ) { 
-    this.peer = new Peer()
-  }
+  ) {}
 
   ngOnInit() {
     this.init()
     this.router.events
-      .pipe(takeUntil(this.onDestroy$))
-      .pipe(filter((event) => event instanceof NavigationEnd))
+      .pipe(
+        takeUntil(this.onDestroy$),
+        filter(
+          (event) => event instanceof NavigationEnd &&
+          event.url.includes('chatserver') &&
+          !event.url.includes(`chatserver/${this.chatServer?.id}`)
+        )
+      )
       .subscribe((event: any) => {
-        if (event.url.includes('chatserver')
-        && !event.url.includes(`chatserver/${this.chatServer?.id}`))
-          this.init()
+        this.init()
       })
     this.getCurrentUser()
     this._chatChannelService.getCreatedCategory()
@@ -121,7 +126,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           const actualCategory = this.chatServer!.chatCategories!.find(category =>
             category.id == channel.chatCategory.id
           )!
-          console.log(actualCategory)
           actualCategory.chatChannels.push(channel)
         }
       )
@@ -176,6 +180,12 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           if (!actualChannel.voiceUsers)
             actualChannel.voiceUsers = []
           actualChannel.voiceUsers!.push(data.user)
+          const voiceUsers = this.channelVoiceUsers.get(`channel-${actualChannel.id}`)
+          if (!voiceUsers) {
+            this.channelVoiceUsers.set(`channel-${actualChannel.id}`, [data.user.id])
+            return
+          }
+            this.channelVoiceUsers.set(`channel-${actualChannel.id}`, [...voiceUsers, data.user.id])
         })
     this._voiceService.getLeftVoiceChannel()
       .pipe(takeUntil(this.onDestroy$))
@@ -186,6 +196,9 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
             category.chatChannels.some(channel => channel.id == data.voiceChannelId)
           )!.chatChannels.find(channel => channel.id == data.voiceChannelId)!
           actualChannel.voiceUsers = actualChannel.voiceUsers!.filter(x => x.id != data.user.id)
+          const voiceUsers = this.channelVoiceUsers.get(`channel-${actualChannel.id}`)!
+          this.channelVoiceUsers.set(`channel-${actualChannel.id}`, voiceUsers.filter(x => x != data.user.id))
+          this.peerList = this.peerList.filter(x => x != `user-${data.user.id}`)
         })
 
     const regex = /main:channel\/(\d+)/
@@ -193,6 +206,8 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     if (match) {
       this.currentChannel = parseInt(match[1])
     }
+
+    this.initPeerConnection()
   }
 
   ngOnDestroy() {
@@ -202,7 +217,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
 
   init() {
     const serverId = this.route.snapshot.paramMap.get('serverId')
-    console.log(serverId)
     this.getChatServerDetails(Number(serverId))
     this.fetchUsers(Number(serverId))
     this.getNotifications()
@@ -211,7 +225,11 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   getCurrentUser() {
     this._sharedDataProvider.getCurrentUser().subscribe(
       (user: User) => {
-        this.currentUser = user
+        if (user) {
+          this.currentUser = user
+          this.peer = new Peer(`user-${user.id}`)
+          this.initPeerConnection()
+        }
       }
     )
   }
@@ -224,12 +242,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           this.toExpand.push(true)
         }
         this.chatChannels = data.body!.chatCategories!.map(x => x.chatChannels).flat()
-        
-        this.chatChannels.forEach(x => {
-          if (x.type == this.channelType.Voice)
-            this.channelPeers.push(new Peer(`channel-${x.id}`))
-        })
-        this.initPeerConnection()
 
         this.redirectToChatChannel(
           data.body!.chatCategories![0].chatChannels![0].id
@@ -291,18 +303,33 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   }
 
   joinVoiceChannel(channel: ChatChannel) {
+    if (this.currentVoiceChannel) 
+      this.leaveVoiceChannel()
+    if (this.currentVoiceChannel?.id == channel.id) return
     this._voiceService.joinVoiceChannel(this.currentUser!.id, channel.id)
     this.currentVoiceChannel = channel
+    const voiceUsers = this.channelVoiceUsers.get(`channel-${channel.id}`)
+    voiceUsers?.forEach(x => {
+      if (x == this.currentUser!.id) return
+      this.callPeer(`user-${x}`)
+    })
     const joinSound = document.getElementById('joinSound')! as HTMLAudioElement
     joinSound.currentTime = 0
     joinSound.play()
-    this.callPeer(`channel-${channel.id}`)
+    //this._voiceService.emitVoiceChannel(channel)
   }
   
-  leaveVoiceChannel(channelId: number) {
+  leaveVoiceChannel() {
     this._voiceService.leaveVoiceChannel(this.currentUser!.id, this.currentVoiceChannel!.id)
-    this.currentConnection?.close()
+    this.activeCalls.forEach(x => x.close())
+    this.activeCalls = []
+    this.peerList = []
+    this.isMuted = false
     const leaveSound = document.getElementById('leaveSound')! as HTMLAudioElement
+    this.dataConnections.forEach(x => {
+      x.send({ type: 'mute', isMuted: false, peerId: this.peerId })
+    })
+    this.mutedPeers[this.peerId] = false
     leaveSound.currentTime = 0
     leaveSound.play()
     this.currentVoiceChannel = undefined
@@ -310,39 +337,16 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
 
   initPeerConnection() {
     this.peer?.on('open', id => {
-      console.log('open')
+      console.log('client opened')
       this.peerId = id
-    })
-
-    this.channelPeers.forEach(x => {
-      x.on('open', id => {
-        console.log('open')
-      })
-
-      x.on('call', call => {
-        console.log('called')
-        navigator.mediaDevices.getUserMedia({ 
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-          },
-          video: false 
-        }).then(stream => {
-          call.answer(stream)
-          call.on('stream', remoteStream => {
-            console.log('rec')
-            this.currentPeer = call.peerConnection
-            this.peerList.push(call.peer)
-            this.remoteAudio!.nativeElement.srcObject = remoteStream
-          })
-        }).catch(err => {
-          console.log(err)
-        })
-      })
     })
 
     this.peer?.on('call', call => {
       console.log('called')
+      console.log(this.peerList)
+      if (!this.peerList.includes(call.peer))
+        this.callPeer(call.peer)
+      this.activeCalls.push(call)
       navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -355,11 +359,24 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           console.log('rec')
           this.currentPeer = call.peerConnection
           this.peerList.push(call.peer)
-          this.remoteAudio!.nativeElement.srcObject = remoteStream
+          this.monitorAudioLevel(false, call.peer, remoteStream, document.getElementById(call.peer)!)
         })
       }).catch(err => {
         console.log(err)
       })
+    })
+
+    this.peer?.on('connection', dataConnection => {
+      dataConnection.on('data', (data: any) => {
+        console.log(data)
+        if (data.type == 'mute')
+          this.mutedPeers[data.peerId] = data.isMuted
+          document.getElementById(`${data.peerId}-muted`)!.style.display = data.isMuted ? 'block' : 'none'
+      })
+    })
+
+    this.peer?.on('close', () => {
+      console.log('closed')
     })
   }
 
@@ -372,21 +389,95 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       video: false 
     }).then(stream => {
       const call = this.peer!.call(id, stream)
-      this.currentConnection = call
+      const dataConnection = this.peer!.connect(id)
+      this.dataConnections.push(dataConnection)
+      this.activeCalls.push(call)
+      this.userStream = stream
       call!.on('stream', remoteStream => {
         console.log('stream')
-        if (!this.peerList.includes(call.peer)) {
           this.currentPeer = call.peerConnection
-          this.peerList.push(call.peer)
-          const audio = document.createElement('audio');
-          audio.style.display = "none";
-          this.remoteAudio!.nativeElement.srcObject = remoteStream;
-          document.body.appendChild(audio);
-        }
+          this.monitorAudioLevel(true, this.peerId, remoteStream, document.getElementById(`user-${this.currentUser!.id}`)!)
+      })
+      call!.on('close', () => {
+        console.log('close')
+      })
+      dataConnection.on('open', () => {
+        console.log('dc opened')
       })
     }).catch(err => {
       console.log(err)
     })
+  }
+
+  monitorAudioLevel(
+    local: boolean, peerId: 
+    string, stream: 
+    MediaStream, 
+    element: HTMLElement, 
+    threshold: number = 35
+  ) {
+    const audioContext = new AudioContext()
+    const analyser = audioContext.createAnalyser()
+    const source = audioContext.createMediaStreamSource(stream)
+  
+    analyser.fftSize = 32
+    source.connect(analyser)
+  
+    const dataArray = new Uint8Array(analyser.frequencyBinCount)
+    let active = false
+
+    if (!local)
+      this.remoteAudio!.nativeElement.srcObject = stream
+
+    const checkAudioLevel = () => {
+      analyser.getByteFrequencyData(dataArray)
+      const avg = dataArray.reduce((a, b) => a + b) / dataArray.length
+      if (avg > threshold && !active && !this.mutedPeers[peerId]) {
+        active = true
+        element.classList.add('active')
+      } else if (avg <= threshold && active) {
+        active = false
+        element.classList.remove('active')
+      }
+  
+      requestAnimationFrame(checkAudioLevel)
+    }
+  
+    checkAudioLevel()
+  }
+
+  muteUser() {
+    this.userStream!.getAudioTracks().forEach(x => {
+      x.enabled = false
+    })
+    this.isMuted = true
+    this.dataConnections.forEach(x => {
+      x.send({ type: 'mute', isMuted: true, peerId: this.peerId })
+    })
+    this.mutedPeers[this.peerId] = true
+    const muteIcon = document.getElementById(`${this.peerId}-muted`)!
+    muteIcon.style.display = 'block'
+    const muteSound = document.getElementById('muteSound')! as HTMLAudioElement
+    const avatar = document.getElementById(`user-${this.currentUser!.id}`)!
+    avatar.classList.remove('active')
+    muteSound.currentTime = 0
+    muteSound.play()
+  }
+
+  unmuteUser() {
+    this.userStream!.getAudioTracks().forEach(x => {
+      x.enabled = true
+    })
+    this.isMuted = false
+    this.dataConnections.forEach(x => {
+      x.send({ type: 'mute', isMuted: false, peerId: this.peerId })
+    })
+    this.mutedPeers[this.peerId] = false
+    const muteIcon = document.getElementById(`${this.peerId}-muted`)!
+    muteIcon.style.display = 'none'
+    const unmuteSound = document.getElementById('unmuteSound')! as HTMLAudioElement
+    unmuteSound.currentTime = 0
+    unmuteSound.play()
   }
 
   openCreateChannelDialog(category: ChatCategory, doNotCollapse: number) {

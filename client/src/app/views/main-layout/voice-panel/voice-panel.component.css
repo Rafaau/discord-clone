@@ -1,0 +1,34 @@
+.current-voice-container {
+    position: absolute;
+    bottom: 75px;
+    height: 40px;
+    margin-bottom: 1px;
+    width: 210px;
+    background-color: #232428;
+    display: flex;
+    font-size: 14px;
+    padding: 10px;
+    color: #B5BAC1;
+}
+
+.voice-status {
+    color: #2DC770;
+}
+
+.voice-channel-name {
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.connection-actions {
+    margin-left: auto;
+    cursor: pointer;
+}
+
+    .connection-actions i {
+        margin-left: 8px;
+    }
+
+.fa-microphone {
+    margin-right: 3px;
+}

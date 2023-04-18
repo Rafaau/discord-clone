@@ -113,20 +113,28 @@
               </div>
             </div>
             <div 
-              *ngFor="let user of channel.voiceUsers"
+              *ngFor="let user of channel.voiceUsers; index as i;"
               class="single-voice-user">
               <user-avatar 
               [userId]="user.id" 
+              id="user-{{ user.id }}"
               class="voice-avatar"
               [username]="user.username"/>
               {{ user.username }}
+              <i 
+                id="user-{{ user.id }}-muted"
+                class="fa-solid fa-microphone-slash">
+              </i>
             </div>
           </div>
         </div>
       </ng-container>
       <audio style="display: none;" id="joinSound" src="../../../assets/joinSound.m4a" preload="auto"></audio>
       <audio style="display: none;" id="leaveSound" src="../../../assets/leaveSound.m4a" preload="auto"></audio>
-      <audio style="display: none;" #remoteAudio controls autoplay></audio>
+      <audio style="display: none;" id="muteSound" src="../../../assets/muteSound.m4a" preload="auto"></audio>
+      <audio style="display: none;" id="unmuteSound" src="../../../assets/unmuteSound.m4a" preload="auto"></audio>    
+      <audio style="display: none;" #remoteAudio autoplay></audio>
+      <audio style="display: none;" #localAudio autoplay muted></audio>
       <div 
         *ngIf="currentVoiceChannel"
         class="current-voice-container">
@@ -139,10 +147,28 @@
             {{ currentVoiceChannel.name }}
           </div>
         </div>
-        <i 
-          class="fa-solid fa-phone-slash"
-          (click)="leaveVoiceChannel(currentVoiceChannel.id)">
-        </i>
+        <div class="connection-actions">
+          <i 
+            *ngIf="!isMuted"
+            class="fa-solid fa-microphone"
+            (click)="muteUser()"
+            matTooltip="Mute"
+            matTooltipPosition="above">
+          </i>
+          <i 
+            *ngIf="isMuted"
+            class="fa-solid fa-microphone-slash"
+            (click)="unmuteUser()"
+            matTooltip="Unmute"
+            matTooltipPosition="above">  
+          </i>
+          <i 
+            class="fa-solid fa-phone-slash"
+            (click)="leaveVoiceChannel()"
+            matTooltip="Disconnect"
+            matTooltipPosition="above">
+          </i>
+        </div>
       </div>
     </div>
   </div>

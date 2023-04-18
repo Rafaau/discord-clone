@@ -1,0 +1,35 @@
+<div 
+  *ngIf="currentVoiceChannel"
+  class="current-voice-container">
+  <div>
+    <div class="voice-status">
+      <i class="fa-solid fa-signal"></i>
+      Voice Connected
+    </div>
+    <div class="voice-channel-name">
+      {{ currentVoiceChannel.name }}
+    </div>
+  </div>
+  <div class="connection-actions">
+    <i 
+      *ngIf="!isMuted"
+      class="fa-solid fa-microphone"
+      (click)="muteUser()"
+      matTooltip="Mute"
+      matTooltipPosition="above">
+    </i>
+    <i 
+      *ngIf="isMuted"
+      class="fa-solid fa-microphone-slash"
+      (click)="unmuteUser()"
+      matTooltip="Unmute"
+      matTooltipPosition="above">  
+    </i>
+    <i 
+      class="fa-solid fa-phone-slash"
+      (click)="leaveVoiceChannel()"
+      matTooltip="Disconnect"
+      matTooltipPosition="above">
+    </i>
+  </div>
+</div>

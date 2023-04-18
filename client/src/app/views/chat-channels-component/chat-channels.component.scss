@@ -318,10 +318,14 @@
     font-size: 12px;
 }
 
-.fa-phone-slash {
+.connection-actions {
     margin-left: auto;
     cursor: pointer;
 }
+
+    .connection-actions i {
+        margin-left: 8px;
+    }
 
 .single-voice-user {
     display: flex;
@@ -337,6 +341,14 @@
         background-color: #36373D;
     }
 
+    .single-voice-user .fa-microphone-slash {
+        line-height: 28px;
+        margin-left: auto;
+        margin-right: 10px;
+        color: #F23F42;
+        display: none;
+    }
+
 .voice-avatar {
     font-size: 12px;
     width: 25px;
@@ -344,6 +356,17 @@
     line-height: 25px;
     text-align: center;
     margin-right: 10px;
-
+    border: 2px solid transparent;
 }
+
+.active {
+    border: 2px solid #2DC759;
+    border-radius: 50%;
+  }
+
+.fa-microphone {
+    margin-right: 3px;
+}
+
+
 

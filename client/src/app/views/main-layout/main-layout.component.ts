@@ -29,6 +29,8 @@ import { initListeners } from 'src/app/utils/CacheListeners';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { CacheResolverService } from 'src/app/utils/CacheResolver.service';
 import { UsersService } from 'src/app/_services/users.service';
+import { ChatChannel } from 'src/app/_models/chat-channels';
+import { VoiceService } from 'src/app/_services/voice.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -67,6 +69,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   userSettingsState: boolean = false
   chatServerToPass?: ChatServer
   onDestroy$ = new Subject<void>()
+  currentVoiceChannel?: ChatChannel
 
   constructor(
     private readonly _authService: AuthService,
