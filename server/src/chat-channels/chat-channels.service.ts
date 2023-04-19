@@ -187,7 +187,10 @@ export class ChatChannelsService {
         })
         if (!chatChannel)
             throw new NotFoundException()
-        return chatChannel.chatCategory.chatServer.members
+        return {
+            users: chatChannel.chatCategory.chatServer.members,
+            serverId: chatChannel.chatCategory.chatServer.id
+        }
     }
 
     async updateChatChannel(

@@ -9,20 +9,20 @@ export class SignallingGateway {
     constructor (
         private readonly chatChannelsService: ChatChannelsService
     ) {
-        eventBus.on('joinedVoiceChannel', ({ userId, voiceChannelId, users }) => {
+        eventBus.on('joinedVoiceChannel', ({ userId, voiceChannelId, users, serverId }) => {
             const user = users.find(x => x.id == userId)
             users.forEach(x => {
                 this.server.to(x.id.toString())
-                           .emit('joinedVoiceChannel', { voiceChannelId, user })
+                           .emit('joinedVoiceChannel', { voiceChannelId, user, serverId })
             })
             console.log(`User ${userId} joined voice channel ${voiceChannelId}`)
             
         })
-        eventBus.on('leftVoiceChannel', ({ userId, voiceChannelId, users }) => {
+        eventBus.on('leftVoiceChannel', ({ userId, voiceChannelId, users, serverId }) => {
             const user = users.find(x => x.id == userId)
             users.forEach(x => {
                 this.server.to(x.id.toString())
-                           .emit('leftVoiceChannel', { voiceChannelId, user })
+                           .emit('leftVoiceChannel', { voiceChannelId, user, serverId })
             })
             console.log(`User ${userId} left voice channel ${voiceChannelId}`)
         })
@@ -37,9 +37,9 @@ export class SignallingGateway {
         params: any
     ) {
         const { userId, voiceChannelId } = params
-        const users = await this.chatChannelsService.getMembersByChannelId(voiceChannelId)
+        const { users, serverId } = await this.chatChannelsService.getMembersByChannelId(voiceChannelId)
         socket.join(`voiceChannel-${voiceChannelId}:user-${userId}`)
-        eventBus.emit('joinedVoiceChannel', { userId, voiceChannelId, users })
+        eventBus.emit('joinedVoiceChannel', { userId, voiceChannelId, users, serverId })
     }
 
     @SubscribeMessage('leaveVoiceChannel')
@@ -48,8 +48,8 @@ export class SignallingGateway {
         params: any
     ) {
         const { userId, voiceChannelId } = params
-        const users = await this.chatChannelsService.getMembersByChannelId(voiceChannelId)
+        const { users, serverId } = await this.chatChannelsService.getMembersByChannelId(voiceChannelId)
         socket.leave(`voiceChannel-${voiceChannelId}:user-${userId}`)
-        eventBus.emit('leftVoiceChannel', { userId, voiceChannelId, users })
+        eventBus.emit('leftVoiceChannel', { userId, voiceChannelId, users, serverId })
     }
 }

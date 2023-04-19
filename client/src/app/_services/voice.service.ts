@@ -7,7 +7,7 @@ import { ChatChannel } from '../_models/chat-channels';
   providedIn: 'root'
 })
 export class VoiceService {
-  public voiceChannelEvent: EventEmitter<ChatChannel> = new EventEmitter<ChatChannel>()
+  public voiceChannelEvent: EventEmitter<any> = new EventEmitter()
 
   constructor(
     private readonly socket: Socket
@@ -22,14 +22,17 @@ export class VoiceService {
   }
 
   getJoinedVoiceChannel() {
-    return this.socket.fromEvent<{voiceChannelId: number, user: User}>('joinedVoiceChannel')
+    return this.socket.fromEvent<{ voiceChannelId: number, user: User, serverId: number }>('joinedVoiceChannel')
   }
 
   getLeftVoiceChannel() {
-    return this.socket.fromEvent<{voiceChannelId: number, user: User}>('leftVoiceChannel')
+    return this.socket.fromEvent<{ voiceChannelId: number, user: User, serverId: number }>('leftVoiceChannel')
   }
 
-  emitVoiceChannel(voiceChannel: ChatChannel) {
-    this.voiceChannelEvent.emit(voiceChannel)
+  emitVoiceChannel(
+    voiceChannel: ChatChannel,
+    userId: number
+  ) {
+    this.voiceChannelEvent.emit({ voiceChannel, userId })
   }
 }

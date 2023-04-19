@@ -82,6 +82,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     private readonly _cacheResolver: CacheResolverService,
     private readonly _usersService: UsersService,
     private readonly _chatServerService: ChatServerService,
+    private readonly _voiceService: VoiceService,
     public router: Router,
     private location: Location
   ) { }
@@ -114,6 +115,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this._directMessagesService,
       this._chatChannelService,
       this._chatServerService,
+      this._voiceService,
       this._cacheResolver,
       this.router,
     )
