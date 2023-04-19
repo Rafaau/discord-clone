@@ -1,3 +1,4 @@
+import { ChatChannel } from "./chat-channels"
 import { DirectConversation } from "./direct-conversation"
 import { Role } from "./role"
 
@@ -11,6 +12,7 @@ export interface User {
     isOwner?: boolean
     roles?: Role[]
     aboutMe?: string,
+    currentVoiceChannel?: ChatChannel
 }
 
 export interface UserComplex {

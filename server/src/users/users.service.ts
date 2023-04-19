@@ -28,7 +28,9 @@ export class UsersService {
             where: { id },
             relations: [
                 'roles',
-                'roles.chatServer'
+                'roles.chatServer',
+                'currentVoiceChannel',
+                'currentVoiceChannel.voiceUsers'
             ] 
         })
         if (!user)
@@ -41,7 +43,9 @@ export class UsersService {
             where: { id },
             relations: [
                 'roles', 
-                'roles.chatServer'
+                'roles.chatServer',
+                'currentVoiceChannel',
+                'currentVoiceChannel.voiceUsers'
             ] 
         })
         if (!user)
@@ -87,12 +91,13 @@ export class UsersService {
     }
 
     async findUserByEmail(email: string) {
-        console.log(email)
         const user = await this.userRepository.findOne({ 
             where: { email },
             relations: [
                  'roles',
-                 'roles.chatServer'
+                 'roles.chatServer',
+                 'currentVoiceChannel',
+                 'currentVoiceChannel.voiceUsers'
             ]
         })
         if (!user)

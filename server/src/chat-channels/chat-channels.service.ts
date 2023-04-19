@@ -176,17 +176,46 @@ export class ChatChannelsService {
         }
     }
 
-    async getMembersByChannelId(id: number) {
+    async joinUserToVoiceChannel(channelId: number, userId: number) {
         const chatChannel = await this.chatChannelRepository.findOne({ 
-            where: { id },
+            where: { id: channelId },
             relations: [
                 'chatCategory',
                 'chatCategory.chatServer',
-                'chatCategory.chatServer.members'
+                'chatCategory.chatServer.members',
+                'voiceUsers'
             ]
         })
         if (!chatChannel)
             throw new NotFoundException()
+        const user = chatChannel.chatCategory.chatServer.members.find(x => x.id == userId)
+        if (!user)
+            throw new NotFoundException()
+        chatChannel.voiceUsers.push(user)
+        await this.chatChannelRepository.save(chatChannel)
+        return {
+            users: chatChannel.chatCategory.chatServer.members,
+            serverId: chatChannel.chatCategory.chatServer.id
+        }
+    }
+
+    async removeUserFromVoiceChannel(channelId: number, userId: number) {
+        const chatChannel = await this.chatChannelRepository.findOne({ 
+            where: { id: channelId },
+            relations: [
+                'chatCategory',
+                'chatCategory.chatServer',
+                'chatCategory.chatServer.members',
+                'voiceUsers'
+            ]
+        })
+        if (!chatChannel)
+            throw new NotFoundException()
+        const user = chatChannel.chatCategory.chatServer.members.find(x => x.id == userId)
+        if (!user)
+            throw new NotFoundException()
+        chatChannel.voiceUsers = chatChannel.voiceUsers.filter(x => x.id != userId)
+        await this.chatChannelRepository.save(chatChannel)
         return {
             users: chatChannel.chatCategory.chatServer.members,
             serverId: chatChannel.chatCategory.chatServer.id

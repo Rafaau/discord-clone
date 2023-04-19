@@ -213,12 +213,13 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           this.toExpand.push(true)
         }
         this.chatChannels = data.body!.chatCategories!.map(x => x.chatChannels).flat()
-        if (!this.chatChannels.find(x => x.type == this.channelType.Voice)?.voiceUsers) {
-          this.chatChannels.forEach(x => {
-            if (x.type == this.channelType.Voice)
-              x.voiceUsers = []
+
+        this.chatChannels.filter(x => x.type == this.channelType.Voice).forEach(channel => {
+          channel.voiceUsers?.forEach(user => {
+            this._sharedDataProvider.emitVoiceUser(channel.id, user, data.body!.id)
           })
-        }
+        })
+
         this.redirectToChatChannel(
           data.body!.chatCategories![0].chatChannels![0].id
         )

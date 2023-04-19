@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ChatChannel } from "./chat-channel";
 import { ChatMessage } from "./chat-message";
 import { ChatServer } from "./chat-server";
@@ -35,6 +35,7 @@ export class User {
     managedChatServers?: ChatServer[]
 
     @ManyToMany(() => ChatServer, (chatServer) => chatServer.members, {
+        onDelete: 'CASCADE',
         nullable: true
     })
     chatServers?: ChatServer[]
@@ -99,4 +100,10 @@ export class User {
         nullable: true
     })
     friendRequestsReceived?: FriendRequest[]
+
+    @ManyToOne(() => ChatChannel, chatChannel => chatChannel.voiceUsers, {
+        onDelete: 'CASCADE',
+        nullable: true
+    })
+    currentVoiceChannel?: ChatChannel
 }

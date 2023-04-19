@@ -5,6 +5,7 @@ import { ChatServer } from "src/typeorm/chat-server";
 import { ChatServerInvitation } from "src/typeorm/chat-server-invitation";
 import { DirectConversation } from "src/typeorm/direct-conversation";
 import { DirectMessage } from "src/typeorm/direct-message";
+import { ChannelType } from "src/typeorm/enums/ChannelType";
 import { Permission } from "src/typeorm/enums/Permission";
 import { MessageReaction } from "src/typeorm/message-reaction";
 import { Role } from "src/typeorm/role";
@@ -77,6 +78,7 @@ export async function seedData(connection: any) {
             name: 'TestChatChannel1',
             index: 0,
             isPrivate: false,
+            type: ChannelType.Text
         })
 
         const chatChannel2 = chatChannelRepository.create({
@@ -84,6 +86,15 @@ export async function seedData(connection: any) {
             name: 'TestChatChannel2',
             index: 1,
             isPrivate: false,
+            type: ChannelType.Text
+        })
+
+        const chatChannel3 = chatChannelRepository.create({
+            id: 3,
+            name: 'TestVoiceChannel1',
+            index: 2,
+            isPrivate: false,
+            type: ChannelType.Voice
         })
 
         const ownerRole = roleRepository.create({
@@ -108,7 +119,7 @@ export async function seedData(connection: any) {
 
         await roleRepository.save([ownerRole, memberRole])
 
-        chatCategory1.chatChannels = [chatChannel1, chatChannel2]
+        chatCategory1.chatChannels = [chatChannel1, chatChannel2, chatChannel3]
 
         const chatServer1 = chatServerRepository.create({
             id: 18,

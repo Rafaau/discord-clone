@@ -12,7 +12,9 @@ export class ChatServer {
     @Column()
     name: string
 
-    @ManyToOne(() => User, (owner) => owner.managedChatServers)
+    @ManyToOne(() => User, (owner) => owner.managedChatServers, {
+        onDelete: 'CASCADE'
+    })
     owner: User
 
     @ManyToMany(() => User, (member) => member.chatServers)

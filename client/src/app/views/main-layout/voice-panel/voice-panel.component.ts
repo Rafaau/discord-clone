@@ -57,33 +57,29 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
         this.currentUser = user
         this.peer = new Peer(`user-${user.id}`)
         this.initPeerConnection()
+        if (user.currentVoiceChannel) {
+          this.currentVoiceChannel = user.currentVoiceChannel
+          user.currentVoiceChannel.voiceUsers.forEach((voiceUser: User) => {
+            this.setVoiceUsers({ voiceChannelId: user.currentVoiceChannel!.id, user: voiceUser })
+          })
+          this.joinVoiceChannel(user.currentVoiceChannel)
+        }
+      })
+    this._sharedDataProvider.voiceUser
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((data) => {
+        this.setVoiceUsers(data)
       })
     this._voiceService.voiceChannelEvent
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(({ voiceChannel, userId }) => {
-        console.log(voiceChannel)
-        if (this.currentVoiceChannel)
-          this.leaveVoiceChannel()
-        this.currentVoiceChannel = voiceChannel
-        this._voiceService.joinVoiceChannel(this.currentUser!.id, voiceChannel.id)
-        this.currentVoiceChannel = voiceChannel
-        const voiceUsers = this.channelVoiceUsers.get(`channel-${voiceChannel.id}`)
-        voiceUsers?.forEach(x => {
-          if (x == this.currentUser!.id) return
-          this.callPeer(`user-${x}`)
-        })
+        this.joinVoiceChannel(voiceChannel)
       })
     this._voiceService.getJoinedVoiceChannel()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (data) => {
-          const voiceUsers = this.channelVoiceUsers.get(`channel-${data.voiceChannelId}`)
-          if (!voiceUsers) {
-            this.channelVoiceUsers.set(`channel-${data.voiceChannelId}`, [data.user.id])
-            return
-          }
-            this.channelVoiceUsers.set(`channel-${data.voiceChannelId}`, [...voiceUsers, data.user.id])
-            this.currentServerId = data.serverId
+          this.setVoiceUsers(data)
         })
     this._voiceService.getLeftVoiceChannel()
       .pipe(takeUntil(this.onDestroy$))
@@ -101,6 +97,21 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
     this.onDestroy$.complete()
   }
 
+  joinVoiceChannel(voiceChannel: ChatChannel) {
+    if (this.currentVoiceChannel)
+      this.leaveVoiceChannel()
+    this.currentVoiceChannel = voiceChannel
+    setTimeout(() => {
+      this._voiceService.joinVoiceChannel(this.currentUser!.id, voiceChannel.id)
+    }, 100)
+    this.currentVoiceChannel = voiceChannel
+    const voiceUsers = this.channelVoiceUsers.get(`channel-${voiceChannel.id}`)
+    voiceUsers?.forEach(x => {
+      if (x == this.currentUser!.id) return
+      this.callPeer(`user-${x}`)
+    })
+  }
+
   leaveVoiceChannel() {
     this._voiceService.leaveVoiceChannel(this.currentUser!.id, this.currentVoiceChannel!.id)
     this.activeCalls.forEach(x => x.close())
@@ -111,10 +122,21 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
       x.send({ type: 'mute', isMuted: false, peerId: this.peerId })
     })
     this.mutedPeers[this.peerId!] = false
-    const leaveSound = document.getElementById('leaveSound')! as HTMLAudioElement
+    const leaveSound = document.getElementById('leaveSound') as HTMLAudioElement
     leaveSound.currentTime = 0
     leaveSound.play()
     this.currentVoiceChannel = undefined
+  }
+
+  setVoiceUsers(data: any) {
+    const voiceUsers = this.channelVoiceUsers.get(`channel-${data.voiceChannelId}`)
+    if (!voiceUsers) {
+      this.channelVoiceUsers.set(`channel-${data.voiceChannelId}`, [data.user.id])
+      return
+    } else if (!voiceUsers.includes(data.user.id)) {
+      this.channelVoiceUsers.set(`channel-${data.voiceChannelId}`, [...voiceUsers, data.user.id])
+    }
+      this.currentServerId = data.serverId
   }
 
   initPeerConnection() {

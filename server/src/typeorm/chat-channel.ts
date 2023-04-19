@@ -43,4 +43,10 @@ export class ChatChannel {
         nullable: true
     })
     roles?: Role[]
+
+    @OneToMany(() => User, user => user.currentVoiceChannel, {
+        onDelete: 'CASCADE',
+        nullable: true
+    })
+    voiceUsers: User[]
 }

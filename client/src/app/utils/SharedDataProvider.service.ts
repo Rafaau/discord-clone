@@ -23,6 +23,7 @@ export class SharedDataProvider {
     public joinedServer: EventEmitter<ChatServer> = new EventEmitter<ChatServer>()
     public removedFromServer: EventEmitter<ChatServer> = new EventEmitter<ChatServer>()
     public updatedUser: EventEmitter<number> = new EventEmitter<number>()
+    public voiceUser: EventEmitter<{ voiceChannelId: number, user: User, serverId: number }> = new EventEmitter<{ voiceChannelId: number, user: User, serverId: number }>()
     readonly api = environment.apiUrl+'/users/getAvatar/user-'
 
     setCurrentUser(user: User) {
@@ -79,5 +80,9 @@ export class SharedDataProvider {
 
     emitUpdatedUser(userId: number) {
         this.updatedUser.emit(userId)
+    }
+
+    emitVoiceUser(voiceChannelId: number, user: User, serverId: number) {
+        this.voiceUser.emit({ voiceChannelId, user, serverId })
     }
 }
