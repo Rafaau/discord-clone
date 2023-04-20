@@ -7,6 +7,6 @@ export const environment = {
     apiUrl: process.env.NG_APP_API_URL,
     joinSoundSrc: 'assets/joinSound.m4a',
     leaveSoundSrc: 'assets/leaveSound.m4a',
-    muteSoundSrc: '.assets/muteSound.m4a',
+    muteSoundSrc: 'assets/muteSound.m4a',
     unmuteSoundSrc: 'assets/unmuteSound.m4a',
 }
