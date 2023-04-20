@@ -55,6 +55,7 @@ export async function seedData(connection: any) {
     })
 
     const existingUsers = await userRepository.find()
+    let usersToCheck = existingUsers
 
     if (existingUsers.length === 0) {
         const appSettings1 = appSettingsRepository.create(new AppSettings(user1))
@@ -68,6 +69,16 @@ export async function seedData(connection: any) {
 
         await userRepository.save([user1, user2, user3])
         await directConversationRepository.save(conversation)
+        usersToCheck = [user1, user2, user3]
+    }
+
+    for (const user of usersToCheck) {
+        if (!user.appSettings) {
+            const appSettings = appSettingsRepository.create(new AppSettings(user))
+            await appSettingsRepository.save(appSettings)
+            user.appSettings = appSettings
+            await userRepository.save(user)
+        }
     }
     
     const existingChatServers = await chatServerRepository.find()
