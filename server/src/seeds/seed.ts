@@ -1,17 +1,13 @@
 import { AppSettings } from "src/typeorm/app-settings";
 import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
-import { ChatMessage } from "src/typeorm/chat-message";
 import { ChatServer } from "src/typeorm/chat-server";
-import { ChatServerInvitation } from "src/typeorm/chat-server-invitation";
 import { DirectConversation } from "src/typeorm/direct-conversation";
-import { DirectMessage } from "src/typeorm/direct-message";
 import { ChannelType } from "src/typeorm/enums/ChannelType";
 import { Permission } from "src/typeorm/enums/Permission";
-import { MessageReaction } from "src/typeorm/message-reaction";
 import { Role } from "src/typeorm/role";
 import { User } from "src/typeorm/user";
-import { Repository, getRepository } from "typeorm";
+import { Repository } from "typeorm";
 
 export async function seedData(connection: any) {
     const userRepository: Repository<User> = connection.getRepository(User)
@@ -61,10 +57,14 @@ export async function seedData(connection: any) {
     const existingUsers = await userRepository.find()
 
     if (existingUsers.length === 0) {
-        const appSettings1 = new AppSettings(user1)
-        const appSettings2 = new AppSettings(user2)
-        const appSettings3 = new AppSettings(user3)
+        const appSettings1 = appSettingsRepository.create(new AppSettings(user1))
+        const appSettings2 = appSettingsRepository.create(new AppSettings(user2))
+        const appSettings3 = appSettingsRepository.create(new AppSettings(user3))
         await appSettingsRepository.save([appSettings1, appSettings2, appSettings3])
+
+        user1.appSettings = appSettings1
+        user2.appSettings = appSettings2
+        user3.appSettings = appSettings3
 
         await userRepository.save([user1, user2, user3])
         await directConversationRepository.save(conversation)
