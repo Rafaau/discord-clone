@@ -16,6 +16,20 @@
         Profiles
       </div>
       <mat-divider></mat-divider>
+      <h5>APP SETTINGS</h5>
+      <div 
+        class="settings-option"
+        [class.current-option]="currentView == View.VoiceAndVideo"
+        (click)="currentView = View.VoiceAndVideo">
+        Voice & Video
+      </div>
+      <div 
+        class="settings-option"
+        [class.current-option]="currentView == View.Notifications"
+        (click)="currentView = View.Notifications">
+        Notifications
+      </div>
+      <mat-divider></mat-divider>
       <div 
         class="settings-option"
         (click)="logout()">
@@ -29,7 +43,7 @@
     <div *ngIf="user">
       <h3>{{ currentView }}</h3>
       <!-- MY ACCOUNT VIEW -->
-      <div *ngIf="currentView == View.MyAccount">
+      <div *ngIf="currentView == View.MyAccount" class="view-container">
         <div class="user-details-container">
           <div class="bottom-section">
             <user-avatar 
@@ -131,7 +145,7 @@
         </button>
       </div>
       <!-- PROFILES VIEW -->
-      <div *ngIf="currentView == View.Profiles">
+      <div *ngIf="currentView == View.Profiles" class="view-container">
         <mat-divider></mat-divider>
         <div style="display: flex; justify-content: space-between;">
           <div class="profiles-left">
@@ -216,6 +230,16 @@
             </div>
           </div>
         </div>
+      </div>
+      <!-- VOICE & VIDEO VIEW -->
+      <div *ngIf="currentView == View.VoiceAndVideo" class="view-container">
+        <h5>INPUT SENSITIVITY</h5>
+        <mat-slider min="0" max="50" step="0.5">
+          <input matSliderThumb [value]="inputSensitivity" (input)="onInputSensitivityChange($event)"/>
+        </mat-slider>
+        <mat-error>
+          <strong>Do not</strong> change the value while you are connected to a voice channel!
+        </mat-error>
       </div>
     </div>
     <div class="close-btn" (click)="onCloseClick()">

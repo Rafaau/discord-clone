@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { AfterInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, getManager } from "typeorm";
 import { ChatChannel } from "./chat-channel";
 import { ChatMessage } from "./chat-message";
 import { ChatServer } from "./chat-server";
@@ -8,6 +8,7 @@ import { MessageReaction } from "./message-reaction";
 import { Notification } from "./notification";
 import { Role } from "./role";
 import { FriendRequest } from "./friend-request";
+import { AppSettings } from "./app-settings";
 
 @Entity({ name: 'users' })
 export class User {
@@ -106,4 +107,11 @@ export class User {
         nullable: true
     })
     currentVoiceChannel?: ChatChannel
+
+    @OneToOne(() => AppSettings, appSettings => appSettings.user, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    @JoinColumn()
+    appSettings: AppSettings
 }

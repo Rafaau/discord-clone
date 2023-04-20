@@ -33,6 +33,7 @@ import { configuration } from 'config/configuration';
 import { FriendRequest } from './typeorm/friend-request';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { SignallingModuleGateway } from './signalling-gateway/signalling.module';
+import { AppSettings } from './typeorm/app-settings';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { SignallingModuleGateway } from './signalling-gateway/signalling.module'
         Notification,
         Role,
         FriendRequest,
+        AppSettings,
         SessionEntity
       ],
       synchronize: true,

@@ -27,6 +27,7 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
   userStream?: MediaStream // ?
   channelVoiceUsers = new Map<string, number[]>()
   currentServerId: number = 0
+  voiceThreshold?: number
 
   constructor(
     private readonly _voiceService: VoiceService,
@@ -53,7 +54,8 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
     this._sharedDataProvider.getCurrentUser()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(user => {
-        if (!user) return
+        this.voiceThreshold = user?.appSettings.inputSensitivity
+        if (!user || this.currentUser) return
         this.currentUser = user
         this.peer = new Peer(`user-${user.id}`)
         this.initPeerConnection()
@@ -219,8 +221,7 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
     local: boolean, peerId: 
     string, stream: 
     MediaStream, 
-    element: HTMLElement, 
-    threshold: number = 35
+    element: HTMLElement
   ) {
     const audioContext = new AudioContext()
     const analyser = audioContext.createAnalyser()
@@ -240,11 +241,11 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
     const checkAudioLevel = () => {
       analyser.getByteFrequencyData(dataArray)
       const avg = dataArray.reduce((a, b) => a + b) / dataArray.length
-      if (avg > threshold && !active && !this.mutedPeers[peerId]) {
+      if (avg > this.voiceThreshold! && !active && !this.mutedPeers[peerId]) {
         active = true
         document.getElementById(peerId)?.classList.add('active')
         remoteAudio.play()
-      } else if (avg <= threshold && active) {
+      } else if (avg <= this.voiceThreshold! && active) {
         active = false
         document.getElementById(peerId)?.classList.remove('active')
         remoteAudio.pause()

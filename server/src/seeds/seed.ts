@@ -1,3 +1,4 @@
+import { AppSettings } from "src/typeorm/app-settings";
 import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
 import { ChatMessage } from "src/typeorm/chat-message";
@@ -19,15 +20,13 @@ export async function seedData(connection: any) {
     const chatChannelRepository: Repository<ChatChannel> = connection.getRepository(ChatChannel)
     const roleRepository: Repository<Role> = connection.getRepository(Role)
     const directConversationRepository: Repository<DirectConversation> = connection.getRepository(DirectConversation)
-    const directMessagesRepository: Repository<DirectMessage> = connection.getRepository(DirectMessage)
-    const chatMessagesRepository: Repository<ChatMessage> = connection.getRepository(ChatMessage)
-    const messageReactionRepository: Repository<MessageReaction> = connection.getRepository(MessageReaction)
-    const chatServerInvitationRepository: Repository<ChatServerInvitation> = connection.getRepository(ChatServerInvitation)
+    const appSettingsRepository: Repository<AppSettings> = connection.getRepository(AppSettings)
 
     if (process.env.NODE_ENV.trim() == 'test') {
         await chatServerRepository.createQueryBuilder().delete().execute()
         await directConversationRepository.createQueryBuilder().delete().execute()
         await userRepository.createQueryBuilder().delete().execute()
+        await appSettingsRepository.createQueryBuilder().delete().execute()
     }
 
     const user1 = userRepository.create({
@@ -62,6 +61,11 @@ export async function seedData(connection: any) {
     const existingUsers = await userRepository.find()
 
     if (existingUsers.length === 0) {
+        const appSettings1 = new AppSettings(user1)
+        const appSettings2 = new AppSettings(user2)
+        const appSettings3 = new AppSettings(user3)
+        await appSettingsRepository.save([appSettings1, appSettings2, appSettings3])
+
         await userRepository.save([user1, user2, user3])
         await directConversationRepository.save(conversation)
     }

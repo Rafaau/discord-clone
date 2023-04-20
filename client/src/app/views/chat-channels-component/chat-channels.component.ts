@@ -280,10 +280,12 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   }
 
   joinVoiceChannel(channel: ChatChannel) {
-    const joinSound = document.getElementById('joinSound')! as HTMLAudioElement
-    joinSound.currentTime = 0
-    joinSound.play()
-    this._voiceService.emitVoiceChannel(channel, this.currentUser!.id)
+    if (!this.doNotInterrupt) {
+      const joinSound = document.getElementById('joinSound')! as HTMLAudioElement
+      joinSound.currentTime = 0
+      joinSound.play()
+      this._voiceService.emitVoiceChannel(channel, this.currentUser!.id)
+    }
   }
 
   openCreateChannelDialog(category: ChatCategory, doNotCollapse: number) {

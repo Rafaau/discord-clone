@@ -15,7 +15,7 @@
     max-width: 20vw;
     height: 100%;
     color: #98999F;
-    padding: 30px 10px 0 10vw;
+    padding: 51px 10px 0 10vw;
 }
 
 .main-container {
@@ -56,11 +56,14 @@ mat-icon {
 }
 
 h5 {
-    margin-left: 12px;
-    margin-bottom: 5px;
+    margin: 0 5px 5px 12px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+mat-divider {
+    margin-top: 8px!important;
 }
 
 h3 {

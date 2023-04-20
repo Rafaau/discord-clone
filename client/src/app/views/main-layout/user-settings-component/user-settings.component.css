@@ -119,13 +119,7 @@ label {
     min-width: 200px;
     width: 45%;
 }
-
-.profiles-left h5 {
-    margin: 0 0 10px 0;
-    font-weight: 500;
-    color: #B5BAC1;
-}
-.profiles-right h5 {
+.view-container h5 {
     margin: 0 0 10px 0;
     font-weight: 500;
     color: #B5BAC1;
@@ -222,4 +216,8 @@ label {
     right: -360px;
     padding: 10px;
     z-index: 5;
+}
+
+mat-slider {
+    width: 100%;
 }

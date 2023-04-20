@@ -143,6 +143,7 @@ export class UsersController {
                 .status(HttpStatus.OK)
                 .json(await this.usersService.updateUser(id, updateUserDto))
         } catch (e) {
+            console.log(e)
             response
                 .status(e.status)
                 .json({

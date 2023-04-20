@@ -19,4 +19,11 @@ export class UpdateUserDto {
     password: string
     phonenumber: string
     aboutMe: string
+    appSettings: UpdateAppSettingsDto
+}
+
+export class UpdateAppSettingsDto {
+    id: number
+    inputSensitivity: number
+    messageBadge: boolean
 }
