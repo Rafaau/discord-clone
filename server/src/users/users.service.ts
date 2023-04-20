@@ -54,7 +54,8 @@ export class UsersService {
                 'roles.chatServer',
                 'currentVoiceChannel',
                 'currentVoiceChannel.voiceUsers',
-                'appSettings'
+                'appSettings',
+                'notifications'
             ] 
         })
         if (!user)

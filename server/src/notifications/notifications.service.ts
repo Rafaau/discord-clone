@@ -18,10 +18,13 @@ export class NotificationsService {
         userId: number
     ) {
         const user = await this.userRepository.findOne({
-            where: { id: userId }
+            where: { id: userId },
+            relations: ['appSettings']
         }) 
         if (!user)
             throw new NotFoundException()
+        if (!user.appSettings.messageBadge)
+            return
         const newNotification = this.notificationRepository.create({
             ...notificationDetails,
             recipient: user

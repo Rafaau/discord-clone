@@ -221,3 +221,18 @@ label {
 mat-slider {
     width: 100%;
 }
+
+.option-name {
+    display: flex;
+    padding-top: 15px
+}
+
+    .option-name mat-slide-toggle {
+        margin-left: auto;
+    }
+
+.option-desc {
+    font-size: 12px;
+    color: #B5BAC1;
+    padding: 10px 0 20px 0;
+}

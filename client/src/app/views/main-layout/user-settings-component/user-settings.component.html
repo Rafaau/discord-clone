@@ -241,6 +241,16 @@
           <strong>Do not</strong> change the value while you are connected to a voice channel!
         </mat-error>
       </div>
+      <!-- NOTIFICATIONS VIEW -->
+      <div *ngIf="currentView == View.Notifications" class="view-container">
+        <div class="option-name">
+          Enable Unread Message Badge
+          <mat-slide-toggle
+            [checked]="messageBadgeOption"
+            (change)="onMessageBadgeChange()">
+          </mat-slide-toggle>
+        </div>
+      </div>
     </div>
     <div class="close-btn" (click)="onCloseClick()">
       <mat-icon>close</mat-icon>

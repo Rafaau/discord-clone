@@ -81,6 +81,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   showEmojiPicker: boolean = false
   martToggle: boolean = false
   inputSensitivity?: number
+  messageBadgeOption?: boolean
   inputElement = () => document.querySelector('.details-input') as HTMLTextAreaElement
   textareaElement = () => document.querySelector('.about-me-input') as HTMLTextAreaElement
 
@@ -127,6 +128,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     })
     this.aboutMeValue = this.user?.aboutMe ? this.user.aboutMe : ''
     this.inputSensitivity = 50 - this.user!.appSettings.inputSensitivity
+    this.messageBadgeOption = this.user!.appSettings.messageBadge
   }
 
   saveUserDetails() {
@@ -138,7 +140,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       aboutMe: this.aboutMeValue,
       appSettings: {
         inputSensitivity: 50 - this.inputSensitivity!,
-        messageBadge: true
+        messageBadge: this.messageBadgeOption!
       }
     }
     this._usersService.updateUser(this.user!.id, reqBody)
@@ -216,6 +218,11 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     }
   }
 
+  onMessageBadgeChange() {
+    this.messageBadgeOption = !this.messageBadgeOption
+    this.openSnackbar()
+  }
+
   openSnackbar() {
     if (!this.snackbar._openedSnackBarRef) {
       let snackBarRef = this.snackbar.openFromComponent(
@@ -224,6 +231,8 @@ export class UserSettingsComponent implements OnInit, OnChanges {
 
       const resetSub = snackBarRef.instance.onResetEvent.subscribe(() => {
         this.aboutMeValue = this.user?.aboutMe ? this.user.aboutMe : ''
+        this.inputSensitivity = 50 - this.user!.appSettings.inputSensitivity
+        this.messageBadgeOption = this.user!.appSettings.messageBadge
         this.snackbar.dismiss()
       })
       snackBarRef.afterDismissed().subscribe(() => resetSub.unsubscribe())
