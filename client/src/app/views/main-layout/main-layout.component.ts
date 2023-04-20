@@ -31,6 +31,7 @@ import { CacheResolverService } from 'src/app/utils/CacheResolver.service';
 import { UsersService } from 'src/app/_services/users.service';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { VoiceService } from 'src/app/_services/voice.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-main-layout',
@@ -70,6 +71,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   chatServerToPass?: ChatServer
   onDestroy$ = new Subject<void>()
   currentVoiceChannel?: ChatChannel
+  environment = environment
 
   constructor(
     private readonly _authService: AuthService,
