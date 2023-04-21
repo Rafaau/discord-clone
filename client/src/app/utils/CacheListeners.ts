@@ -15,6 +15,7 @@ import { ChatChannel } from "../_models/chat-channels"
 import { ChatServerService } from "../_services/chat-server.service"
 import { ChatServer } from "../_models/chat-servers"
 import { User } from "../_models/user"
+import { VoiceService } from "../_services/voice.service"
 
 export function initListeners(
     onDestroy$: Subject<void>,
@@ -24,6 +25,7 @@ export function initListeners(
     _directMessagesService: DirectMessageService,
     _chatChannelService: ChatChannelService,
     _chatServerService: ChatServerService,
+    _voiceService: VoiceService,
     cacheResolver: CacheResolverService,
     router: Router
 ) {
@@ -330,6 +332,38 @@ export function initListeners(
       if (cachedResponse) {
         const updatedData = cachedResponse.body.filter((user: User) => user.id != data.userId)
         const updatedResponse = cachedResponse.clone({ body: updatedData })
+        cacheResolver.set(key, updatedResponse)
+      }
+    })
+  _voiceService.getJoinedVoiceChannel()
+    .pipe(takeUntil(onDestroy$))
+    .subscribe((data: any) => {
+      if (router.url.includes(`chatserver/${data.serverId})`)) return
+      const key = environment.apiUrl + `/chatservers/${data.serverId}`
+      const cachedResponse = cacheResolver.get(key)
+
+      if (cachedResponse) {
+        const updatedData = cachedResponse.body.chatCategories.find(
+          (category: ChatCategory) => category.chatChannels.some(x => x.id == data.voiceChannelId)
+        ).chatChannels.find((channel: ChatChannel) => channel.id == data.voiceChannelId)!
+        updatedData.voiceUsers.push(data.user)
+        const updatedResponse = cachedResponse.clone({ body: cachedResponse.body })
+        cacheResolver.set(key, updatedResponse)
+      }
+    })
+  _voiceService.getLeftVoiceChannel()
+    .pipe(takeUntil(onDestroy$))
+    .subscribe((data: any) => {
+      if (router.url.includes(`chatserver/${data.serverId})`)) return
+      const key = environment.apiUrl + `/chatservers/${data.serverId}`
+      const cachedResponse = cacheResolver.get(key)
+
+      if (cachedResponse) {
+        const updatedData = cachedResponse.body.chatCategories.find(
+          (category: ChatCategory) => category.chatChannels.some(x => x.id == data.voiceChannelId)
+        ).chatChannels.find((channel: ChatChannel) => channel.id == data.voiceChannelId)!
+        updatedData.voiceUsers = updatedData.voiceUsers.filter((user: User) => user.id != data.user.id)
+        const updatedResponse = cachedResponse.clone({ body: cachedResponse.body })
         cacheResolver.set(key, updatedResponse)
       }
     })

@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ChatCategory } from 'src/app/_models/chat-category';
@@ -15,13 +15,15 @@ import { AddCategoryDialog } from './add-category-dialog/add-category-dialog.com
 import { GenerateInvitationDialog } from './generate-invitation-dialog/generate-invitation.component';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ChatChannel, UpdateChatChannelParams } from 'src/app/_models/chat-channels';
+import { ChannelType, ChatChannel, UpdateChatChannelParams } from 'src/app/_models/chat-channels';
 import { Notification } from 'src/app/_models/notification';
 import { NotificationsService } from 'src/app/_services/notifications.service';
 import { ChannelPermissionsDialog } from './channel-permissions-dialog/channel-permissions.component';
 import { RouteParamsProvider } from 'src/app/utils/RouteParamsProvider.service';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 import { Subject, Subscription, filter, takeUntil } from 'rxjs';
+import { VoiceService } from 'src/app/_services/voice.service';
+import Peer, { DataConnection, MediaConnection } from 'peerjs';
 
 @Component({
   selector: 'app-chat-channels',
@@ -49,6 +51,7 @@ import { Subject, Subscription, filter, takeUntil } from 'rxjs';
 export class ChatChannelsComponent implements OnInit, OnDestroy {
   chatServer?: ChatServer
   chatChannels?: ChatChannel[]
+  channelType = ChannelType
   toExpand: boolean[] = []
   isOpen: boolean[] = []
   isServerMenuExpanded: boolean = false
@@ -73,18 +76,23 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
     private readonly _chatChannelService: ChatChannelService,
     private readonly _notificationsService: NotificationsService,
     private readonly _sharedDataProvider: SharedDataProvider,
+    private readonly _voiceService: VoiceService,
     private location: Location,
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.init()
     this.router.events
-      .pipe(takeUntil(this.onDestroy$))
-      .pipe(filter((event) => event instanceof NavigationEnd))
+      .pipe(
+        takeUntil(this.onDestroy$),
+        filter(
+          (event) => event instanceof NavigationEnd &&
+          event.url.includes('chatserver') &&
+          !event.url.includes(`chatserver/${this.chatServer?.id}`)
+        )
+      )
       .subscribe((event: any) => {
-        if (event.url.includes('chatserver')
-        && !event.url.includes(`chatserver/${this.chatServer?.id}`))
-          this.init()
+        this.init()
       })
     this.getCurrentUser()
     this._chatChannelService.getCreatedCategory()
@@ -102,7 +110,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           const actualCategory = this.chatServer!.chatCategories!.find(category =>
             category.id == channel.chatCategory.id
           )!
-          console.log(actualCategory)
           actualCategory.chatChannels.push(channel)
         }
       )
@@ -146,6 +153,26 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       (event: ChatServer) => {
         this.chatServer = event
       })
+    this._voiceService.getJoinedVoiceChannel()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data) => {
+          const actualChannel = this.chatServer!.chatCategories!.find(category => 
+            category.chatChannels.some(channel => channel.id == data.voiceChannelId)
+          )!.chatChannels.find(channel => channel.id == data.voiceChannelId)!
+          if (!actualChannel.voiceUsers)
+            actualChannel.voiceUsers = []
+          actualChannel.voiceUsers!.push(data.user)
+        })
+    this._voiceService.getLeftVoiceChannel()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (data) => {
+          const actualChannel = this.chatServer!.chatCategories!.find(category => 
+            category.chatChannels.some(channel => channel.id == data.voiceChannelId)
+          )!.chatChannels.find(channel => channel.id == data.voiceChannelId)!
+          actualChannel.voiceUsers = actualChannel.voiceUsers!.filter(x => x.id != data.user.id)
+        })
 
     const regex = /main:channel\/(\d+)/
     const match = this.router.url.match(regex)
@@ -161,7 +188,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
 
   init() {
     const serverId = this.route.snapshot.paramMap.get('serverId')
-    console.log(serverId)
     this.getChatServerDetails(Number(serverId))
     this.fetchUsers(Number(serverId))
     this.getNotifications()
@@ -170,7 +196,9 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
   getCurrentUser() {
     this._sharedDataProvider.getCurrentUser().subscribe(
       (user: User) => {
-        this.currentUser = user
+        if (user) {
+          this.currentUser = user
+        }
       }
     )
   }
@@ -183,6 +211,13 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
           this.toExpand.push(true)
         }
         this.chatChannels = data.body!.chatCategories!.map(x => x.chatChannels).flat()
+
+        this.chatChannels.filter(x => x.type == this.channelType.Voice).forEach(channel => {
+          channel.voiceUsers?.forEach(user => {
+            this._sharedDataProvider.emitVoiceUser(channel.id, user, data.body!.id)
+          })
+        })
+
         this.redirectToChatChannel(
           data.body!.chatCategories![0].chatChannels![0].id
         )
@@ -239,6 +274,15 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       })
 
       this.currentChannel = channelId
+    }
+  }
+
+  joinVoiceChannel(channel: ChatChannel) {
+    if (!this.doNotInterrupt) {
+      const joinSound = document.getElementById('joinSound')! as HTMLAudioElement
+      joinSound.currentTime = 0
+      joinSound.play()
+      this._voiceService.emitVoiceChannel(channel, this.currentUser!.id)
     }
   }
 

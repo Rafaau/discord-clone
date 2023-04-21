@@ -29,6 +29,9 @@ import { initListeners } from 'src/app/utils/CacheListeners';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { CacheResolverService } from 'src/app/utils/CacheResolver.service';
 import { UsersService } from 'src/app/_services/users.service';
+import { ChatChannel } from 'src/app/_models/chat-channels';
+import { VoiceService } from 'src/app/_services/voice.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-main-layout',
@@ -67,6 +70,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   userSettingsState: boolean = false
   chatServerToPass?: ChatServer
   onDestroy$ = new Subject<void>()
+  currentVoiceChannel?: ChatChannel
+  environment = environment
 
   constructor(
     private readonly _authService: AuthService,
@@ -79,6 +84,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     private readonly _cacheResolver: CacheResolverService,
     private readonly _usersService: UsersService,
     private readonly _chatServerService: ChatServerService,
+    private readonly _voiceService: VoiceService,
     public router: Router,
     private location: Location
   ) { }
@@ -111,6 +117,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this._directMessagesService,
       this._chatChannelService,
       this._chatServerService,
+      this._voiceService,
       this._cacheResolver,
       this.router,
     )

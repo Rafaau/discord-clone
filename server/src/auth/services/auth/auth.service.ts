@@ -12,7 +12,6 @@ export class AuthService {
 
     async validateUser(email: string, password: string) {
         const userDB = this.userService.findUserByEmail(email)
-        console.log(userDB)
         if (userDB) {
             const matched = comparePassword(password, (await userDB).password)
             if (matched) {

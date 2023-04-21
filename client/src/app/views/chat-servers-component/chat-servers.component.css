@@ -7,7 +7,7 @@
     bottom: 0;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
-    padding: 0 0 30px 10px;
+    padding: 0 5px 30px 10px;
 }
 
     .chat-servers-container::-webkit-scrollbar {

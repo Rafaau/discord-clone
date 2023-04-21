@@ -97,34 +97,33 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
               })
           } 
       })
+    this._notificationsService.getNewNotification()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (notification: Notification) => {
+          if (notification.recipient.id == this.currentUser!.id) {
+            this.notifications!.push(notification)
+            this.groupNotifications()
+            this._sharedDataProvider.setServerNotifications(this.notifications)
+          }
+        }
+      )
+    this._notificationsService.getReadedNotification()
+        .pipe(takeUntil(this.onDestroy$))
+        .subscribe(
+          (notification: Notification) => {
+            const notifications = this.notifications.filter(x => x.id != notification.id)
+            this.notifications = notifications
+            this.groupNotifications(notifications)
+            this._sharedDataProvider.setServerNotifications(notifications)
+          }
+        )  
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.currentUser) {
       this.getChatServers(this.currentUser.id)
       this.getNotifications(this.currentUser.id)
-
-      this._notificationsService.getNewNotification()
-        .pipe(takeUntil(this.onDestroy$))
-        .subscribe(
-          (notification: Notification) => {
-            if (notification.recipient.id == this.currentUser!.id) {
-              this.notifications!.push(notification)
-              this.groupNotifications()
-              this._sharedDataProvider.setServerNotifications(this.notifications)
-            }
-          }
-        )
-      this._notificationsService.getReadedNotification()
-          .pipe(takeUntil(this.onDestroy$))
-          .subscribe(
-            (notification: Notification) => {
-              const notifications = this.notifications.filter(x => x.id != notification.id)
-              this.notifications = notifications
-              this.groupNotifications(notifications)
-              this._sharedDataProvider.setServerNotifications(notifications)
-            }
-          )
     }
   }
 

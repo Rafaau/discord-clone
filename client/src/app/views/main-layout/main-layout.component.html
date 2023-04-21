@@ -9,6 +9,7 @@
     </div>
     <div class="secondary-side-bar">
       <router-outlet name="secondary"></router-outlet>
+      <voice-panel></voice-panel>
       <div class="user-tab">
         <div 
           *ngIf="currentUser"
@@ -44,3 +45,9 @@
   </user-settings>
 </div>
 
+<!-- AUDIO -->
+<audio style="display: none;" id="remoteAudio" #remoteAudio autoplay></audio>
+<audio style="display: none;" id="joinSound" [src]="environment.joinSoundSrc" preload="auto"></audio>
+<audio style="display: none;" id="leaveSound" [src]="environment.leaveSoundSrc" preload="auto"></audio>
+<audio style="display: none;" id="muteSound" [src]="environment.muteSoundSrc" preload="auto"></audio>
+<audio style="display: none;" id="unmuteSound" [src]="environment.unmuteSoundSrc" preload="auto"></audio>  

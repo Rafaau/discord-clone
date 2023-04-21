@@ -10,6 +10,7 @@ import { ChangePasswordDialog } from './change-password-dialog/change-password-d
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ServerSettingsSnackbar } from '../../chat-channels-component/chat-server-settings/server-settings-snackbar/server-settings-snackbar.component';
+import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 
 @Component({
   selector: 'user-settings',
@@ -79,12 +80,15 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   aboutMeValue?: string
   showEmojiPicker: boolean = false
   martToggle: boolean = false
+  inputSensitivity?: number
+  messageBadgeOption?: boolean
   inputElement = () => document.querySelector('.details-input') as HTMLTextAreaElement
   textareaElement = () => document.querySelector('.about-me-input') as HTMLTextAreaElement
 
   constructor(
     private readonly _usersService: UsersService,
     private readonly _authService: AuthService,
+    private readonly _sharedDataProvider: SharedDataProvider,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
     private router: Router
@@ -123,6 +127,8 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       )
     })
     this.aboutMeValue = this.user?.aboutMe ? this.user.aboutMe : ''
+    this.inputSensitivity = 50 - this.user!.appSettings.inputSensitivity
+    this.messageBadgeOption = this.user!.appSettings.messageBadge
   }
 
   saveUserDetails() {
@@ -131,13 +137,18 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       email: this.userDetailsForm!.controls['email'].value,
       phoneNumber: this.userDetailsForm!.controls['phoneNumber'].value,
       password: this.userPassword,
-      aboutMe: this.aboutMeValue
+      aboutMe: this.aboutMeValue,
+      appSettings: {
+        inputSensitivity: 50 - this.inputSensitivity!,
+        messageBadge: this.messageBadgeOption!
+      }
     }
     this._usersService.updateUser(this.user!.id, reqBody)
       .subscribe(
         (data: HttpResponse<any>) => {
           this.user = data.body
           this.onUserUpdate.emit(data.body)
+          this._sharedDataProvider.setCurrentUser(data.body)
         }
       )
     this.currentForm = Form.None
@@ -187,7 +198,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     const file: File = (event.target as any).files[0]
     this._usersService.uploadAvatar(this.user!.id, file)
       .subscribe((response: HttpResponse<any>) => {
-        console.log(response)
+        // TODO
       })
   }
 
@@ -199,6 +210,19 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     }
   }
 
+  onInputSensitivityChange(event: Event) {
+    const value = (event.target as any).value
+    this.inputSensitivity = value
+    if (value != this.user?.appSettings.inputSensitivity) {
+      this.openSnackbar()
+    }
+  }
+
+  onMessageBadgeChange() {
+    this.messageBadgeOption = !this.messageBadgeOption
+    this.openSnackbar()
+  }
+
   openSnackbar() {
     if (!this.snackbar._openedSnackBarRef) {
       let snackBarRef = this.snackbar.openFromComponent(
@@ -207,6 +231,8 @@ export class UserSettingsComponent implements OnInit, OnChanges {
 
       const resetSub = snackBarRef.instance.onResetEvent.subscribe(() => {
         this.aboutMeValue = this.user?.aboutMe ? this.user.aboutMe : ''
+        this.inputSensitivity = 50 - this.user!.appSettings.inputSensitivity
+        this.messageBadgeOption = this.user!.appSettings.messageBadge
         this.snackbar.dismiss()
       })
       snackBarRef.afterDismissed().subscribe(() => resetSub.unsubscribe())
@@ -247,7 +273,9 @@ export class UserSettingsComponent implements OnInit, OnChanges {
 
 export enum View {
   MyAccount = 'My Account',
-  Profiles = 'Profiles'
+  Profiles = 'Profiles',
+  VoiceAndVideo = 'Voice & Video',
+  Notifications = 'Notifications',
 }
 
 export enum Form {

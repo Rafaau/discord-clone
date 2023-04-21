@@ -143,6 +143,7 @@ export class UsersController {
                 .status(HttpStatus.OK)
                 .json(await this.usersService.updateUser(id, updateUserDto))
         } catch (e) {
+            console.log(e)
             response
                 .status(e.status)
                 .json({
@@ -201,7 +202,6 @@ export class UsersController {
         @UploadedFile() file: MulterDiskUploadedFile,
         @Res() response: Response
     ) {
-        console.log(file)
         try {
             const filename = await this.fileService.saveFile(
                 file,

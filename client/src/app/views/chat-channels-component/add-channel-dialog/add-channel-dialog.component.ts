@@ -3,7 +3,7 @@ import { Component, EventEmitter, Inject, OnInit, ViewEncapsulation } from '@ang
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MyErrorStateMatcher } from 'src/app/utils/MyErrorStateMatcher';
-import { CreateChatChannelParams } from 'src/app/_models/chat-channels';
+import { ChannelType, CreateChatChannelParams } from 'src/app/_models/chat-channels';
 import { User } from 'src/app/_models/user';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 
@@ -13,9 +13,11 @@ import { ChatChannelService } from 'src/app/_services/chat-channel.service';
   styleUrls: ['./add-channel-dialog.component.css']
 })
 export class AddChannelDialog {
+  channelType = ChannelType
   channelForm = new FormGroup({
     name: new FormControl('', Validators.required),
-    isPrivate: new FormControl(false)
+    isPrivate: new FormControl(false),
+    type: new FormControl(this.channelType.Text)
   })
 
   matcher = new MyErrorStateMatcher()
@@ -36,6 +38,7 @@ export class AddChannelDialog {
       const isPrivate = this.channelForm.value.isPrivate!
       const reqBody: CreateChatChannelParams = {
         name: this.channelForm.value.name!,
+        type: this.channelForm.value.type!,
         isPrivate: isPrivate,
         users: isPrivate ? [this.data.currentUser] : [],
         roles: []

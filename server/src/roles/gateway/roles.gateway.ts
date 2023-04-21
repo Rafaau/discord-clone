@@ -33,7 +33,7 @@ export class RolesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     server: Server
     
     handleConnection(socket: Socket) {
-        socket.setMaxListeners(20)
+        socket.setMaxListeners(30)
     }
 
     handleDisconnect() {

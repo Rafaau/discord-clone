@@ -13,6 +13,7 @@ export type UpdateUserParams = {
     password: string
     phonenumber: string
     aboutMe: string
+    appSettings: UpdateAppSettingsParams
 }
 
 export type CreateChatServerParams = {
@@ -68,4 +69,10 @@ export type UpdateChatServerParams = {
 export type UpdateRoleParams = {
     name: string,
     permissions: any[]
+}
+
+export type UpdateAppSettingsParams = {
+    id: number,
+    inputSensitivity: number,
+    messageBadge: boolean,
 }

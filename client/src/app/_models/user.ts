@@ -1,3 +1,5 @@
+import { AppSettings, UpdateAppSettingsParams } from "./app-settings"
+import { ChatChannel } from "./chat-channels"
 import { DirectConversation } from "./direct-conversation"
 import { Role } from "./role"
 
@@ -11,6 +13,8 @@ export interface User {
     isOwner?: boolean
     roles?: Role[]
     aboutMe?: string,
+    currentVoiceChannel?: ChatChannel,
+    appSettings: AppSettings
 }
 
 export interface UserComplex {
@@ -36,6 +40,7 @@ export interface UpdateUserParams {
     phoneNumber: string,
     password?: string,
     aboutMe?: string,
+    appSettings: UpdateAppSettingsParams
 }
 
 export interface LoginUserParams {

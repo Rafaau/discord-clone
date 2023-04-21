@@ -151,6 +151,7 @@ export class ChatServersService {
                 'chatCategories.chatChannels.chatCategory',
                 'chatCategories.chatChannels.users',
                 'chatCategories.chatChannels.roles',
+                'chatCategories.chatChannels.voiceUsers',
                 'members',
                 'members.roles',
                 'roles',

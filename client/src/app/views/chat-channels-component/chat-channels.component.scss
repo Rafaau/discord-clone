@@ -122,7 +122,16 @@
 
 .hashtag {
     font-size: 20px;
+    margin-right: 11px;
+    color: #989AA2;
+}
+
+.speaker {
+    position: relative;
+    left: -2px;
+    font-size: 15px;
     margin-right: 5px;
+    transform: scaleX(0.8);
     color: #989AA2;
 }
 
@@ -286,3 +295,78 @@
     left: -5px;
     top: 11px;
 }
+
+.current-voice-container {
+    position: absolute;
+    bottom: 0;
+    height: 50px;
+    margin-bottom: 1px;
+    width: 210px;
+    background-color: #232428;
+    display: flex;
+    font-size: 14px;
+    padding: 10px;
+    color: #B5BAC1;
+}
+
+.voice-status {
+    color: #2DC770;
+}
+
+.voice-channel-name {
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.connection-actions {
+    margin-left: auto;
+    cursor: pointer;
+}
+
+    .connection-actions i {
+        margin-left: 8px;
+    }
+
+.single-voice-user {
+    display: flex;
+    cursor: pointer;
+    margin: 5px 5px 0 30px;
+    line-height: 28px;
+    font-size: 14px;
+    border-radius: 5px;
+    padding: 5px 0 5px 10px;
+}
+
+    .single-voice-user:hover {
+        background-color: #36373D;
+    }
+
+    .single-voice-user .fa-microphone-slash {
+        line-height: 28px;
+        margin-left: auto;
+        margin-right: 10px;
+        color: #F23F42;
+        display: none;
+    }
+
+.voice-avatar {
+    font-size: 12px;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    margin-right: 10px;
+    border: 2px solid transparent;
+}
+
+.active {
+    border: 2px solid #2DC759;
+    border-radius: 50%;
+  }
+
+.fa-microphone {
+    margin-right: 3px;
+}
+
+
+

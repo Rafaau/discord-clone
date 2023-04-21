@@ -37,7 +37,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
     ) {
         const notification = await this.notificationsService
             .createNotification(params[0], params[1])
-        if (params[1] == notification.recipient.id)
+        if (params[1] == notification?.recipient.id)
             eventBus.emit('newNotification', notification)
     }
 

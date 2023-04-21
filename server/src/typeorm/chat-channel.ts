@@ -3,6 +3,7 @@ import { ChatCategory } from "./chat-category";
 import { ChatMessage } from "./chat-message";
 import { Role } from "./role";
 import { User } from "./user";
+import { ChannelType } from "./enums/ChannelType";
 
 @Entity({ name: 'chat-channels' })
 export class ChatChannel {
@@ -14,6 +15,9 @@ export class ChatChannel {
 
     @Column()
     index: number
+
+    @Column({ default: ChannelType.Text })
+    type: ChannelType
 
     @Column()
     isPrivate: boolean
@@ -39,4 +43,10 @@ export class ChatChannel {
         nullable: true
     })
     roles?: Role[]
+
+    @OneToMany(() => User, user => user.currentVoiceChannel, {
+        onDelete: 'CASCADE',
+        nullable: true
+    })
+    voiceUsers: User[]
 }

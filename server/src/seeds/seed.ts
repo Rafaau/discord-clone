@@ -1,15 +1,13 @@
+import { AppSettings } from "src/typeorm/app-settings";
 import { ChatCategory } from "src/typeorm/chat-category";
 import { ChatChannel } from "src/typeorm/chat-channel";
-import { ChatMessage } from "src/typeorm/chat-message";
 import { ChatServer } from "src/typeorm/chat-server";
-import { ChatServerInvitation } from "src/typeorm/chat-server-invitation";
 import { DirectConversation } from "src/typeorm/direct-conversation";
-import { DirectMessage } from "src/typeorm/direct-message";
+import { ChannelType } from "src/typeorm/enums/ChannelType";
 import { Permission } from "src/typeorm/enums/Permission";
-import { MessageReaction } from "src/typeorm/message-reaction";
 import { Role } from "src/typeorm/role";
 import { User } from "src/typeorm/user";
-import { Repository, getRepository } from "typeorm";
+import { Repository } from "typeorm";
 
 export async function seedData(connection: any) {
     const userRepository: Repository<User> = connection.getRepository(User)
@@ -18,15 +16,13 @@ export async function seedData(connection: any) {
     const chatChannelRepository: Repository<ChatChannel> = connection.getRepository(ChatChannel)
     const roleRepository: Repository<Role> = connection.getRepository(Role)
     const directConversationRepository: Repository<DirectConversation> = connection.getRepository(DirectConversation)
-    const directMessagesRepository: Repository<DirectMessage> = connection.getRepository(DirectMessage)
-    const chatMessagesRepository: Repository<ChatMessage> = connection.getRepository(ChatMessage)
-    const messageReactionRepository: Repository<MessageReaction> = connection.getRepository(MessageReaction)
-    const chatServerInvitationRepository: Repository<ChatServerInvitation> = connection.getRepository(ChatServerInvitation)
+    const appSettingsRepository: Repository<AppSettings> = connection.getRepository(AppSettings)
 
     if (process.env.NODE_ENV.trim() == 'test') {
         await chatServerRepository.createQueryBuilder().delete().execute()
         await directConversationRepository.createQueryBuilder().delete().execute()
         await userRepository.createQueryBuilder().delete().execute()
+        await appSettingsRepository.createQueryBuilder().delete().execute()
     }
 
     const user1 = userRepository.create({
@@ -59,10 +55,30 @@ export async function seedData(connection: any) {
     })
 
     const existingUsers = await userRepository.find()
+    let usersToCheck = existingUsers
 
     if (existingUsers.length === 0) {
+        const appSettings1 = appSettingsRepository.create(new AppSettings(user1))
+        const appSettings2 = appSettingsRepository.create(new AppSettings(user2))
+        const appSettings3 = appSettingsRepository.create(new AppSettings(user3))
+        await appSettingsRepository.save([appSettings1, appSettings2, appSettings3])
+
+        user1.appSettings = appSettings1
+        user2.appSettings = appSettings2
+        user3.appSettings = appSettings3
+
         await userRepository.save([user1, user2, user3])
         await directConversationRepository.save(conversation)
+        usersToCheck = [user1, user2, user3]
+    }
+
+    for (const user of usersToCheck) {
+        if (!user.appSettings) {
+            const appSettings = appSettingsRepository.create(new AppSettings(user))
+            await appSettingsRepository.save(appSettings)
+            user.appSettings = appSettings
+            await userRepository.save(user)
+        }
     }
     
     const existingChatServers = await chatServerRepository.find()
@@ -77,6 +93,7 @@ export async function seedData(connection: any) {
             name: 'TestChatChannel1',
             index: 0,
             isPrivate: false,
+            type: ChannelType.Text
         })
 
         const chatChannel2 = chatChannelRepository.create({
@@ -84,6 +101,15 @@ export async function seedData(connection: any) {
             name: 'TestChatChannel2',
             index: 1,
             isPrivate: false,
+            type: ChannelType.Text
+        })
+
+        const chatChannel3 = chatChannelRepository.create({
+            id: 3,
+            name: 'TestVoiceChannel1',
+            index: 2,
+            isPrivate: false,
+            type: ChannelType.Voice
         })
 
         const ownerRole = roleRepository.create({
@@ -108,7 +134,7 @@ export async function seedData(connection: any) {
 
         await roleRepository.save([ownerRole, memberRole])
 
-        chatCategory1.chatChannels = [chatChannel1, chatChannel2]
+        chatCategory1.chatChannels = [chatChannel1, chatChannel2, chatChannel3]
 
         const chatServer1 = chatServerRepository.create({
             id: 18,

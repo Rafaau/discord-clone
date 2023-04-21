@@ -6,16 +6,23 @@ import { CreateUserParams, UpdateUserParams } from "../utils/types";
 import { Repository } from "typeorm";
 import { File as MulterFile } from 'multer';
 import { FileService } from "src/utils/file-service/file.service";
+import { AppSettings } from "src/typeorm/app-settings";
 
 @Injectable() 
 export class UsersService {
     constructor(
-        @InjectRepository(User) private userRepository: Repository<User>
+        @InjectRepository(User) private userRepository: Repository<User>,
+        @InjectRepository(AppSettings) private appSettingsRepository: Repository<AppSettings>,
     ) {}
 
     async createUser(userDetails: CreateUserParams) {
         const password = encodePassword(userDetails.password)
         const newUser = this.userRepository.create({ ...userDetails, password })
+
+        const appSettings = new AppSettings(newUser)
+        await this.appSettingsRepository.save(appSettings)
+        newUser.appSettings = appSettings
+
         return await this.userRepository.save(newUser)
     }
 
@@ -28,7 +35,10 @@ export class UsersService {
             where: { id },
             relations: [
                 'roles',
-                'roles.chatServer'
+                'roles.chatServer',
+                'currentVoiceChannel',
+                'currentVoiceChannel.voiceUsers',
+                'appSettings'
             ] 
         })
         if (!user)
@@ -41,13 +51,27 @@ export class UsersService {
             where: { id },
             relations: [
                 'roles', 
-                'roles.chatServer'
+                'roles.chatServer',
+                'currentVoiceChannel',
+                'currentVoiceChannel.voiceUsers',
+                'appSettings',
+                'notifications'
             ] 
         })
         if (!user)
             throw new NotFoundException()
         if (userDetails.password) 
             userDetails.password = encodePassword(userDetails.password)
+        
+        const appSettings = await this.appSettingsRepository.findOneBy({ id: userDetails.appSettings.id })
+        if (!appSettings)
+            throw new NotFoundException()
+
+        await this.appSettingsRepository.save({
+            ...appSettings,
+            ...userDetails.appSettings
+        })
+
         return this.userRepository.save({
             ...user,
             ...userDetails
@@ -87,12 +111,14 @@ export class UsersService {
     }
 
     async findUserByEmail(email: string) {
-        console.log(email)
         const user = await this.userRepository.findOne({ 
             where: { email },
             relations: [
                  'roles',
-                 'roles.chatServer'
+                 'roles.chatServer',
+                 'currentVoiceChannel',
+                 'currentVoiceChannel.voiceUsers',
+                 'appSettings'
             ]
         })
         if (!user)

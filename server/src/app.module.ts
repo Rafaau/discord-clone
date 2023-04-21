@@ -32,6 +32,8 @@ import { ConfigModule } from '@nestjs/config';
 import { configuration } from 'config/configuration';
 import { FriendRequest } from './typeorm/friend-request';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+import { SignallingModuleGateway } from './signalling-gateway/signalling.module';
+import { AppSettings } from './typeorm/app-settings';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
     RolesModule,
     FriendRequestsModule,
     AuthModule,
+    SignallingModuleGateway,
     MulterModule.register({
       dest: '../uploads/chat-server-avatars'
     }),
@@ -77,6 +80,7 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
         Notification,
         Role,
         FriendRequest,
+        AppSettings,
         SessionEntity
       ],
       synchronize: true,

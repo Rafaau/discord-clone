@@ -70,45 +70,100 @@
           <div
             cdkDrag
             [cdkDragData]="channel"
-            [ngClass]="router.url.includes('channel/'+channel.id+'/') ? 
-            'chat-channel chat-channel-current' : 'chat-channel'" 
             *ngFor="let channel of availableChannels(category.chatChannels)"
             id="channel-{{ channel.id }}"
-            (click)="redirectToChatChannel(channel.id)">
-            <div [ngClass]="channel.hasNotification ? 'notification-indicator' : ''"></div>
-            <div class="hashtag"> # </div>
+            (click)="channel.type == channelType.Text ? 
+            redirectToChatChannel(channel.id) : joinVoiceChannel(channel)">
             <div 
-              class="channel-name"
-              [ngStyle]="{ 'color': channel.hasNotification ? '#f3f4f5' : '' }">
-              {{ channel.name }}
-            </div>
-            <i
-              *ngIf="isPermittedToManageServer()"  
-              [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id
-              || (currentChannelSettings && currentChannelSettings!.id == channel.id) ?
-              'settings' : 'settings hide-settings'"
-              matTooltip="Edit Channel"
-              matTooltipPosition="above"
-              (click)="openChannelSettings(channel)"
-              class="fa-solid fa-gear"></i>
-            <div 
-              *ngIf="currentChannelSettings && currentChannelSettings!.id == channel.id"
-              class="channel-settings"
-              (clickOutside)="closeChannelSettings()">
+              [ngClass]="router.url.includes('channel/'+channel.id+'/') ? 
+              'chat-channel chat-channel-current' : 'chat-channel'">
+              <div [ngClass]="channel.hasNotification ? 'notification-indicator' : ''"></div>
+              <div *ngIf="channel.type == channelType.Text" class="hashtag"> # </div>
+              <div *ngIf="channel.type == channelType.Voice" class="speaker">
+                <i class="fa-solid fa-volume-high"></i>
+              </div>
               <div 
-                class="settings-option"
-                (click)="openChannelPermissionsDialog()">
-                Permissions
+                class="channel-name"
+                [ngStyle]="{ 'color': channel.hasNotification ? '#f3f4f5' : '' }">
+                {{ channel.name }}
               </div>
-              <div
-                (click)="deleteChannel()" 
-                class="settings-option warn">
-                Delete Channel
+              <i
+                *ngIf="isPermittedToManageServer()"  
+                [ngClass]="currentRoute.route == '/chatserver?id='+chatServer.id+'&channel='+channel.id
+                || (currentChannelSettings && currentChannelSettings!.id == channel.id) ?
+                'settings' : 'settings hide-settings'"
+                matTooltip="Edit Channel"
+                matTooltipPosition="above"
+                (click)="openChannelSettings(channel)"
+                class="fa-solid fa-gear"></i>
+              <div 
+                *ngIf="currentChannelSettings && currentChannelSettings!.id == channel.id"
+                class="channel-settings"
+                (clickOutside)="closeChannelSettings()">
+                <div 
+                  class="settings-option"
+                  (click)="openChannelPermissionsDialog()">
+                  Permissions
+                </div>
+                <div
+                  (click)="deleteChannel()" 
+                  class="settings-option warn">
+                  Delete Channel
+                </div>
               </div>
+            </div>
+            <div 
+              *ngFor="let user of channel.voiceUsers; index as i;"
+              class="single-voice-user">
+              <user-avatar 
+              [userId]="user.id" 
+              id="user-{{ user.id }}"
+              class="voice-avatar"
+              [username]="user.username"/>
+              {{ user.username }}
+              <i 
+                id="user-{{ user.id }}-muted"
+                class="fa-solid fa-microphone-slash">
+              </i>
             </div>
           </div>
         </div>
       </ng-container>
+      <!-- <div 
+        *ngIf="currentVoiceChannel"
+        class="current-voice-container">
+        <div>
+          <div class="voice-status">
+            <i class="fa-solid fa-signal"></i>
+            Voice Connected
+          </div>
+          <div class="voice-channel-name">
+            {{ currentVoiceChannel.name }}
+          </div>
+        </div>
+        <div class="connection-actions">
+          <i 
+            *ngIf="!isMuted"
+            class="fa-solid fa-microphone"
+            (click)="muteUser()"
+            matTooltip="Mute"
+            matTooltipPosition="above">
+          </i>
+          <i 
+            *ngIf="isMuted"
+            class="fa-solid fa-microphone-slash"
+            (click)="unmuteUser()"
+            matTooltip="Unmute"
+            matTooltipPosition="above">  
+          </i>
+          <i 
+            class="fa-solid fa-phone-slash"
+            (click)="leaveVoiceChannel()"
+            matTooltip="Disconnect"
+            matTooltipPosition="above">
+          </i>
+        </div>
+      </div> -->
     </div>
   </div>
 </div>

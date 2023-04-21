@@ -10,10 +10,14 @@ import { SessionSerializer } from './utils/session-serializer';
 import { AuthGateway } from './gateways/auth.gateway';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './utils/constants';
+import { AppSettings } from 'src/typeorm/app-settings';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([
+      User,
+      AppSettings
+    ]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
