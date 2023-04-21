@@ -143,13 +143,10 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
 
   initPeerConnection() {
     this.peer?.on('open', id => {
-      console.log('client opened')
       this.peerId = id
     })
 
     this.peer?.on('call', call => {
-      console.log('called')
-      console.log(this.peerList)
       if (!this.peerList.includes(call.peer))
         this.callPeer(call.peer)
       this.activeCalls.push(call)
@@ -162,7 +159,6 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
       }).then(stream => {
         call.answer(stream)
         call.on('stream', remoteStream => {
-          console.log('rec')
           this.currentPeer = call.peerConnection
           this.peerList.push(call.peer)
           this.monitorAudioLevel(false, call.peer, remoteStream, document.getElementById(call.peer)!)
@@ -174,17 +170,12 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
 
     this.peer?.on('connection', dataConnection => {
       dataConnection.on('data', (data: any) => {
-        console.log(data)
         if (data.type == 'mute')
           this.mutedPeers[data.peerId] = data.isMuted
           const mutedIcon = document.getElementById(`${data.peerId}-muted`) as HTMLElement
           if (mutedIcon)
             mutedIcon.style.display = data.isMuted ? 'block' : 'none'
       })
-    })
-
-    this.peer?.on('close', () => {
-      console.log('closed')
     })
   }
 
@@ -202,15 +193,8 @@ export class VoicePanelComponent implements OnInit, OnDestroy {
       this.activeCalls.push(call)
       this.userStream = stream
       call!.on('stream', remoteStream => {
-        console.log('stream')
           this.currentPeer = call.peerConnection
           this.monitorAudioLevel(true, this.peerId!, remoteStream, document.getElementById(`user-${this.currentUser!.id}`)!)
-      })
-      call!.on('close', () => {
-        console.log('close')
-      })
-      dataConnection.on('open', () => {
-        console.log('dc opened')
       })
     }).catch(err => {
       console.log(err)

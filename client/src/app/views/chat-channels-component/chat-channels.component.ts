@@ -157,7 +157,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (data) => {
-          console.log(`User ${data.user.id} has joined channel ${data.voiceChannelId}`)
           const actualChannel = this.chatServer!.chatCategories!.find(category => 
             category.chatChannels.some(channel => channel.id == data.voiceChannelId)
           )!.chatChannels.find(channel => channel.id == data.voiceChannelId)!
@@ -169,7 +168,6 @@ export class ChatChannelsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (data) => {
-          console.log(`User ${data.user.id} has left channel ${data.voiceChannelId}`)
           const actualChannel = this.chatServer!.chatCategories!.find(category => 
             category.chatChannels.some(channel => channel.id == data.voiceChannelId)
           )!.chatChannels.find(channel => channel.id == data.voiceChannelId)!

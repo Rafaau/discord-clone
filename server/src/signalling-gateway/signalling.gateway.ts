@@ -17,7 +17,6 @@ export class SignallingGateway implements OnGatewayDisconnect {
                 this.server.to(x.id.toString())
                            .emit('joinedVoiceChannel', { voiceChannelId, user, serverId })
             })
-            console.log(`User ${userId} joined voice channel ${voiceChannelId}`)
             
         })
         eventBus.on('leftVoiceChannel', ({ userId, voiceChannelId, users, serverId }) => {
@@ -26,7 +25,6 @@ export class SignallingGateway implements OnGatewayDisconnect {
                 this.server.to(x.id.toString())
                            .emit('leftVoiceChannel', { voiceChannelId, user, serverId })
             })
-            console.log(`User ${userId} left voice channel ${voiceChannelId}`)
         })
     }
 

@@ -11,7 +11,6 @@ export class AuthGateway {
 
     @SubscribeMessage('join')
     handleJoin(socket: Socket, params: { userId: string }) {
-        console.log(params.userId)
         socket.join(params.userId)
     }
 }

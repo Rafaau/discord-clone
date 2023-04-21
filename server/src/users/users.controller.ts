@@ -202,7 +202,6 @@ export class UsersController {
         @UploadedFile() file: MulterDiskUploadedFile,
         @Res() response: Response
     ) {
-        console.log(file)
         try {
             const filename = await this.fileService.saveFile(
                 file,
