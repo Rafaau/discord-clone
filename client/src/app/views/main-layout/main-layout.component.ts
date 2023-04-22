@@ -1,8 +1,8 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Location } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ElementRef, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { Socket } from 'ngx-socket-io';
 import { LocationHrefProvider } from 'src/app/utils/LocationHrefProvider';
 import { ChatServer } from 'src/app/_models/chat-servers';
@@ -12,19 +12,13 @@ import { User } from 'src/app/_models/user';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ChatServerService } from 'src/app/_services/chat-server.service';
 import { RolesService } from 'src/app/_services/roles.service';
-import { ChatChannelsComponent } from '../chat-channels-component/chat-channels.component';
 import { ChatServerSettingsComponent } from '../chat-channels-component/chat-server-settings/chat-server-settings.component';
 import { ChatServersComponent } from '../chat-servers-component/chat-servers.component';
-import { DirectMessagesListComponent } from '../direct-messages-list-component/direct-messages-list.component';
-import { FriendsComponent } from '../friends-component/friends.component';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, filter, takeUntil } from 'rxjs';
 import { ChatMessagesService } from 'src/app/_services/chat-messages.service';
-import { ChatMessage } from 'src/app/_models/chat-message';
 import { MessageReactionsService } from 'src/app/_services/message-reactions.service';
-import { MessageReaction } from 'src/app/_models/message-reaction';
 import { DirectMessageService } from 'src/app/_services/direct-message.service';
-import { DirectMessage } from 'src/app/_models/direct-message';
 import { initListeners } from 'src/app/utils/CacheListeners';
 import { ChatChannelService } from 'src/app/_services/chat-channel.service';
 import { CacheResolverService } from 'src/app/utils/CacheResolver.service';
@@ -32,6 +26,8 @@ import { UsersService } from 'src/app/_services/users.service';
 import { ChatChannel } from 'src/app/_models/chat-channels';
 import { VoiceService } from 'src/app/_services/voice.service';
 import { environment } from 'src/environments/environment';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import KeenSlider, { KeenSliderInstance } from 'keen-slider';
 
 @Component({
   selector: 'app-main-layout',
@@ -72,6 +68,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   onDestroy$ = new Subject<void>()
   currentVoiceChannel?: ChatChannel
   environment = environment
+  isMobile: boolean = false
+  displayMap = new Map([
+    [Breakpoints.XSmall, true],
+    [Breakpoints.Small, false],
+  ])
+  @ViewChild('sliderRef') sliderRef?: ElementRef
+  slider: KeenSliderInstance | null = null
+  currentSlide: number = 1
 
   constructor(
     private readonly _authService: AuthService,
@@ -86,8 +90,39 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     private readonly _chatServerService: ChatServerService,
     private readonly _voiceService: VoiceService,
     public router: Router,
-    private location: Location
-  ) { }
+    private location: Location,
+    private breakpointObserver: BreakpointObserver
+  ) { 
+    breakpointObserver.observe([
+      Breakpoints.XSmall,
+      Breakpoints.Small
+    ]).subscribe(result => {
+      for (let query of Object.keys(result.breakpoints)) {
+        if (result.breakpoints[query])
+          this.isMobile = this.displayMap.get(query) ?? false
+          if (this.isMobile) {
+            setTimeout(() => {
+              this.slider = new KeenSlider(this.sliderRef?.nativeElement, {
+                initial: this.currentSlide,
+                slideChanged: s => {
+                  this.currentSlide = s.track.details.rel
+                  console.log(this.currentSlide)
+                }
+              })
+            }, 100)
+          } else 
+            this.slider?.destroy()
+      }
+    })
+    this.router.events
+      .pipe(
+        takeUntil(this.onDestroy$),
+        filter(event => event instanceof NavigationEnd)
+      )
+      .subscribe((event: any) => {
+        this.slider?.moveToIdx(1)
+      })
+  }
 
   async ngOnInit() {
     await this.authorizeUser()

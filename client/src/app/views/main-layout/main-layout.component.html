@@ -1,34 +1,35 @@
 <div class="base-container">
-  <div class="row" [@settingsToggle]="serverSettingsState || userSettingsState ? 'open' : 'closed'">
-    <div class="primary-side-bar">
-      <app-chat-servers 
-        [currentUser]="currentUser"
-        (notificationsToPass)="fetchNotificationsFromServers($event)"
-        (updateUser)="fetchUser($event)">
-      </app-chat-servers>
-    </div>
-    <div class="secondary-side-bar">
-      <router-outlet name="secondary"></router-outlet>
-      <voice-panel></voice-panel>
-      <div class="user-tab">
-        <div 
-          *ngIf="currentUser"
-          class="flex">
-          <user-avatar 
-            [userId]="currentUser.id" 
-            class="user-avatar"
-            [username]="currentUser.username"/>
-          <div class="user-name">{{ currentUser!.username }}</div>
-          <i 
-            class="fa-solid fa-gear options-icon"
-            matTooltip="User Settings"
-            matTooltipPosition="above"
-            (click)="toggleUserSettingsView($event)">
-          </i>
+  <div #sliderRef [class.keen-slider]="isMobile" class="row" [@settingsToggle]="serverSettingsState || userSettingsState ? 'open' : 'closed'">
+    <div [class.keen-slider__slide]="isMobile" style="display: flex;">
+      <div class="primary-side-bar">
+        <app-chat-servers 
+          [currentUser]="currentUser"
+          (notificationsToPass)="fetchNotificationsFromServers($event)"
+          (updateUser)="fetchUser($event)">
+        </app-chat-servers>
+      </div>
+      <div class="secondary-side-bar" [class.mobile-secondary]="isMobile">
+        <router-outlet name="secondary"></router-outlet>
+        <div class="user-tab">
+          <div 
+            *ngIf="currentUser"
+            class="flex">
+            <user-avatar 
+              [userId]="currentUser.id" 
+              class="user-avatar"
+              [username]="currentUser.username"/>
+            <div class="user-name">{{ currentUser!.username }}</div>
+            <i 
+              class="fa-solid fa-gear options-icon"
+              matTooltip="User Settings"
+              matTooltipPosition="above"
+              (click)="toggleUserSettingsView($event)">
+            </i>
+          </div>
         </div>
       </div>
     </div>
-    <div class="main-container">
+    <div [class.keen-slider__slide]="isMobile" class="main-container">
       <router-outlet name="main"></router-outlet>
     </div>
   </div>
