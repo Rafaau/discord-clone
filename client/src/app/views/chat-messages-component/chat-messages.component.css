@@ -1,6 +1,7 @@
 .container {
     position: absolute;
-    width:100%;
+    left: 0;
+    right: 0;
     height:100%;
     bottom: 0;
 }
@@ -8,7 +9,8 @@
 .top-bar {
     display: flex;
     position: relative;
-    width: 100%;
+    left: 0;
+    right: 0;
     height: 42px;
     line-height: 42px;
     border-bottom: 1px solid #1F2023;
@@ -478,6 +480,7 @@ h6 {
     bottom: 60px;
     right: 0;
     padding: 10px;
+    z-index: 5;
 }
 
 ::ng-deep .emoji-mart-scroll {
@@ -517,6 +520,10 @@ h6 {
     -webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 1);
     -moz-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 1);
     box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 1);
+}
+
+.gif-mart-mobile {
+    width: 90vw;
 }
 
 .mart-header {
@@ -571,6 +578,10 @@ h6 {
     .single-gif img:hover {
         outline: 2px solid #3f51b5;
     }
+
+.single-gif-mobile img {
+    width: 42vw!important;
+}
 
 .member-options {
     position: absolute;
@@ -635,6 +646,14 @@ mat-progress-spinner {
     position: fixed;
     top: 20vh;
     right: 400px;
+    z-index: 5;
+}
+
+.reactions-picker-container-mobile {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 5vw;
     z-index: 5;
 }
 

@@ -69,6 +69,7 @@ label {
 .data-value {
     padding-top: 3px;
     font-size: 15px;
+    width: 80%;
 }
 
 .action-btn {
@@ -119,6 +120,11 @@ label {
     min-width: 200px;
     width: 45%;
 }
+
+.profiles-left-mobile {
+    width: 95%!important;
+}
+
 .view-container h5 {
     margin: 0 0 10px 0;
     font-weight: 500;
@@ -173,7 +179,7 @@ label {
     border-radius: 3px;
     width: 86%;
     min-height: 150px;
-    margin-top: 15px;
+    margin: 15px 0 15px 0;
     padding: 4% 10% 4% 4%;
     color: #f3f4f5;
     font-size: 16px;
@@ -183,7 +189,7 @@ label {
 
 .chars-left {
     position: absolute;
-    bottom: 10px;
+    bottom: 25px;
     right: 5%;
 }
 

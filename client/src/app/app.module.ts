@@ -50,6 +50,7 @@ import { CacheInterceptor } from './utils/CacheInterceptor';
 import { CacheResolverService } from './utils/CacheResolver.service';
 import { DeleteServerConfirmDialog } from './views/chat-channels-component/chat-server-settings/delete-server-confirm-dialog/delete-server-confirm-dialog.component';
 import { VoicePanelComponent } from './views/main-layout/voice-panel/voice-panel.component';
+import { MembersListComponent } from './views/chat-servers-component/members-list-component/members-list.component';
 
 const socketIoConfig: SocketIoConfig = { 
   url: process.env.NG_APP_SOCKET_PATH || 'http://localhost:3000', 
@@ -86,7 +87,8 @@ const socketIoConfig: SocketIoConfig = {
     ChannelPermissionsDialog,
     RemoveConfirmDialog,
     DeleteServerConfirmDialog,
-    VoicePanelComponent
+    VoicePanelComponent,
+    MembersListComponent
   ],
   imports: [
     BrowserModule,

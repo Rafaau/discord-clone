@@ -18,6 +18,12 @@
     text-align: center;
 }
 
+@media screen and (max-width: 768px) {
+    .form-container {
+        width: 300px;
+    }
+}
+
 p {
     margin-top: 5px!important;
     margin-bottom: 30px!important;

@@ -23,6 +23,8 @@ import { UsersService } from 'src/app/_services/users.service';
 import { Subject, takeUntil } from 'rxjs';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { ChatServer } from 'src/app/_models/chat-servers';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import KeenSlider, { KeenSliderInstance } from 'keen-slider';
 
 @Component({
   selector: 'app-chat-messages',
@@ -89,6 +91,16 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   usersToNotify: number[] = []
   inputElement = () => document.querySelector('.chat-input') as HTMLTextAreaElement
   onDestroy$ = new Subject<void>()
+  
+  isMobile: boolean = false
+  displayMap = new Map([
+    [Breakpoints.XSmall, true],
+    [Breakpoints.Small, false],
+  ])
+  @ViewChild('sliderRef') sliderRef?: ElementRef
+  slider: KeenSliderInstance | null = null
+  currentSlide: number = 1
+  currentParentSlide: number = 0
 
   constructor(
     private location: Location,
@@ -102,7 +114,32 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
     private readonly _notificationsService: NotificationsService,
     private readonly _sharedDataProvider: SharedDataProvider,
     public dialog: MatDialog,
-  ) { }
+    private breakpointObserver: BreakpointObserver
+  ) { 
+    breakpointObserver.observe([
+      Breakpoints.XSmall,
+      Breakpoints.Small
+    ]).subscribe(result => {
+      for (let query of Object.keys(result.breakpoints)) {
+        if (result.breakpoints[query]) {
+          this.isMobile = this.displayMap.get(query) ?? false
+          if (this.isMobile) {
+            setTimeout(() => {
+              this.slider = new KeenSlider(this.sliderRef?.nativeElement, {
+                initial: 0,         
+                rubberband: false,
+                slideChanged: s => {
+                  this.currentSlide = s.track.details.rel
+                },
+                range: { min: 0, max: 1 }
+              })
+            }, 300)
+          } else 
+            this.slider?.destroy()
+        }
+      }
+    })
+  }
 
   ngOnInit() {
     this.init()
@@ -155,6 +192,13 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
           if (this.router.url.includes(`chatserver/${data.chatServer.id})`))
             this.members = this.members!.filter(x => x.id != data.userId)
         })
+    this._sharedDataProvider.currentSlide
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe(
+        (slide: number) => {
+          if (this.slider)
+            this.slider!.options.disabled = false
+        })
   }
 
   ngOnDestroy() {
@@ -177,8 +221,11 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
       this.getChatChannel(Number(channelId))
     }
     setTimeout(() => {
-      this.infiniteScrollDirective!.destroyScroller()
-      this.infiniteScrollDirective!.setup()
+      if (this.infiniteScrollDirective) {
+        this.infiniteScrollDirective.destroyScroller()
+        this.infiniteScrollDirective.setup()
+        this.smoothScroll()
+      }
       this.doNotScroll = true // to avoid scrolling on tooltip display
     }, 500)
   }

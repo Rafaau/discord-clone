@@ -1,32 +1,32 @@
-<div [@fadeIn] *ngIf="isOpen" class="server-settings-container">
+<div #sliderRef [class.keen-slider]="isMobile" [@fadeIn] *ngIf="isOpen" class="server-settings-container">
   <!-- SIDE MENU -->
-  <div class="side-menu">
+  <div class="side-menu" [class.keen-slider__slide]="isMobile">
     <div *ngIf="user">
       <h5>USER SETTINGS</h5>
       <div 
         class="settings-option"
-        [class.current-option]="currentView == View.MyAccount"
-        (click)="currentView = View.MyAccount">
+        [class.current-option]="(currentView | async) === View.MyAccount"
+        (click)="currentView.next(View.MyAccount)">
         My Account
       </div>
       <div 
         class="settings-option"
-        [class.current-option]="currentView == View.Profiles"
-        (click)="currentView = View.Profiles">
+        [class.current-option]="(currentView | async) === View.Profiles"
+        (click)="currentView.next(View.Profiles)">
         Profiles
       </div>
       <mat-divider></mat-divider>
       <h5>APP SETTINGS</h5>
       <div 
         class="settings-option"
-        [class.current-option]="currentView == View.VoiceAndVideo"
-        (click)="currentView = View.VoiceAndVideo">
+        [class.current-option]="(currentView | async) === View.VoiceAndVideo"
+        (click)="currentView.next(View.VoiceAndVideo)">
         Voice & Video
       </div>
       <div 
         class="settings-option"
-        [class.current-option]="currentView == View.Notifications"
-        (click)="currentView = View.Notifications">
+        [class.current-option]="(currentView | async) === View.Notifications"
+        (click)="currentView.next(View.Notifications)">
         Notifications
       </div>
       <mat-divider></mat-divider>
@@ -37,13 +37,19 @@
         <i class="fa-solid fa-arrow-right-from-bracket"
            style="margin-left: auto;"></i>
       </div>
+      <div 
+        *ngIf="isMobile"
+        class="settings-option"
+        (click)="onCloseClick()">
+        Exit
+      </div>
     </div>
   </div>
-  <div class="main-container">
+  <div [class.keen-slider__slide]="isMobile" class="main-container">
     <div *ngIf="user">
-      <h3>{{ currentView }}</h3>
+      <h3>{{ (currentView | async) }}</h3>
       <!-- MY ACCOUNT VIEW -->
-      <div *ngIf="currentView == View.MyAccount" class="view-container">
+      <div *ngIf="(currentView | async) === View.MyAccount" class="view-container">
         <div class="user-details-container">
           <div class="bottom-section">
             <user-avatar 
@@ -54,9 +60,11 @@
               {{ user.username }}
             </div>
             <button 
+              *ngIf="!isMobile"
               mat-raised-button
               color="primary"
-              class="to-profile-btn">
+              class="to-profile-btn"
+              (click)="currentView.next(View.Profiles)">
               Edit User Profile
             </button>
             <div class="personal-data">
@@ -145,10 +153,10 @@
         </button>
       </div>
       <!-- PROFILES VIEW -->
-      <div *ngIf="currentView == View.Profiles" class="view-container">
+      <div *ngIf="(currentView | async) === View.Profiles" class="view-container">
         <mat-divider></mat-divider>
-        <div style="display: flex; justify-content: space-between;">
-          <div class="profiles-left">
+        <div [ngStyle]="{'display': !isMobile ? 'flex' : 'block', 'justify-content': !isMobile ? 'space-between' : 'center'}">
+          <div class="profiles-left" [class.profiles-left-mobile]="isMobile">
             <h5>AVATAR</h5>
             <input 
               type="file" 
@@ -232,7 +240,7 @@
         </div>
       </div>
       <!-- VOICE & VIDEO VIEW -->
-      <div *ngIf="currentView == View.VoiceAndVideo" class="view-container">
+      <div *ngIf="(currentView | async) === View.VoiceAndVideo" class="view-container">
         <h5>INPUT SENSITIVITY</h5>
         <mat-slider min="0" max="50" step="0.5">
           <input matSliderThumb [value]="inputSensitivity" (input)="onInputSensitivityChange($event)"/>
@@ -242,7 +250,7 @@
         </mat-error>
       </div>
       <!-- NOTIFICATIONS VIEW -->
-      <div *ngIf="currentView == View.Notifications" class="view-container">
+      <div *ngIf="(currentView | async) === View.Notifications" class="view-container">
         <div class="option-name">
           Enable Unread Message Badge
           <mat-slide-toggle
@@ -252,7 +260,7 @@
         </div>
       </div>
     </div>
-    <div class="close-btn" (click)="onCloseClick()">
+    <div *ngIf="!isMobile" class="close-btn" (click)="onCloseClick()">
       <mat-icon>close</mat-icon>
       ESC
     </div>

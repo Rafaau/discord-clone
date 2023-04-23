@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChatServer, UpdateChatServerParams } from 'src/app/_models/chat-servers';
@@ -11,9 +11,10 @@ import { RolesService } from 'src/app/_services/roles.service';
 import { AssignToRoleDialog } from './assign-to-role-dialog/assign-to-role-dialog.component';
 import { ServerSettingsSnackbar } from './server-settings-snackbar/server-settings-snackbar.component';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, takeUntil } from 'rxjs';
 import { DeleteServerConfirmDialog } from './delete-server-confirm-dialog/delete-server-confirm-dialog.component';
 import { Router } from '@angular/router';
+import KeenSlider, { KeenSliderInstance } from 'keen-slider';
 
 @Component({
   selector: 'chat-server-settings',
@@ -47,13 +48,15 @@ import { Router } from '@angular/router';
 export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   chatServer?: ChatServer
+  @Input()
+  isMobile?: boolean
   @Output()
   public onClose = new EventEmitter()
   @Output()
   public onSave = new EventEmitter<ChatServer>
   isOpen: boolean = true
   public View = View
-  currentView: View = View.Overview
+  currentView: BehaviorSubject<View> = new BehaviorSubject<View>(View.Overview)
   serverNameValue?: string
   displayedColumns: string[] = ['name', 'users']
   currentRole?: Role
@@ -63,6 +66,10 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
   doNotInterrupt: boolean = false
   roleNameValue?: string
   onDestroy$ = new Subject<void>()
+
+  @ViewChild('sliderRef') sliderRef?: ElementRef
+  slider: KeenSliderInstance | null = null
+  currentSlide: number = 0
 
   constructor(
     private readonly _chatServerService: ChatServerService,
@@ -74,6 +81,22 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
   ) { }
 
   ngOnInit() {
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.slider = new KeenSlider(this.sliderRef?.nativeElement, {
+          initial: this.currentSlide,     
+          range: { min: 0, max: 1 },
+          rubberband: false,
+          slideChanged: s => {
+            this.currentSlide = s.track.details.rel
+          }
+        })
+      }, 100)
+    }
+    this.currentView.subscribe(view => {
+      if (this.slider)
+        this.slider.moveToIdx(1)
+    })
     this._rolesService.getRoleUpdated()
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((role: Role) => {
@@ -131,9 +154,9 @@ export class ChatServerSettingsComponent implements OnInit, OnChanges, OnDestroy
       snackBarRef.afterDismissed().subscribe(() => resetSub.unsubscribe())
 
       const saveSub = snackBarRef.instance.onSaveEvent.subscribe(() => {
-        if (this.currentView == View.Overview)
+        if (this.currentView.getValue() == View.Overview)
           this.saveSettings()
-        if (this.currentView == View.RolesExtended)
+        if (this.currentView.getValue() == View.RolesExtended)
           this.saveRole()
         this.snackbar.dismiss()
       })

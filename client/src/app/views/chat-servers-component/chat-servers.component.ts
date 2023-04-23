@@ -46,6 +46,8 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
   chatServers: ChatServer[] = []
   @Input()
   currentUser?: User
+  @Input()
+  isMobile?: boolean
   notifications: Notification[] = []
   @Output()
   notificationsToPass = new EventEmitter<Notification[]>
@@ -196,7 +198,7 @@ export class ChatServersComponent implements OnInit, OnChanges, OnDestroy {
       data: { currentUser: this.currentUser },
       width: '450px',
       panelClass: 'add-server-dialog',
-      height: '272px'
+      height: !this.isMobile ? '272px' : '310px'
     })
     const sub = dialogRef.componentInstance.onCreate.subscribe(() => {
       this.getChatServers(this.currentUser!.id)
