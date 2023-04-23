@@ -153,6 +153,7 @@ export class DirectMessagesComponent implements OnInit, OnDestroy {
       this.doNotScroll = true // to avoid scrolling on tooltip display
       this.infiniteScrollDirective!.destroyScroller()
       this.infiniteScrollDirective!.setup()
+      this.smoothScroll()
     }, 500)
   }
 

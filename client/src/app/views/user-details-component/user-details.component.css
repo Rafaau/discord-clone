@@ -9,6 +9,42 @@
     height: auto;
 }
 
+.mobile-details-container {
+    left: 5vw;
+    right: 5vw;
+    width: auto;
+    bottom: 20vh;
+}
+
+    .mobile-details-container .member-avatar {
+        width: 20vw;
+        height: 20vw;
+        font-size: 10vw;
+        line-height: 20vw;
+        border: 2vw solid #232428;
+        top: 4vh;
+        left: 3vw;
+    }
+
+    .mobile-details-container .details {
+        margin: 10vw 15px 15px 15px;
+        padding: 3vw;
+        height: 32vh;
+    }
+
+    .mobile-details-container .username {
+        font-size: 24px;
+    }
+
+    .mobile-details-container .input-container {
+        padding: 2vw;
+        margin: 2vw;
+    }
+
+    .mobile-details-container input {
+        font-size: 24px;
+    }
+
 .details-upper {
     height: 11vh;
     border-top-right-radius: 8px;

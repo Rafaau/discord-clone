@@ -98,20 +98,23 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       Breakpoints.Small
     ]).subscribe(result => {
       for (let query of Object.keys(result.breakpoints)) {
-        if (result.breakpoints[query])
+        if (result.breakpoints[query]) {
           this.isMobile = this.displayMap.get(query) ?? false
           if (this.isMobile) {
             setTimeout(() => {
               this.slider = new KeenSlider(this.sliderRef?.nativeElement, {
-                initial: this.currentSlide,
+                initial: this.currentSlide,     
+                range: { min: 0, max: 1 },
+                rubberband: false,
                 slideChanged: s => {
                   this.currentSlide = s.track.details.rel
-                  console.log(this.currentSlide)
+                  this._sharedDataProvider.emitCurrentSlide(this.currentSlide)
                 }
               })
             }, 100)
           } else 
             this.slider?.destroy()
+        }
       }
     })
     this.router.events

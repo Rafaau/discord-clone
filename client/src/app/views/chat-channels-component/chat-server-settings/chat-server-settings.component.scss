@@ -18,6 +18,36 @@
     padding: 51px 10px 0 10vw;
 }
 
+.keen-slider {
+    display: flex;
+    overflow-y: scroll;
+}
+
+.keen-slider__slide:nth-child(1) {
+    position: absolute!important;
+    width: 100vw!important;
+    left: 0!important;
+    right: 0!important;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.keen-slider__slide:nth-child(2) {
+    position: absolute!important;
+    width: 100vw!important;
+    max-width: 100vw!important;
+    left: 100vw!important;
+    margin: 0!important;
+    padding: 30px 20px 50px 20px!important;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    overflow-y: scroll;
+    overflow-x: scroll;
+    touch-action:pan-x!important;
+}
+
 .main-container {
     position: relative;
     width: 750px;
@@ -27,6 +57,8 @@
     overflow-y: scroll;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+    overflow-x: scroll;
+    touch-action:pan-x!important;
 }
 
     .main-container::-webkit-scrollbar {
@@ -154,6 +186,10 @@ p {
         font-weight: 500;
         color: #ADB1BD;
     }
+
+.col-3-mobile {
+    margin-top: 60px;
+}
 
 .upload-btn {
     margin-top: 15px;
@@ -342,6 +378,10 @@ td {
     cursor: pointer;
 }
 
+.edit-role-wrapper {
+    width: 90vw;
+}
+
 .current-edit {
     color: #f3f4f5;
 }
@@ -352,6 +392,10 @@ td {
     white-space: nowrap;
     overflow: hidden;
     margin-right: 20px;
+}
+
+.role-wrapper-mobile {
+    width: 220px;
 }
 
 .single-user {

@@ -1,0 +1,43 @@
+<!-- <div *ngIf="members?.length" class="members-container">
+  <h6>OWNER  -  1</h6>
+  <div 
+    class="single-member"
+    (click)="openMemberDetails(members![0].id)">
+    <user-avatar 
+      [userId]="members![0].id" 
+      class="member-avatar"
+      [username]="members![0].username"/>
+    <div class="username">{{ members![0].username }}</div>
+  </div>
+  <h6 *ngIf="members!.length > 1">MEMBERS  - {{ members!.length - 1 }}</h6>
+  <div *ngFor="let member of members; let i = index">
+    <user-details 
+      *ngIf="currentMemberDetails == member.id"
+      (clickOutside)="closeMemberDetails($event)"
+      [currentUser]="currentUser"
+      [user]="member">
+    </user-details>
+    <div 
+      *ngIf="currentMemberOptions == member.id && isPermittedToKickMembers()" 
+      class="member-options"
+      (clickOutside)="closeMemberOptions($event)">
+      <div 
+        (click)="onKickMember(member.id)" 
+        class="member-option-warn">
+        Kick {{ member.username }}
+      </div>
+    </div>
+    <div *ngIf="!member.isOwner">
+      <div 
+        class="single-member"
+        (click)="openMemberDetails(member.id)"
+        (contextmenu)="onMemberRightClick(member.id)">
+        <user-avatar 
+          [userId]="member.id" 
+          class="member-avatar"
+          [username]="member.username"/>
+        <div class="username">{{ member.username }}</div>
+      </div>
+    </div>
+  </div>
+</div> -->

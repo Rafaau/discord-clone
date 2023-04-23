@@ -69,6 +69,13 @@ h2 {
     margin-right: 25px;
 }
 
+@media screen and (max-width: 768px) {
+    .type-desc {
+        margin-top: 15px;
+        line-height: 10px;
+    }
+}
+
 .full-width {
     width: 100%;
 }

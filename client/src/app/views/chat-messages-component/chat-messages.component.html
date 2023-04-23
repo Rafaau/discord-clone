@@ -7,14 +7,15 @@
       {{ chatChannel.name }}
     </div>
     <div 
+      *ngIf="!isMobile"
       (click)="hideShowMembers()" 
       class="members-icon"
       [matTooltip]="showMembers ? 'Hide Member List' : 'Show Member List'">
       <mat-icon>people</mat-icon>
     </div>
   </div>
-  <div class="flex" *ngIf="chatChannel">
-    <div class="messages-container">
+  <div #sliderRef class="flex" *ngIf="chatChannel" [class.keen-slider]="isMobile">
+    <div class="messages-container" [class.keen-slider__slide]="isMobile">
       <div 
         class="messages-wrapper"
         #wrapper
@@ -82,7 +83,8 @@
                   (clickOutside)="closeMemberDetails($event)"
                   [centered]="true"
                   [currentUser]="currentUser"
-                  [user]="message.user">
+                  [user]="message.user"
+                  [isMobile]="isMobile">
                 </user-details>
 
                 <div 
@@ -116,7 +118,7 @@
                   [message]="message">
                 </message-reactions>
 
-                <div class="reactions-picker-container">
+                <div [ngClass]="!isMobile ? 'reactions-picker-container' : 'reactions-picker-container-mobile'">
                   <emoji-mart 
                     class="emoji-mart" 
                     *ngIf="showReactionsPicker && message.id == messageToReact"
@@ -171,7 +173,7 @@
           id="target" 
           class="end-space"
           [ngStyle]="{ 'height': messageToReply ? '30px' : '15px' }">
-          {{ scrollToLastMessage() }}
+          <!-- {{ scrollToLastMessage() }} -->
         </div>
       </div>
       <div class="bottom-section">
@@ -231,7 +233,8 @@
             *ngIf="showGifPicker"
             [@onMartToggle] 
             (clickOutside)="closeGifPicker($event)"
-            class="gif-mart">
+            class="gif-mart"
+            [class.gif-mart-mobile]="isMobile">
             <div class="mart-header">
               <div class="input-container">
                 <input 
@@ -256,6 +259,7 @@
               <div 
                 *ngFor="let result of _giphyService.searchResults$ | async; let i = index;"
                 class="single-gif"
+                [class.single-gif-mobile]="isMobile"
                 (click)="sendGif(result.images)">
                   <img
                     *ngIf="i % 2 == 0" 
@@ -267,6 +271,7 @@
               <div 
                 *ngFor="let result of _giphyService.searchResults$ | async; let i = index;"
                 class="single-gif"
+                [class.single-gif-mobile]="isMobile"
                 (click)="sendGif(result.images)">
                   <img 
                     *ngIf="i % 2 != 0"
@@ -304,7 +309,7 @@
         </div>
       </div>
     </div>
-    <div *ngIf="showMembers && members?.length" class="members-container">
+    <div [class.keen-slider__slide]="isMobile" *ngIf="showMembers && members?.length" class="members-container">
       <h6>OWNER  -  1</h6>
       <div 
         class="single-member"
@@ -321,7 +326,8 @@
           *ngIf="currentMemberDetails == member.id && detailsMode == 0"
           (clickOutside)="closeMemberDetails($event)"
           [currentUser]="currentUser"
-          [user]="member">
+          [user]="member"
+          [isMobile]="isMobile">
         </user-details>
         <div 
           *ngIf="currentMemberOptions == member.id && isPermittedToKickMembers()" 

@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ServerSettingsSnackbar } from '../../chat-channels-component/chat-server-settings/server-settings-snackbar/server-settings-snackbar.component';
 import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
+import KeenSlider, { KeenSliderInstance } from 'keen-slider';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'user-settings',
@@ -66,13 +68,15 @@ import { SharedDataProvider } from 'src/app/utils/SharedDataProvider.service';
 export class UserSettingsComponent implements OnInit, OnChanges {
   @Input()
   user?: User
+  @Input()
+  isMobile?: boolean
   @Output()
   public onClose = new EventEmitter()
   @Output()
   public onUserUpdate = new EventEmitter<User>
   isOpen: boolean = true
   public View = View
-  currentView: View = View.MyAccount
+  currentView: BehaviorSubject<View> = new BehaviorSubject<View>(View.MyAccount)
   public Form = Form
   currentForm: Form = Form.None
   userDetailsForm?: FormGroup
@@ -85,6 +89,10 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   inputElement = () => document.querySelector('.details-input') as HTMLTextAreaElement
   textareaElement = () => document.querySelector('.about-me-input') as HTMLTextAreaElement
 
+  @ViewChild('sliderRef') sliderRef?: ElementRef
+  slider: KeenSliderInstance | null = null
+  currentSlide: number = 0
+
   constructor(
     private readonly _usersService: UsersService,
     private readonly _authService: AuthService,
@@ -95,6 +103,22 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.slider = new KeenSlider(this.sliderRef?.nativeElement, {
+          initial: this.currentSlide,     
+          range: { min: 0, max: 1 },
+          rubberband: false,
+          slideChanged: s => {
+            this.currentSlide = s.track.details.rel
+          }
+        })
+      }, 100)
+    }
+    this.currentView.subscribe(view => {
+      if (this.slider)
+        this.slider.moveToIdx(1)
+    })
   }
 
   logout() {

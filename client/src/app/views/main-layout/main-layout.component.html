@@ -4,6 +4,7 @@
       <div class="primary-side-bar">
         <app-chat-servers 
           [currentUser]="currentUser"
+          [isMobile]="isMobile"
           (notificationsToPass)="fetchNotificationsFromServers($event)"
           (updateUser)="fetchUser($event)">
         </app-chat-servers>
@@ -35,11 +36,13 @@
   </div>
   <chat-server-settings 
     *ngIf="serverSettingsState" 
+    [isMobile]="isMobile"
     (onClose)="toggleServerSettingsView($event)"
     [chatServer]="chatServerToPass">
   </chat-server-settings>
   <user-settings
     *ngIf="userSettingsState"
+    [isMobile]="isMobile"
     [user]="currentUser"
     (onClose)="toggleUserSettingsView($event)"
     (onUserUpdate)="refreshUser($event)">

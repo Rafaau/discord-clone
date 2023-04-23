@@ -10,7 +10,7 @@ h1 {
 }
 
 ::ng-deep .mat-mdc-dialog-content {
-    text-align: center!important;;
+    text-align: center!important;
 }
 
 .close-btn {

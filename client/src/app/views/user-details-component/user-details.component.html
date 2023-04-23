@@ -2,7 +2,8 @@
   *ngIf="currentUser && user"
   [@slideIn] 
   class="details-container"
-  [ngStyle]="centered ? {
+  [class.mobile-details-container]="isMobile"
+  [ngStyle]="centered && !isMobile ? {
     'left': (user.username.length*8)+365+'px'
   } : {}">
   <div class="details-upper" [ngClass]="true ? 'av-' + user!.username[0].toLowerCase() : ''"></div>

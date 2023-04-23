@@ -38,6 +38,8 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   currentUser?: User
   @Input()
   user?: User | UserComplex
+  @Input()
+  isMobile?: boolean
   messageValue: string = ''
   @Input()
   centered?: boolean
@@ -56,7 +58,11 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.onDestroy$))
       .subscribe(
         (conversation: DirectConversation) => {
-          conversation.users = [conversation.users[1], conversation.users[0]]
+          conversation.users.sort((a, b) => {
+            if (a.id === this.currentUser!.id) return -1
+            if (b.id === this.currentUser!.id) return 1
+            return 0
+          })
           const messageReqBody: CreateDirectMessageParams = {
             content: this.messageValue
           }
