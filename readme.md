@@ -1,7 +1,8 @@
 # Discord-clone
 
 **Discord-clone** is a feature-rich application that aims to replicate the functionality of the popular chat platform, **Discord**. This project is built using **Angular** for the client-side, **NestJS** with **TypeORM** for the server-side, and **MySQL** for the database layer.
-The current implementation focuses on text-based communication, with plans to add voice chat in the future. 
+~~The current implementation focuses on text-based communication, with plans to add voice chat in the future.~~ 
+The current implementation includes a basic text-based communication system and has also introduced a simple voice chat using WebRTC.
 
 
 ## Features
@@ -21,6 +22,7 @@ Discord-clone offers a range of features found in the original Discord app, incl
 - Notifications
 - Socket.IO implementation for real-time communication
 - Basic frontend caching with HTTP Interceptors
+- Mobile screen support (untested)
 
 ## Testing
 Server-side tests are implemented using the **Jest** testing library, while E2E tests for the frontend are conducted using **Cypress**. 
