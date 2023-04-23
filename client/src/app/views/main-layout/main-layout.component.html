@@ -11,6 +11,7 @@
       </div>
       <div class="secondary-side-bar" [class.mobile-secondary]="isMobile">
         <router-outlet name="secondary"></router-outlet>
+        <voice-panel></voice-panel>
         <div class="user-tab">
           <div 
             *ngIf="currentUser"
