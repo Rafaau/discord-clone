@@ -3,7 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing"
 import { Response } from "express"
 import { createResponse, MockResponse } from "node-mocks-http"
 import { ChatServerInvitationsController } from "src/chat-server-invitations/chat-server-invitations.controller"
-import { ChatServerInvitationsService } from "src/chat-server-invitations/chat-server-invitations.service"
+import { ChatServerInvitationsService } from "src/modules/chat-server-invitations/chat-server-invitations.service"
 import { generateChatServerInvitation } from "./fakes-factory"
 
 describe('ChatServerInvitationsController', () => {

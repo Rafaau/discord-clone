@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { CreateNotificationDto } from "src/notifications/notifications.dto"
-import { Notification } from "src/typeorm/notification"
+import { Notification } from "src/entities/notification"
 import { generateUser } from "test/controllers/users/fakes-factory"
 
 export class FakeNotificationCreate {

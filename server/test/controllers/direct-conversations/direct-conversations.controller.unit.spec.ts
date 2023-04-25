@@ -3,7 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing"
 import { Response } from "express"
 import { createResponse, MockResponse } from "node-mocks-http"
 import { DirectConversationsController } from "src/direct-conversations/direct-conversations.controller"
-import { DirectConversationsService } from "src/direct-conversations/direct-conversations.service"
+import { DirectConversationsService } from "src/modules/direct-conversations/direct-conversations.service"
 import { FakeDirectConversationCreate, generateDirectConversation, generateFewDirectConversations } from "./fakes-factory"
 
 describe('DirectConversationController', () => {

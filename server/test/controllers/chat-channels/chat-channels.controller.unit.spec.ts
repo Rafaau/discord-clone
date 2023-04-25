@@ -4,7 +4,7 @@ import { Response } from "express"
 import { createResponse, MockResponse } from "node-mocks-http"
 import { ChatChannelsController } from "src/chat-channels/chat-channels.controller"
 import { CreateChatCategoryDto, CreateChatChannelDto } from "src/chat-channels/chat-channels.dto"
-import { ChatChannelsService } from "src/chat-channels/chat-channels.service"
+import { ChatChannelsService } from "src/modules/chat-channels/chat-channels.service"
 import { FakeChatCategoryCreate, FakeChatChannelCreate, generateChatCategory, generateChatChannel } from "./fakes-factory"
 
 describe('ChatChannelsController', () => {

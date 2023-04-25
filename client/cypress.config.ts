@@ -3,7 +3,7 @@ import { execSync } from "child_process";
 
 export default defineConfig({
   e2e: {
-    baseUrl: "http://localhost:4200",
+    baseUrl: "http://localhost:4200/#",
     setupNodeEvents(on, config) {
       on('task', {
         getClipboard: () => {

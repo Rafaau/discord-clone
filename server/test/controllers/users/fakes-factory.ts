@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
-import { ChatServer } from 'src/typeorm/chat-server';
-import { User } from "src/typeorm/user";
+import { ChatServer } from 'src/entities/chat-server';
+import { User } from "src/entities/user";
 import { CreateUserDto, UpdateUserDto } from 'src/users/users.dto';
 
 export function generateUser(): User {

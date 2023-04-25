@@ -51,6 +51,7 @@ import { CacheResolverService } from './utils/CacheResolver.service';
 import { DeleteServerConfirmDialog } from './views/chat-channels-component/chat-server-settings/delete-server-confirm-dialog/delete-server-confirm-dialog.component';
 import { VoicePanelComponent } from './views/main-layout/voice-panel/voice-panel.component';
 import { MembersListComponent } from './views/chat-servers-component/members-list-component/members-list.component';
+import { ComponentsModule } from './views/components.module';
 
 const socketIoConfig: SocketIoConfig = { 
   url: process.env.NG_APP_SOCKET_PATH || 'http://localhost:3000', 
@@ -60,52 +61,12 @@ const socketIoConfig: SocketIoConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    MainLayoutComponent,
-    LoginPageComponent,
-    RegisterPageComponent,
-    ChatServersComponent,
-    ChatChannelsComponent,
-    ChatMessagesComponent,
-    DirectMessagesListComponent,
-    DirectMessagesComponent,
-    FriendsComponent,
-    VarDirective,
-    AddServerDialog,
-    AddChannelDialog,
-    AddCategoryDialog,
-    ConfirmDeleteDialog,
-    GenerateInvitationDialog,
-    UserDetailsComponent,
-    ChatServerSettingsComponent,
-    UserSettingsComponent,
-    ChangePasswordDialog,
-    MessageContentComponent,
-    MessageReactionsComponent,
-    UserAvatarComponent,
-    ChatServerAvatarComponent,
-    AssignToRoleDialog,
-    ChannelPermissionsDialog,
-    RemoveConfirmDialog,
-    DeleteServerConfirmDialog,
-    VoicePanelComponent,
-    MembersListComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    LayoutModule,
-    MaterialModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    FormsModule,
-    ClickOutsideModule,
-    PickerModule,
-    EmojiModule,
-    ClipboardModule,
-    InfiniteScrollModule,
-    NgxYoutubePlayerModule.forRoot(),
+    ComponentsModule,
     SocketIoModule.forRoot(socketIoConfig),
-    BrowserAnimationsModule,
   ],
   providers: [
     HttpClient,

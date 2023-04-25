@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { CreateChatServerDto, UpdateChatServerDto } from "src/chat-servers/chat-servers.dto";
-import { ChatServer } from "src/typeorm/chat-server";
+import { ChatServer } from "src/entities/chat-server";
 import { generateUser } from "../users/fakes-factory";
 
 export function generateChatServer(): ChatServer {

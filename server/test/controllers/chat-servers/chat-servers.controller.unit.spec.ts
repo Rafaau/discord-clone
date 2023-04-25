@@ -5,7 +5,7 @@ import { Response } from "express"
 import { createResponse, MockResponse } from "node-mocks-http"
 import { ChatServersController } from "src/chat-servers/chat-servers.controller"
 import { CreateChatServerDto } from "src/chat-servers/chat-servers.dto"
-import { ChatServersService } from "src/chat-servers/chat-servers.service"
+import { ChatServersService } from "src/modules/chat-servers/chat-servers.service"
 import { FakeChatServerCreate, generateChatServer, generateFewChatServers } from "./fakes-factory"
 
 describe('ChatServersController', () => {

@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { ChatServerInvitation } from "src/typeorm/chat-server-invitation";
+import { ChatServerInvitation } from "src/entities/chat-server-invitation";
 import { generateChatServer } from "../chat-servers/fakes-factory";
 
 export function generateChatServerInvitation(): ChatServerInvitation {

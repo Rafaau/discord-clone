@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { CreateDirectMessageDto, UpdateDirectMessageDto } from "src/direct-messages/direct-messages.dto";
-import { DirectMessage } from "src/typeorm/direct-message";
+import { DirectMessage } from "src/entities/direct-message";
 import { generateDirectConversation } from "../direct-conversations/fakes-factory";
 import { generateUser } from "../users/fakes-factory";
 

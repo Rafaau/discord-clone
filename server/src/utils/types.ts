@@ -1,5 +1,5 @@
-import { Role } from "src/typeorm/role"
-import { User } from "src/typeorm/user"
+import { Role } from "src/entities/role"
+import { User } from "src/entities/user"
 
 export type CreateUserParams = {
     username: string

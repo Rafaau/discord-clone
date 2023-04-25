@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
-import { Permission } from "src/typeorm/enums/Permission"
-import { Role } from "src/typeorm/role"
+import { Permission } from "src/entities/enums/Permission"
+import { Role } from "src/entities/role"
 import { UpdateRoleParams } from "src/utils/types"
 
 export class FakeRoleCreate {

@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { CreateDirectConversationDto } from "src/direct-conversations/direct-conversations.dto";
-import { DirectConversation } from "src/typeorm/direct-conversation";
+import { DirectConversation } from "src/entities/direct-conversation";
 import { generateUser } from "../users/fakes-factory";
 
 export function generateDirectConversation(): DirectConversation {

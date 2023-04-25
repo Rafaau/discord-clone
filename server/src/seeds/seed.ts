@@ -1,12 +1,12 @@
-import { AppSettings } from "src/typeorm/app-settings";
-import { ChatCategory } from "src/typeorm/chat-category";
-import { ChatChannel } from "src/typeorm/chat-channel";
-import { ChatServer } from "src/typeorm/chat-server";
-import { DirectConversation } from "src/typeorm/direct-conversation";
-import { ChannelType } from "src/typeorm/enums/ChannelType";
-import { Permission } from "src/typeorm/enums/Permission";
-import { Role } from "src/typeorm/role";
-import { User } from "src/typeorm/user";
+import { AppSettings } from "src/entities/app-settings";
+import { ChatCategory } from "src/entities/chat-category";
+import { ChatChannel } from "src/entities/chat-channel";
+import { ChatServer } from "src/entities/chat-server";
+import { DirectConversation } from "src/entities/direct-conversation";
+import { ChannelType } from "src/entities/enums/ChannelType";
+import { Permission } from "src/entities/enums/Permission";
+import { Role } from "src/entities/role";
+import { User } from "src/entities/user";
 import { Repository } from "typeorm";
 
 export async function seedData(connection: any) {

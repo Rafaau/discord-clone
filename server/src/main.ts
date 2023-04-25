@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import session from 'express-session';
 import passport from 'passport'
 import { TypeormStore } from 'connect-typeorm';
-import { SessionEntity } from './typeorm/session';
+import { SessionEntity } from './entities/session';
 import { DataSource } from 'typeorm';
 import { seedData } from './seeds/seed';
 import { TypeOrmModule } from '@nestjs/typeorm';

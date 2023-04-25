@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { CreateChatMessageDto, UpdateChatMessageDto } from "src/chat-messages/chat-messages.dto";
-import { ChatMessage } from "src/typeorm/chat-message";
+import { ChatMessage } from "src/entities/chat-message";
 import { generateChatChannel } from "../chat-channels/fakes-factory";
 import { generateUser } from "../users/fakes-factory";
 

@@ -4,7 +4,7 @@ import { Response } from "express"
 import { createResponse, MockResponse } from "node-mocks-http"
 import { DirectMessagesControler } from "src/direct-messages/direct-messages.controller"
 import { CreateDirectMessageDto, UpdateDirectMessageDto } from "src/direct-messages/direct-messages.dto"
-import { DirectMessagesService } from "src/direct-messages/direct-messages.service"
+import { DirectMessagesService } from "src/modules/direct-messages/direct-messages.service"
 import { FakeDirectMessageCreate, generateDirectMessage, generateFewDirectMessages } from "./fakes-factory"
 
 describe('DirectMessagesController', () => {

@@ -1,10 +1,10 @@
 import { BadRequestException, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { ChatChannelsService } from 'src/chat-channels/chat-channels.service';
-import { ChatCategory } from 'src/typeorm/chat-category';
-import { ChatChannel } from 'src/typeorm/chat-channel';
-import { ChatServer } from 'src/typeorm/chat-server';
+import { ChatChannelsService } from 'src/modules/chat-channels/chat-channels.service';
+import { ChatCategory } from 'src/entities/chat-category';
+import { ChatChannel } from 'src/entities/chat-channel';
+import { ChatServer } from 'src/entities/chat-server';
 import { FakeChatCategoryCreate, FakeChatChannelCreate, generateChatCategory, generateChatChannel } from 'test/controllers/chat-channels/fakes-factory';
 import { Repository } from 'typeorm';
 

@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { CreateChatCategoryDto, CreateChatChannelDto } from "src/chat-channels/chat-channels.dto";
-import { ChatCategory } from "src/typeorm/chat-category";
-import { ChatChannel } from "src/typeorm/chat-channel";
+import { ChatCategory } from "src/entities/chat-category";
+import { ChatChannel } from "src/entities/chat-channel";
 import { generateChatServer } from "../chat-servers/fakes-factory";
 
 export function generateChatChannel(): ChatChannel {

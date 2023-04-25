@@ -2,10 +2,10 @@ import { ArgumentMetadata, HttpStatus, NotFoundException, ValidationPipe } from 
 import { Test, TestingModule } from '@nestjs/testing'
 import { Response } from 'express'
 import { createResponse, MockResponse } from 'node-mocks-http'
-import { CreateUserDto } from 'src/users/users.dto'
-import { User } from '../../../src/typeorm/user'
-import { UsersController } from '../../../src/users/users.controller'
-import { UsersService } from '../../../src/users/users.service'
+import { CreateUserDto } from 'src/modules/users/users.dto'
+import { User } from '../../../src/entities/user'
+import { UsersController } from '../../../src/modules/users/users.controller'
+import { UsersService } from '../../../src/modules/users/users.service'
 import { FakeUserCreate, generateFewUsers, generateUser } from './fakes-factory'
 
 describe('UsersController', () => {
