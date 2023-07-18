@@ -28,9 +28,9 @@ Discord-clone offers a range of features found in the original Discord app, incl
 Server-side tests are implemented using the **Jest** testing library, while E2E tests for the frontend are conducted using **Cypress**. 
 
 ## Deployment
-The client-side of the application is deployed on **Vercel**, while the server-side and the database are hosted on **Railway.app**. To experience the Discord-clone app in action, please follow the link below:
-[Discord-clone Demo](https://discord-clone-rafaau.vercel.app/)
-> **Note:** Your browser may flag the site as potentially unsafe, but rest assured, the application does not use any real data. You can log in with the provided credentials in the dropdown in the login page or create an account using a fake email address.
+~~The client-side of the application is deployed on **Vercel**, while the server-side and the database are hosted on **Railway.app**. To experience the Discord-clone app in action, please follow the link below:
+[Discord-clone Demo](https://discord-clone-rafaau.vercel.app/)~~
+**UNDEPLOYED**
 ## Screenshots
 
 ![alt text](https://imgur.com/FfEiW7L.jpg)
